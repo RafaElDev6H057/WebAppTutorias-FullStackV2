@@ -1,115 +1,111 @@
 # 🎓 Sistema de Gestión de Tutorías
 
-Este proyecto es un sistema para la **gestión de tutorías**, desarrollado con **Vue.js** (utilizando **Tailwind CSS** para el diseño) en el frontend y **Laravel** en el backend. Sigue las instrucciones a continuación para configurarlo y ponerlo en marcha.
+Este proyecto es un sistema para la gestión de tutorías, desarrollado con **Vue.js** (utilizando **Tailwind CSS**) en el frontend y **FastAPI** en el backend. Sigue las instrucciones a continuación para configurarlo y ponerlo en marcha.
 
 ---
 
-## 🔧 **Requisitos previos**
+## 🔧 Requisitos previos
 
 Antes de comenzar, asegúrate de tener instaladas las siguientes herramientas en tu sistema:
 
-- [Node.js](https://nodejs.org/) (versión 16 o superior).
-- [Composer](https://getcomposer.org/) (versión 2 o superior).
-- [PHP](https://www.php.net/) (versión 8.1 o superior).
-- [MySQL](https://www.mysql.com/) o cualquier base de datos compatible con Laravel.
+- **Node.js** (versión 16 o superior).
+- **Python** (versión 3.8 o superior).
+- **pip** (el gestor de paquetes de Python).
+- **MySQL** o una base de datos compatible.
 
 ---
 
-## 🚀 **Instalación**
+## 🚀 Instalación
 
-### 1️⃣ **Configuración del Frontend (Vue.js con Tailwind CSS)**
+Sigue los pasos para configurar ambos entornos, el del frontend y el del backend.
 
-1. Navega al directorio del frontend:
+### 1️⃣ Configuración del Frontend (Vue.js con Tailwind CSS)
 
-   ```bash
-   cd frontend
-   ```
+1.  Navega al directorio del frontend:
+    ```bash
+    cd frontend
+    ```
+2.  Instala las dependencias del proyecto:
+    ```bash
+    npm install
+    ```
+3.  Para iniciar el servidor de desarrollo, ejecuta:
+    ```bash
+    npm run dev
+    ```
+    Esto levantará el servidor del frontend, que estará disponible por defecto en **`http://localhost:5173`** (el puerto puede variar).
 
-2. Instala las dependencias:
+### 2️⃣ Configuración del Backend (FastAPI)
 
-   ```bash
-   npm install
-   ```
+1.  Navega al directorio del backend:
+    ```bash
+    cd backend
+    ```
+2.  Crea y activa un entorno virtual para aislar las dependencias:
+    ```bash
+    # Crear el entorno virtual
+    python -m venv .venv
+    ```
+    Ahora, activa el entorno. El comando varía según tu sistema operativo:
+    - **En Windows (PowerShell/CMD):**
+      ```bash
+      .\venv\Scripts\activate
+      ```
+    - **En macOS / Linux:**
+      ```bash
+      source venv/bin/activate
+      ```
+3.  Con el entorno virtual activado, instala todas las librerías necesarias:
+    ```bash
+    pip install -r requirements.txt
+    ```
+4.  Configura las variables de entorno. Copia el archivo `.env.example` y renómbralo a `.env`:
+    ```bash
+    cp .env.example .env
+    ```
+    Abre el nuevo archivo `.env` y actualiza las credenciales de tu base de datos:
+    ```env
+    # Variables de entorno para la Base de Datos
+    DB_USER="tu_usuario_mysql"
+    DB_PASSWORD="tu_contraseña_segura"
+    DB_HOST="localhost"
+    DB_PORT="3306"
+    DB_NAME="nombre_de_tu_base_de_datos"
+    ```
+5.  Levanta el servidor de desarrollo de FastAPI:
+    ```bash
+    # Asumiendo que tu archivo principal es app/main.py
+    fastapi dev app/main.py
+    ```
+    El backend estará disponible en **`http://127.0.0.1:8000`**. Puedes acceder a la documentación interactiva en **`http://127.0.0.1:8000/docs`**.
 
-3. Para iniciar el servidor de desarrollo, ejecuta:
-   ```bash
-   npm run dev
-   ```
-   Esto levantará el servidor del frontend, que estará disponible por defecto en http://localhost:5173 (el puerto puede variar).
+---
 
-### 2️⃣ **Configuración del Backend (Laravel)**
+## 💡 Notas importantes
 
-1. Navega al directorio del backend:
+- **Ejecución simultánea**: Asegúrate de que los servidores de **Vue.js** y **FastAPI** estén corriendo al mismo tiempo para que el sistema funcione correctamente.
 
-   ```bash
-   cd backend
-   ```
+---
 
-2. Instala las dependencias de Laravel:
+## 🛠️ Tecnologías utilizadas
 
-   ```bash
-   composer install
-   ```
-
-3. Configura el entorno:
-
-   - Copia el archivo `.env.example` y renómbralo a `.env`:
-     ```bash
-     cp .env.example .env
-     ```
-   - Abre el archivo `.env` en un editor de texto y actualiza las credenciales de tu base de datos:
-     ```env
-     DB_CONNECTION=mysql
-     DB_HOST=127.0.0.1
-     DB_PORT=3306
-     DB_DATABASE=nombre_de_tu_base
-     DB_USERNAME=tu_usuario
-     DB_PASSWORD=tu_contraseña
-     ```
-
-4. Genera la clave de la aplicación:
-
-   ```bash
-   php artisan key:generate
-   ```
-
-5. Ejecuta las migraciones para crear las tablas necesarias en la base de datos:
-
-   ```bash
-   php artisan migrate
-   ```
-
-6. Levanta el servidor de desarrollo:
-   ```bash
-   php artisan serve
-   ```
-   El backend estará disponible por defecto en http://localhost:8000.
-
-## 💡 **Notas importantes**
-
-- **Ejecución simultánea**: Asegúrate de que los servidores de **Vue.js** y **Laravel** estén corriendo al mismo tiempo para que el sistema funcione correctamente.
-- **Permisos de Laravel**: Si encuentras problemas de permisos, ejecuta:
-  ```bash
-  sudo chmod -R 775 storage bootstrap/cache
-  ```
-
-## 🛠️ **Tecnologías utilizadas**
-
-### Frontend
+#### **Frontend**
 
 - **Framework**: Vue.js 3
 - **Estilos**: Tailwind CSS
 - **Herramienta de construcción**: Vite
 
-### Backend
+#### **Backend**
 
-- **Framework**: Laravel
-- **ORM**: Eloquent
+- **Framework**: FastAPI
+- **ORM / Modelado de datos**: SQLModel, Pydantic
 
-### Base de datos
+#### **Base de datos**
 
 - **Motor principal**: MySQL
 
-## 📞 **Contacto**
+---
+
+## 📞 Contacto
 
 Si tienes preguntas o problemas, no dudes en contactarnos. ¡Estamos aquí para ayudarte! ✨
