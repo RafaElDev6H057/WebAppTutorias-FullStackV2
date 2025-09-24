@@ -1,25 +1,23 @@
-import os 
-from dotenv import load_dotenv
+# app/database.py
+
 from sqlmodel import SQLModel, create_engine, Session
 
-# Cargar variables de entorno
-load_dotenv()
+# 1. Definimos la URL para la base de datos SQLite.
+# Esto creará un archivo llamado "database.db" en la raíz de tu proyecto.
+DATABASE_URL = "sqlite:///./database.db"
 
-MYSQL_USER = os.getenv("MYSQL_USER")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
-MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
-MYSQL_PORT = os.getenv("MYSQL_PORT", "3306")
-MYSQL_DB = os.getenv("MYSQL_DB")
+# 2. Creamos el "engine" con un argumento especial para SQLite.
+engine = create_engine(
+    DATABASE_URL, 
+    echo=True, 
+    connect_args={"check_same_thread": False}
+)
 
-DATABASE_URL = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
-
-engine = create_engine(DATABASE_URL, echo=True)
-
-# Crear tablas
+# Esta función no necesita cambios.
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
 
-# Sesión de base de datos
+# Esta función tampoco necesita cambios.
 def get_session():
     with Session(engine) as session:
         yield session
