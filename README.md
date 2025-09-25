@@ -11,7 +11,6 @@ Antes de comenzar, asegúrate de tener instaladas las siguientes herramientas en
 - **Node.js** (versión 16 o superior).
 - **Python** (versión 3.8 o superior).
 - **pip** (el gestor de paquetes de Python).
-- **MySQL** o una base de datos compatible.
 
 ---
 
@@ -59,25 +58,12 @@ Sigue los pasos para configurar ambos entornos, el del frontend y el del backend
     ```bash
     pip install -r requirements.txt
     ```
-4.  Configura las variables de entorno. Copia el archivo `.env.example` y renómbralo a `.env`:
-    ```bash
-    cp .env.example .env
-    ```
-    Abre el nuevo archivo `.env` y actualiza las credenciales de tu base de datos:
-    ```env
-    # Variables de entorno para la Base de Datos
-    DB_USER="tu_usuario_mysql"
-    DB_PASSWORD="tu_contraseña_segura"
-    DB_HOST="localhost"
-    DB_PORT="3306"
-    DB_NAME="nombre_de_tu_base_de_datos"
-    ```
-5.  Levanta el servidor de desarrollo de FastAPI:
+4.  Levanta el servidor de desarrollo de FastAPI:
     ```bash
     # Asumiendo que tu archivo principal es app/main.py
     fastapi dev app/main.py
     ```
-    El backend estará disponible en **`http://127.0.0.1:8000`**. Puedes acceder a la documentación interactiva en **`http://127.0.0.1:8000/docs`**.
+    El backend estará disponible en **`http://127.0.0.1:8000`**. La primera vez que se ejecute, se creará automáticamente un archivo `database.db` que contendrá toda la información. Puedes acceder a la documentación interactiva en **`http://127.0.0.1:8000/docs`**.
 
 ---
 
@@ -102,10 +88,4 @@ Sigue los pasos para configurar ambos entornos, el del frontend y el del backend
 
 #### **Base de datos**
 
-- **Motor principal**: MySQL
-
----
-
-## 📞 Contacto
-
-Si tienes preguntas o problemas, no dudes en contactarnos. ¡Estamos aquí para ayudarte! ✨
+- **Motor principal**: SQLite
