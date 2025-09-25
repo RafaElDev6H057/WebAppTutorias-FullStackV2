@@ -12,26 +12,26 @@ if TYPE_CHECKING:
     from .tutoria import Tutoria
 
 # Definimos un Enum para el estado del alumno
-class EstadoAlumno(str, enum.Enum):
-    ACTIVO = "activo"
-    INACTIVO = "inactivo"
-    EGRESADO = "egresado"
-    BAJA = "baja"
+# class EstadoAlumno(str, enum.Enum):
+#     ACTIVO = "activo"
+#     INACTIVO = "inactivo"
+#     EGRESADO = "egresado"
+#     BAJA = "baja"
 
 
 class Alumno(SQLModel, table=True):
-
     id_alumno: Optional[int] = Field(default=None, primary_key=True)
     nombre: str = Field(max_length=100)
     apellido_p: str = Field(max_length=100)
     apellido_m: Optional[str] = Field(default=None, max_length=100)
-    
-    num_control: str = Field(max_length=50, unique=True, index=True) 
+    num_control: str = Field(max_length=50, unique=True, index=True)
     contraseña: str
     carrera: str = Field(max_length=100)
-    
     semestre_actual: int = Field(ge=1, le=14)
-    estado: str = Field(default=EstadoAlumno.ACTIVO, max_length=50)
+    estado: str = Field(default="A", max_length=50)
+    curp: str = Field(max_length=18, unique=True, index=True)
+    correo: str = Field(max_length=255, index=True)
+    requires_password_change: bool = Field(default=True)
 
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)

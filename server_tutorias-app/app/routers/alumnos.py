@@ -1,7 +1,9 @@
 # routers/alumnos.py
 
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Response, UploadFile, File, Query
 from sqlmodel import Session, select
+import shutil 
+import os
 from typing import List
 
 # ⚙️ Imports refactorizados
@@ -23,8 +25,20 @@ def get_alumno_or_404(id_alumno: int, session: Session = Depends(get_session)) -
 
 # 🔹 Obtener todos los alumnos (sin cambios, ya era simple)
 @router.get("/", response_model=List[AlumnoRead])
-def get_alumnos(session: Session = Depends(get_session)):
-    return session.exec(select(Alumno)).all()
+def get_alumnos(
+    session: Session = Depends(get_session),
+    page: int = Query(1, gt=0, description="Número de página a solicitar"),
+    size: int = Query(10, gt=0, le=100, description="Tamaño de la página (máximo 100)")
+):
+    # ✅ 2. Calculamos cuántos registros saltar (offset)
+    offset = (page - 1) * size
+    
+    # ✅ 3. Modificamos la consulta para aplicar el offset y el límite (size)
+    alumnos = session.exec(
+        select(Alumno).offset(offset).limit(size)
+    ).all()
+    
+    return alumnos
 
 
 # 🔹 Obtener un alumno por ID
@@ -62,18 +76,46 @@ def delete_alumno(alumno: Alumno = Depends(get_alumno_or_404), session: Session 
 
 
 # 🔹 Login de alumno
-@router.post("/login", response_model=AlumnoRead) # 👈 ¡MUY IMPORTANTE!
+@router.post("/login", response_model=AlumnoRead)
 def login(data: AlumnoLogin, session: Session = Depends(get_session)):
     alumno = alumno_service.get_alumno_by_num_control(session, data.num_control)
 
-    if not alumno or not alumno_service.verify_password(data.contraseña, alumno.contraseña):
-        # ✅ 3. Lanzamos una excepción estándar de "No autorizado"
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Número de control o contraseña incorrectos",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    # ✅ 4. ¡NUNCA devuelvas el hash de la contraseña!
-    # Usamos AlumnoRead como response_model para filtrar la contraseña automáticamente.
+    # Si el alumno no existe, el error es el mismo
+    if not alumno:
+        raise HTTPException(status_code=401, detail="Número de control o contraseña incorrectos")
+
+    # ✅ LÓGICA DE LOGIN DUAL
+    is_password_correct = False
+    # Si requiere cambio, es contraseña temporal (comparación directa)
+    if alumno.requires_password_change:
+        if data.contraseña == alumno.contraseña:
+            is_password_correct = True
+    # Si no, es contraseña hasheada (verificación)
+    else:
+        if alumno_service.verify_password(data.contraseña, alumno.contraseña):
+            is_password_correct = True
+            
+    if not is_password_correct:
+        raise HTTPException(status_code=401, detail="Número de control o contraseña incorrectos")
+
     return alumno
+
+@router.post("/upload-excel", summary="Cargar alumnos desde un archivo Excel")
+def upload_alumnos_from_excel(
+    file: UploadFile = File(...),
+    session: Session = Depends(get_session)
+):
+    """
+    Sube un archivo Excel para poblar la base de datos de alumnos.
+    La operación es rápida y la respuesta es inmediata.
+    
+    **Importante**: Esta operación BORRA todos los alumnos y tutorías existentes
+    y los reemplaza con los datos del archivo.
+    """
+    # ✅ Llamada directa a la función del servicio
+    alumnos_cargados = alumno_service.process_and_load_excel(db=session, file=file)
+    
+    return {
+        "message": "Archivo procesado y alumnos cargados exitosamente.",
+        "alumnos_cargados": alumnos_cargados
+    }

@@ -1,10 +1,10 @@
 # schemas/alumno.py
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, EmailStr
 from typing import Optional
 
 # Importamos el Enum definido en el modelo para reutilizarlo
-from app.models.alumno import EstadoAlumno 
+# from app.models.alumno import EstadoAlumno 
 
 # 💡 Idea: Podríamos preguntarle al usuario el formato exacto de su num_control
 # Por ahora, un ejemplo: 8 dígitos numéricos.
@@ -13,18 +13,13 @@ from app.models.alumno import EstadoAlumno
 class AlumnoBase(BaseModel):
     nombre: str = Field(..., min_length=2, max_length=100)
     apellido_p: str = Field(..., min_length=2, max_length=100)
-    apellido_m: Optional[str] = Field(default=None, max_length=100)
-    
-    # ✅ 1. Validación de formato con Regex (ajustar según el formato real)
+    apellido_m: Optional[str] = None
     num_control: str = Field(..., max_length=50)
-    
     carrera: str = Field(..., min_length=3, max_length=100)
-    
-    # ✅ 2. Validación de rango numérico
     semestre_actual: int = Field(..., ge=1, le=14)
-    
-    # ✅ 3. Usamos el Enum para validar la entrada
-    estado: Optional[EstadoAlumno] = EstadoAlumno.ACTIVO
+    estado: str
+    curp: str = Field(..., min_length=18, max_length=18)
+    correo: EmailStr
 
     # ✅ 4. (Opcional pero recomendado) Sanitizar entradas de texto
     @field_validator('nombre', 'apellido_p', 'apellido_m', 'carrera', mode='before')
@@ -54,7 +49,9 @@ class AlumnoUpdate(BaseModel):
     
     carrera: Optional[str] = Field(default=None, min_length=3, max_length=100)
     semestre_actual: Optional[int] = Field(default=None, ge=1, le=14)
-    estado: Optional[EstadoAlumno] = None
+    estado: Optional[str] = None
+    curp: Optional[str] = Field(default=None, min_length=18, max_length=18)
+    correo: Optional[EmailStr] = None
     
     # ✅ 2. Añadimos un validador que solo se activa si se escribe una nueva contraseña
     @field_validator('contraseña')
@@ -70,6 +67,7 @@ class AlumnoUpdate(BaseModel):
 
 class AlumnoRead(AlumnoBase):
     id_alumno: int
+    requires_password_change: bool
 
     class Config:
         from_attributes = True

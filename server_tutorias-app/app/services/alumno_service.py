@@ -1,12 +1,14 @@
 # app/services/alumno_service.py
 
-from fastapi import HTTPException, status
-from sqlmodel import Session, select
+from fastapi import HTTPException, status, UploadFile
+from sqlmodel import Session, select, delete
 from passlib.context import CryptContext
+import pandas as pd
 
 from app.models.alumno import Alumno
 from app.schemas.alumno import AlumnoCreate, AlumnoUpdate
 from app.models.tutoria import Tutoria
+from app.database import engine
 
 # Mueve el contexto de la contraseña aquí, ya que es parte de la lógica de negocio
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -84,3 +86,60 @@ def update_alumno(db: Session, alumno: Alumno, data: AlumnoUpdate) -> Alumno:
     db.commit()
     db.refresh(alumno)
     return alumno
+
+def process_and_load_excel(db: Session, file: UploadFile):
+    """
+    Procesa un archivo Excel, valida los datos, borra los alumnos existentes 
+    y carga los nuevos con una contraseña temporal.
+    """
+    try:
+        column_map = {
+            "numero_control": "num_control", "nombre": "nombre",
+            "apellido_paterno": "apellido_p", "apellido_materno": "apellido_m",
+            "carrera": "carrera", "semestre": "semestre_actual",
+            "curp": "curp", "estatus": "estado", "email": "correo"
+        }
+        
+        df = pd.read_excel(file.file, dtype={'numero_control': str, 'curp': str})
+        df.rename(columns=column_map, inplace=True)
+        df = df.astype(object).where(pd.notnull(df), None)
+        
+        # ... (limpieza de texto) ...
+        text_columns = ['nombre', 'apellido_p', 'apellido_m', 'carrera']
+        for col in text_columns:
+            if col in df.columns:
+                df[col] = df[col].str.title()
+        if 'correo' in df.columns:
+            df['correo'] = df['correo'].str.lower()
+
+        # ✅ NUEVA VALIDACIÓN: Revisar que las columnas obligatorias no tengan valores nulos
+        required_columns = ['num_control', 'nombre', 'apellido_p', 'carrera', 'semestre_actual', 'curp', 'correo']
+        null_check = df[required_columns].isnull()
+        if null_check.any().any():
+            # (Opcional) Encontrar la primera fila con error para un mensaje más útil
+            first_error_row = df[null_check.any(axis=1)].iloc[0]
+            raise HTTPException(
+                status_code=400,
+                detail=f"Error de datos: El archivo contiene filas con valores vacíos en columnas obligatorias. "
+                        f"Por ejemplo, el alumno con número de control '{first_error_row['num_control']}' tiene datos faltantes. "
+                        "Por favor, revise el archivo."
+            )
+
+        alumnos_a_crear = []
+        for _, row in df.iterrows():
+            row_data = row.to_dict()
+            row_data["contraseña"] = f'{row_data["num_control"]}itsf'
+            alumnos_a_crear.append(Alumno(**row_data))
+
+        db.execute(delete(Alumno))
+        db.add_all(alumnos_a_crear)
+        db.commit()
+
+        return len(alumnos_a_crear)
+
+    except KeyError as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"La columna requerida {e} no se encontró en el Excel.")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
