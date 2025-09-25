@@ -9,7 +9,7 @@
         Número de Control: <span class="font-normal">{{ props.num_control }}</span>
       </p>
     </div>
-    <form @submit.prevent="generarPDF" class="space-y-6">
+    <form @submit.prevent="guardarReporteIntegral" class="space-y-6">
       <!-- Sección: Estudiantes atendidos -->
       <div class="bg-blue-50 p-4 rounded-lg">
         <h3 class="text-lg font-semibold mb-3 text-blue-800">Estudiantes atendidos</h3>
@@ -17,7 +17,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700">Tutoría Grupal:</label>
             <input
-              v-model="datos.A1"
+              v-model="datos.tutoria_grupal"
               type="number"
               min="0"
               max="16"
@@ -27,7 +27,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700">Tutoría Individual:</label>
             <input
-              v-model="datos.A2"
+              v-model="datos.tutoria_individual"
               type="number"
               min="0"
               max="2"
@@ -46,7 +46,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700">Seguimiento 1:</label>
             <textarea
-              v-model="datos.B1"
+              v-model="datos.seguimiento_1"
               rows="3"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50 bg-white p-2"
               placeholder="Ingrese las materias separadas por comas"
@@ -55,7 +55,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700">Seguimiento 2:</label>
             <textarea
-              v-model="datos.B2"
+              v-model="datos.seguimiento_2"
               rows="3"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50 bg-white p-2"
               placeholder="Ingrese las materias separadas por comas"
@@ -64,7 +64,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700">Seguimiento 3:</label>
             <textarea
-              v-model="datos.B3"
+              v-model="datos.seguimiento_3"
               rows="3"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50 bg-white p-2"
               placeholder="Ingrese las materias separadas por comas"
@@ -80,7 +80,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700">Jefatura Académica:</label>
             <input
-              v-model="datos.C1"
+              v-model="datos.jefatura_academica"
               type="number"
               min="0"
               max="1"
@@ -91,7 +91,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700">Ciencias Básicas:</label>
             <input
-              v-model="datos.C2"
+              v-model="datos.ciencias_basicas"
               type="number"
               min="0"
               max="1"
@@ -102,7 +102,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700">Psicología:</label>
             <input
-              v-model="datos.C3"
+              v-model="datos.psicologia"
               type="number"
               min="0"
               max="1"
@@ -124,7 +124,7 @@
               >Número de materias aprobadas:</label
             >
             <input
-              v-model="datos.D1"
+              v-model="datos.materias_aprobadas"
               type="number"
               min="0"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 bg-white p-2"
@@ -135,7 +135,7 @@
               >Nombre de materias No aprobadas:</label
             >
             <textarea
-              v-model="datos.D2"
+              v-model="datos.materias_no_aprobadas"
               rows="3"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 bg-white p-2"
               placeholder="Ingrese las materias separadas por comas"
@@ -158,7 +158,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { PDFDocument, rgb } from 'pdf-lib'
+import axios from 'axios' // 👈 1. Importa axios
 
 const props = defineProps({
   nombre: {
@@ -171,51 +171,41 @@ const props = defineProps({
   },
 })
 
+// Objeto reactivo para almacenar los datos del formulario
 const datos = ref({
-  A1: 0, // Tutoría Grupal
-  A2: 0, // Tutoría Individual
-  B1: '', // Seguimiento 1
-  B2: '', // Seguimiento 2
-  B3: '', // Seguimiento 3
-  C1: 0, // Jefatura Académica
-  C2: 0, // Ciencias Básicas
-  C3: 0, // Psicología
-  D1: 0, // Materias aprobadas
-  D2: '', // Materias no aprobadas
+  tutoria_grupal: 0,
+  tutoria_individual: 0,
+  seguimiento_1: '',
+  seguimiento_2: '',
+  seguimiento_3: '',
+  jefatura_academica: 0,
+  ciencias_basicas: 0,
+  psicologia: 0,
+  materias_aprobadas: 0,
+  materias_no_aprobadas: '',
 })
 
-const celdaAncho = 100
-const celdaAlto = 20
-const offsetX = 100
-const offsetY = 700
+// 👇 2. Implementa la función para guardar
+const guardarReporteIntegral = async () => {
+  try {
+    // 3. Realiza la petición POST a tu endpoint de FastAPI
+    const response = await axios.post(
+      'http://localhost:8000/api/reportes/integral',
+      datos.value, // El .value es importante porque 'datos' es una ref
+    )
 
-const calcularPosicion = (celda) => {
-  let columna = celda.charCodeAt(0) - 65
-  let fila = parseInt(celda.substring(1)) - 1
-  let x = offsetX + columna * celdaAncho
-  let y = offsetY - fila * celdaAlto
-  return { x, y }
-}
-
-const generarPDF = async () => {
-  const existingPdfBytes = await fetch('/formato.pdf').then((res) => res.arrayBuffer())
-  const pdfDoc = await PDFDocument.load(existingPdfBytes)
-  const page = pdfDoc.getPages()[0]
-
-  for (let celda in datos.value) {
-    let { x, y } = calcularPosicion(celda)
-    let valor = datos.value[celda]
-    if (typeof valor === 'number') {
-      valor = valor.toString()
+    // 4. Maneja la respuesta exitosa
+    if (response.status === 201) {
+      console.log('Reporte guardado exitosamente:', response.data)
+      // Aquí puedes mostrar una notificación de éxito al usuario
+      alert('¡Reporte guardado con éxito!')
+      // Opcional: limpiar el formulario o redirigir al usuario
     }
-    page.drawText(valor, { x, y, size: 12, color: rgb(0, 0, 0) })
+  } catch (error) {
+    // 5. Maneja cualquier error que ocurra
+    console.error('Error al guardar el reporte:', error)
+    // Muestra una notificación de error al usuario
+    alert('Ocurrió un error al guardar el reporte. Inténtalo de nuevo.')
   }
-
-  const pdfBytes = await pdfDoc.save()
-  const blob = new Blob([pdfBytes], { type: 'application/pdf' })
-  const link = document.createElement('a')
-  link.href = URL.createObjectURL(blob)
-  link.download = 'reporte_integral_tutoria.pdf'
-  link.click()
 }
 </script>
