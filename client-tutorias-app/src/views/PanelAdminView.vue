@@ -47,7 +47,7 @@
     </nav>
 
     <!-- Contenido principal -->
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 relative z-10">
+    <main class="max-w-[1400px] mx-auto py-6 sm:px-6 lg:px-8 relative z-10">
       <div class="px-4 py-6 sm:px-0">
         <h1 class="text-3xl font-bold text-gray-900 mb-8">Panel de Administración</h1>
 
