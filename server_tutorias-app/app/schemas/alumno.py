@@ -82,3 +82,8 @@ class AlumnoReadBasic(AlumnoBase):
 
     class Config:
         from_attributes = True
+
+class AlumnoSetPassword(BaseModel):
+    num_control: str
+    contraseña_actual: str
+    nueva_contraseña: str = Field(..., min_length=8)

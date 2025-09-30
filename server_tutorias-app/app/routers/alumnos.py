@@ -9,7 +9,7 @@ from typing import List
 # ⚙️ Imports refactorizados
 from app.database import get_session
 from app.models.alumno import Alumno
-from app.schemas.alumno import AlumnoCreate, AlumnoRead, AlumnoUpdate, AlumnoLogin
+from app.schemas.alumno import AlumnoCreate, AlumnoRead, AlumnoUpdate, AlumnoLogin, AlumnoSetPassword
 from app.services import alumno_service  # 👈 Importamos nuestro nuevo servicio
 
 router = APIRouter(prefix="/alumnos", tags=["Alumnos"])
@@ -99,6 +99,14 @@ def login(data: AlumnoLogin, session: Session = Depends(get_session)):
         raise HTTPException(status_code=401, detail="Número de control o contraseña incorrectos")
 
     return alumno
+
+@router.post("/set-password", summary="Establecer contraseña permanente para un alumno")
+def set_password(data: AlumnoSetPassword, session: Session = Depends(get_session)):
+    """
+    Permite a un alumno con contraseña temporal establecer su
+    contraseña final y segura.
+    """
+    return alumno_service.set_permanent_password(db=session, data=data)
 
 @router.post("/upload-excel", summary="Cargar alumnos desde un archivo Excel")
 def upload_alumnos_from_excel(

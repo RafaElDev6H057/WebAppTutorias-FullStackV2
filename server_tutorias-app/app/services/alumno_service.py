@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 import pandas as pd
 
 from app.models.alumno import Alumno
-from app.schemas.alumno import AlumnoCreate, AlumnoUpdate
+from app.schemas.alumno import AlumnoCreate, AlumnoUpdate, AlumnoSetPassword
 from app.models.tutoria import Tutoria
 from app.database import engine
 
@@ -38,7 +38,13 @@ def create_alumno(db: Session, data: AlumnoCreate) -> Alumno:
     
     hashed_password = get_password_hash(data.contraseña)
     
-    alumno = Alumno.model_validate(data.model_dump(), update={'contraseña': hashed_password})
+    alumno = Alumno.model_validate(
+        data.model_dump(), 
+        update={
+            'contraseña': hashed_password,
+            'requires_password_change': False 
+        }
+    )
     
     db.add(alumno)
     db.commit()
@@ -143,3 +149,37 @@ def process_and_load_excel(db: Session, file: UploadFile):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
+    
+def set_permanent_password(db: Session, data: AlumnoSetPassword):
+    """
+    Establece una contraseña permanente y hasheada para un alumno
+    que actualmente tiene una contraseña temporal.
+    """
+    # 1. Buscar al alumno por su número de control
+    alumno = get_alumno_by_num_control(db, data.num_control)
+    if not alumno:
+        raise HTTPException(status_code=404, detail="El alumno no fue encontrado.")
+
+    # 2. Verificar que el alumno realmente necesite un cambio de contraseña
+    if not alumno.requires_password_change:
+        raise HTTPException(
+            status_code=400, 
+            detail="Este alumno ya tiene una contraseña permanente."
+        )
+        
+    # 3. Validar que la contraseña actual (temporal) sea correcta
+    if data.contraseña_actual != alumno.contraseña:
+        raise HTTPException(
+            status_code=401,
+            detail="La contraseña actual es incorrecta."
+        )
+
+    # 4. Hashear y actualizar la nueva contraseña
+    hashed_password = get_password_hash(data.nueva_contraseña)
+    alumno.contraseña = hashed_password
+    alumno.requires_password_change = False # 👈 Cambiamos la bandera
+
+    db.add(alumno)
+    db.commit()
+
+    return {"message": "Contraseña actualizada exitosamente."}
