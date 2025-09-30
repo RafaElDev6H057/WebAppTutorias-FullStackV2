@@ -718,20 +718,22 @@
                         ]"
                       >
                         <option value="">Selecciona una carrera</option>
-                        <option value="Ing. en Semiconductores">Ing. en Semiconductores</option>
-                        <option value="Ing. en Logistica">Ing. en Logistica</option>
-                        <option value="Ing. en Informatica">Ing. en Informatica</option>
-                        <option value="Ing. en Electronica">Ing. en Electronica</option>
-                        <option value="Ing. en Sistemas Computacionales">
-                          Ing. en Sistemas Computacionales
+                        <option value="Ingeniería en Semiconductores">
+                          Ingeniería en Semiconductores
                         </option>
-                        <option value="Ing. Ambiental">Ing. Ambiental</option>
-                        <option value="Ing. Industrial">Ing. Industrial</option>
-                        <option value="Ing. en Gestion Empresarial">
-                          Ing. en Gestion Empresarial
+                        <option value="Ingeniería en Logística">Ingeniería en Logística</option>
+                        <option value="Ingeniería en Informática">Ingeniería en Informática</option>
+                        <option value="Ingeniería en Electrónica">Ingeniería en Electrónica</option>
+                        <option value="Ingeniería en Sistemas Computacionales">
+                          Ingeniería en Sistemas Computacionales
                         </option>
-                        <option value="Ing. en Mineria">Ing. en Mineria</option>
-                        <option value="Lic. en Arquitectura">Lic. en Arquitectura</option>
+                        <option value="Ingeniería Ambiental">Ingeniería Ambiental</option>
+                        <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+                        <option value="Ingeniería en Gestión Empresarial">
+                          Ingeniería en Gestión Empresarial
+                        </option>
+                        <option value="Ingeniería en Mineria">Ingeniería en Mineria</option>
+                        <option value="Arquitectura">Arquitectura</option>
                       </select>
                       <p v-if="errors.carrera" class="mt-2 text-sm text-red-600">
                         {{ errors.carrera[0] }}
@@ -779,8 +781,8 @@
                             { 'border-red-500': errors.estado },
                           ]"
                         >
-                          <option value="activo">Activo</option>
-                          <option value="inactivo">Inactivo</option>
+                          <option value="A">Activo</option>
+                          <option value="I">Inactivo</option>
                         </select>
                         <p v-if="errors.estado" class="mt-2 text-sm text-red-600">
                           {{ errors.estado[0] }}
@@ -1442,6 +1444,7 @@ const openModal = (type, mode = 'add', item = null) => {
     const { contraseña, ...rest } = item
     Object.assign(formData, rest)
     formData.contraseña = '' // Ensure password field is empty
+    console.log(formData)
   } else {
     // Set default values based on the type
     if (type === 'student') {

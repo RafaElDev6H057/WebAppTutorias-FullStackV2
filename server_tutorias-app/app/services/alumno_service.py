@@ -103,26 +103,32 @@ def process_and_load_excel(db: Session, file: UploadFile):
             "numero_control": "num_control", "nombre": "nombre",
             "apellido_paterno": "apellido_p", "apellido_materno": "apellido_m",
             "carrera": "carrera", "semestre": "semestre_actual",
-            "curp": "curp", "estatus": "estado", "email": "correo"
+            "curp": "curp", "estatus": "estado", "email": "correo" # Cambiado 'email' a 'correo' por consistencia
         }
         
         df = pd.read_excel(file.file, dtype={'numero_control': str, 'curp': str})
         df.rename(columns=column_map, inplace=True)
         df = df.astype(object).where(pd.notnull(df), None)
         
-        # ... (limpieza de texto) ...
-        text_columns = ['nombre', 'apellido_p', 'apellido_m', 'carrera']
-        for col in text_columns:
+        # ✅ LÓGICA DE NORMALIZACIÓN DE TEXTO ACTUALIZADA
+        # 1. Normalizamos nombres y apellidos como antes
+        name_columns = ['nombre', 'apellido_p', 'apellido_m']
+        for col in name_columns:
             if col in df.columns:
                 df[col] = df[col].str.title()
+        
+        # 2. Aplicamos la regla especial para la columna 'carrera'
+        if 'carrera' in df.columns:
+            df['carrera'] = df['carrera'].str.title().str.replace(" En ", " en ")
+
+        # 3. Normalizamos el correo a minúsculas
         if 'correo' in df.columns:
             df['correo'] = df['correo'].str.lower()
 
-        # ✅ NUEVA VALIDACIÓN: Revisar que las columnas obligatorias no tengan valores nulos
+        # ... (el resto de la función, incluyendo la validación, queda igual) ...
         required_columns = ['num_control', 'nombre', 'apellido_p', 'carrera', 'semestre_actual', 'curp', 'correo']
         null_check = df[required_columns].isnull()
         if null_check.any().any():
-            # (Opcional) Encontrar la primera fila con error para un mensaje más útil
             first_error_row = df[null_check.any(axis=1)].iloc[0]
             raise HTTPException(
                 status_code=400,
