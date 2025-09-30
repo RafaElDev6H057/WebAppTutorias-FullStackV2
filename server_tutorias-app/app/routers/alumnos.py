@@ -9,7 +9,7 @@ from typing import List
 # ⚙️ Imports refactorizados
 from app.database import get_session
 from app.models.alumno import Alumno
-from app.schemas.alumno import AlumnoCreate, AlumnoRead, AlumnoUpdate, AlumnoLogin, AlumnoSetPassword
+from app.schemas.alumno import AlumnoCreate, AlumnoRead, AlumnoUpdate, AlumnoLogin, AlumnoSetPassword, AlumnoUpdatePassword
 from app.services import alumno_service  # 👈 Importamos nuestro nuevo servicio
 
 router = APIRouter(prefix="/alumnos", tags=["Alumnos"])
@@ -107,6 +107,18 @@ def set_password(data: AlumnoSetPassword, session: Session = Depends(get_session
     contraseña final y segura.
     """
     return alumno_service.set_permanent_password(db=session, data=data)
+
+@router.put("/{id_alumno}/change-password", summary="Cambiar la contraseña de un alumno existente")
+def update_password(
+    data: AlumnoUpdatePassword,
+    alumno: Alumno = Depends(get_alumno_or_404), # Reutilizamos nuestra dependencia
+    session: Session = Depends(get_session)
+):
+    """
+    Permite a un alumno ya registrado (con contraseña hasheada) 
+    cambiar su contraseña.
+    """
+    return alumno_service.change_password(db=session, alumno=alumno, data=data)
 
 @router.post("/upload-excel", summary="Cargar alumnos desde un archivo Excel")
 def upload_alumnos_from_excel(

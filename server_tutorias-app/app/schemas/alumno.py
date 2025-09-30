@@ -87,3 +87,7 @@ class AlumnoSetPassword(BaseModel):
     num_control: str
     contraseña_actual: str
     nueva_contraseña: str = Field(..., min_length=8)
+
+class AlumnoUpdatePassword(BaseModel):
+    contraseña_actual: str
+    nueva_contraseña: str = Field(..., min_length=8)

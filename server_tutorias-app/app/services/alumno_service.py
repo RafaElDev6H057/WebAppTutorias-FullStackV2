@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 import pandas as pd
 
 from app.models.alumno import Alumno
-from app.schemas.alumno import AlumnoCreate, AlumnoUpdate, AlumnoSetPassword
+from app.schemas.alumno import AlumnoCreate, AlumnoUpdate, AlumnoSetPassword, AlumnoUpdatePassword
 from app.models.tutoria import Tutoria
 from app.database import engine
 
@@ -183,3 +183,30 @@ def set_permanent_password(db: Session, data: AlumnoSetPassword):
     db.commit()
 
     return {"message": "Contraseña actualizada exitosamente."}
+
+def change_password(db: Session, alumno: Alumno, data: AlumnoUpdatePassword):
+    """
+    Permite a un alumno con una contraseña permanente cambiarla por una nueva.
+    """
+    # 1. Validar que el alumno NO tenga una contraseña temporal
+    if alumno.requires_password_change:
+        raise HTTPException(
+            status_code=400,
+            detail="Este alumno debe usar la ruta /set-password para establecer su contraseña inicial."
+        )
+
+    # 2. Verificar que la contraseña actual que proporcionó sea correcta
+    if not verify_password(data.contraseña_actual, alumno.contraseña):
+        raise HTTPException(
+            status_code=401,
+            detail="La contraseña actual es incorrecta."
+        )
+    
+    # 3. Hashear y guardar la nueva contraseña
+    hashed_password = get_password_hash(data.nueva_contraseña)
+    alumno.contraseña = hashed_password
+    
+    db.add(alumno)
+    db.commit()
+
+    return {"message": "Su contraseña ha sido actualizada exitosamente."}
