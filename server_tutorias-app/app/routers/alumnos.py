@@ -1,15 +1,15 @@
 # routers/alumnos.py
 
 from fastapi import APIRouter, Depends, HTTPException, status, Response, UploadFile, File, Query
-from sqlmodel import Session, select
+from sqlmodel import Session, select, or_, func
 import shutil 
 import os
-from typing import List
+from typing import List, Optional
 
 # ⚙️ Imports refactorizados
 from app.database import get_session
 from app.models.alumno import Alumno
-from app.schemas.alumno import AlumnoCreate, AlumnoRead, AlumnoUpdate, AlumnoLogin, AlumnoSetPassword, AlumnoUpdatePassword
+from app.schemas.alumno import AlumnoCreate, AlumnoRead, AlumnoUpdate, AlumnoLogin, AlumnoSetPassword, AlumnoUpdatePassword, AlumnosPage
 from app.services import alumno_service  # 👈 Importamos nuestro nuevo servicio
 
 router = APIRouter(prefix="/alumnos", tags=["Alumnos"])
@@ -24,21 +24,37 @@ def get_alumno_or_404(id_alumno: int, session: Session = Depends(get_session)) -
 
 
 # 🔹 Obtener todos los alumnos (sin cambios, ya era simple)
-@router.get("/", response_model=List[AlumnoRead])
+@router.get("/", response_model=AlumnosPage)
 def get_alumnos(
     session: Session = Depends(get_session),
     page: int = Query(1, gt=0, description="Número de página a solicitar"),
-    size: int = Query(10, gt=0, le=100, description="Tamaño de la página (máximo 100)")
+    size: int = Query(10, gt=0, le=100, description="Tamaño de la página (máximo 100)"),
+    search: Optional[str] = Query(None, min_length=3, description="Término de búsqueda por nombre, apellido o núm. de control")
 ):
-    # ✅ 2. Calculamos cuántos registros saltar (offset)
+    query = select(Alumno)
+
+    if search:
+        search_term = f"%{search}%"
+        query = query.where(
+            or_(
+                Alumno.nombre.ilike(search_term),  #type: ignore 
+                Alumno.apellido_p.ilike(search_term), #type: ignore
+                Alumno.apellido_m.ilike(search_term), #type: ignore
+                Alumno.num_control.ilike(search_term) #type: ignore
+            )
+        )
+
+    # ✅ 2. Esta consulta ahora funcionará porque 'func' está importado.
+    # Usamos .subquery() para que funcione correctamente con la consulta filtrada.
+    count_query = select(func.count()).select_from(query.subquery())
+    total_alumnos = session.exec(count_query).one()
+
     offset = (page - 1) * size
-    
-    # ✅ 3. Modificamos la consulta para aplicar el offset y el límite (size)
     alumnos = session.exec(
-        select(Alumno).offset(offset).limit(size)
+        query.offset(offset).limit(size)
     ).all()
     
-    return alumnos
+    return AlumnosPage(total_alumnos=total_alumnos, alumnos=alumnos) #type: ignore
 
 
 # 🔹 Obtener un alumno por ID

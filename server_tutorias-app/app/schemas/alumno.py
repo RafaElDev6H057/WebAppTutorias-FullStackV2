@@ -1,7 +1,7 @@
 # schemas/alumno.py
 
 from pydantic import BaseModel, Field, field_validator, EmailStr
-from typing import Optional
+from typing import List, Optional
 
 # Importamos el Enum definido en el modelo para reutilizarlo
 # from app.models.alumno import EstadoAlumno 
@@ -91,3 +91,7 @@ class AlumnoSetPassword(BaseModel):
 class AlumnoUpdatePassword(BaseModel):
     contraseña_actual: str
     nueva_contraseña: str = Field(..., min_length=8)
+
+class AlumnosPage(BaseModel):
+    total_alumnos: int
+    alumnos: List[AlumnoRead]

@@ -1728,6 +1728,7 @@ const openModal = (type, mode = 'add', item = null) => {
 
   if (mode === 'edit' && item) {
     // Clonar el item para evitar modificar directamente los datos originales
+    // eslint-disable-next-line
     const { contraseña, ...rest } = item
     Object.assign(formData, rest)
     formData.contraseña = '' // Asegurar que el campo de contraseña esté vacío
