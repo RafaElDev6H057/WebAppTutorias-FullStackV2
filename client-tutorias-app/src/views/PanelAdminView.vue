@@ -1288,6 +1288,9 @@
 </template>
 
 <script setup>
+// ===========================================
+// IMPORTS
+// ===========================================
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
@@ -1297,220 +1300,292 @@ import ShowEye from '@/components/icons/ShowEye.vue'
 import HideEye from '@/components/icons/HideEye.vue'
 import BaseSearchInput from '@/components/ui/BaseSearchInput.vue'
 
+// ===========================================
+// ROUTER
+// ===========================================
 const router = useRouter()
 
-const showPassword = ref(false)
+// ===========================================
+// REACTIVE STATE - UI CONTROL
+// ===========================================
+// Control de pestañas y modales
 const activeTab = ref('students')
 const showModal = ref(false)
 const modalType = ref('')
 const modalMode = ref('')
-const formData = reactive({})
+const showPassword = ref(false)
 
-const students = ref([])
-const tutors = ref([])
-const loading = ref(true) // Indica si los datos están cargando
-const error = ref(null) // Manejo de errores
-
+// Control de modales de eliminación
 const showDeleteModal = ref(false)
 const studentToDelete = ref(null)
 const showDeleteTutorModal = ref(false)
 const tutorToDelete = ref(null)
 
-const deleteItem = (student) => {
-  studentToDelete.value = student
-  showDeleteModal.value = true
-}
+// Control de modal de tutorías
+const showTutoringModal = ref(false)
+const selectedStudent = ref(null)
 
-const cancelDelete = () => {
-  showDeleteModal.value = false
-  studentToDelete.value = null
-}
+// ===========================================
+// REACTIVE STATE - DATA
+// ===========================================
+// Datos principales
+const students = ref([])
+const tutors = ref([])
+const studentTutorings = ref([])
 
-const confirmDelete = async () => {
-  if (studentToDelete.value) {
-    try {
-      const response = await axios.delete(
-        `http://localhost:8000/api/alumnos/${studentToDelete.value.id_alumno}`,
-      )
-      if (response.status === 204) {
-        students.value = students.value.filter(
-          (s) => s.id_alumno !== studentToDelete.value.id_alumno,
-        )
-        console.log('Estudiante eliminado exitosamente')
-      } else {
-        console.error('Error al eliminar el estudiante:', response.data)
-      }
-    } catch (error) {
-      console.error('Error al eliminar el estudiante:', error)
-    } finally {
-      showDeleteModal.value = false
-      studentToDelete.value = null
-    }
+// Estados de carga y errores
+const loading = ref(true)
+const error = ref(null)
+const errors = ref({})
+
+// ===========================================
+// REACTIVE STATE - FORMS
+// ===========================================
+// Formulario principal para estudiantes y tutores
+const formData = reactive({})
+
+// Formulario de tutorías
+const tutoringForm = reactive({
+  tutoring_id: null,
+  tutorSearch: '',
+  tutor_id: null,
+  periodo: '',
+  observaciones: '',
+  dia: 'Lunes',
+  hora: '',
+  estado: 'en curso',
+})
+
+// ===========================================
+// REACTIVE STATE - PAGINATION & SEARCH
+// ===========================================
+// Paginación de estudiantes
+const currentPage = ref(1)
+const itemsPerPage = ref(5)
+const searchQuery = ref('')
+
+// Paginación de tutores
+const tutorSearchQuery = ref('')
+const tutorCurrentPage = ref(1)
+const tutorItemsPerPage = ref(5)
+
+// ===========================================
+// COMPUTED PROPERTIES - STUDENTS
+// ===========================================
+/**
+ * Filtra estudiantes según el término de búsqueda
+ * Busca en nombre completo, número de control y carrera
+ */
+const filteredStudents = computed(() => {
+  return students.value.filter((student) => {
+    const fullName = `${student.nombre} ${student.apellido_p} ${student.apellido_m}`.toLowerCase()
+    const searchTerm = searchQuery.value.toLowerCase()
+    return (
+      fullName.includes(searchTerm) ||
+      student.num_control.toLowerCase().includes(searchTerm) ||
+      student.carrera.toLowerCase().includes(searchTerm)
+    )
+  })
+})
+
+/**
+ * Retorna los estudiantes paginados para la tabla actual
+ */
+const paginatedStudents = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return filteredStudents.value.slice(start, end)
+})
+
+/**
+ * Calcula el total de páginas para estudiantes
+ */
+const totalPages = computed(() => {
+  return Math.ceil(filteredStudents.value.length / itemsPerPage.value)
+})
+
+// ===========================================
+// COMPUTED PROPERTIES - TUTORS
+// ===========================================
+/**
+ * Filtra tutores según el término de búsqueda
+ * Busca en nombre, correo y especialidad
+ */
+const filteredTutors = computed(() => {
+  return tutors.value.filter((tutor) => {
+    const searchTerm = tutorSearchQuery.value.toLowerCase()
+    return (
+      tutor.nombre.toLowerCase().includes(searchTerm) ||
+      tutor.correo.toLowerCase().includes(searchTerm) ||
+      tutor.especialidad.toLowerCase().includes(searchTerm)
+    )
+  })
+})
+
+/**
+ * Retorna los tutores paginados para la tabla actual
+ */
+const paginatedTutors = computed(() => {
+  const start = (tutorCurrentPage.value - 1) * tutorItemsPerPage.value
+  const end = start + tutorItemsPerPage.value
+  return filteredTutors.value.slice(start, end)
+})
+
+/**
+ * Calcula el total de páginas para tutores
+ */
+const totalTutorPages = computed(() => {
+  return Math.ceil(filteredTutors.value.length / tutorItemsPerPage.value)
+})
+
+// ===========================================
+// COMPUTED PROPERTIES - TUTORING
+// ===========================================
+/**
+ * Busca tutores para el modal de asignación de tutorías
+ * Filtra por nombre, apellidos y correo
+ */
+const searchTutors = computed(() => {
+  if (tutoringForm.tutorSearch.length > 2) {
+    const searchTerm = tutoringForm.tutorSearch.toLowerCase()
+    return tutors.value.filter(
+      (tutor) =>
+        tutor.nombre.toLowerCase().includes(searchTerm) ||
+        tutor.apellido_p.toLowerCase().includes(searchTerm) ||
+        tutor.apellido_m.toLowerCase().includes(searchTerm) ||
+        tutor.correo.toLowerCase().includes(searchTerm),
+    )
   }
-}
+  return []
+})
 
-const deleteTutor = (tutor) => {
-  tutorToDelete.value = tutor
-  showDeleteTutorModal.value = true
-}
-
-const cancelDeleteTutor = () => {
-  showDeleteTutorModal.value = false
-  tutorToDelete.value = null
-}
-
-const confirmDeleteTutor = async () => {
-  if (tutorToDelete.value) {
-    try {
-      const response = await axios.delete(
-        `http://localhost:8000/api/tutores/${tutorToDelete.value.id_tutor}`,
-      )
-      if (response.status === 204) {
-        tutors.value = tutors.value.filter((t) => t.id_tutor !== tutorToDelete.value.id_tutor)
-        console.log('Tutor eliminado exitosamente')
-      } else {
-        console.error('Error al eliminar el tutor:', response.data)
-      }
-    } catch (error) {
-      console.error('Error al eliminar el tutor:', error)
-    } finally {
-      showDeleteTutorModal.value = false
-      tutorToDelete.value = null
-    }
+// ===========================================
+// STATIC DATA
+// ===========================================
+/**
+ * Genera opciones de períodos académicos para los próximos años
+ */
+const generatePeriodOptions = (yearsAhead = 3) => {
+  const currentYear = new Date().getFullYear()
+  const options = []
+  for (let i = 0; i < yearsAhead; i++) {
+    const year = currentYear + i
+    options.push(`Enero-Junio ${year}`)
+    options.push(`Agosto-Diciembre ${year}`)
   }
+  return options
 }
 
-// Método para obtener los estudiantes
+const periodOptions = ref(generatePeriodOptions())
+
+/**
+ * Configuración de círculos animados para el fondo
+ */
+const circles = [
+  { color: 'bg-blue-500', size: 96, top: 10, left: 5 },
+  { color: 'bg-blue-600', size: 64, top: 20, left: 80 },
+  { color: 'bg-blue-400', size: 128, top: 70, left: 20 },
+  { color: 'bg-blue-300', size: 80, top: 40, left: 95 },
+  { color: 'bg-blue-300', size: 112, top: 85, left: 70 },
+  { color: 'bg-blue-400', size: 48, top: 55, left: 10 },
+  { color: 'bg-blue-600', size: 72, top: 60, left: 50 },
+  { color: 'bg-blue-500', size: 56, top: 5, left: 90 },
+  { color: 'bg-blue-500', size: 88, top: 80, left: 40 },
+  { color: 'bg-blue-300', size: 40, top: 90, left: 10 },
+  { color: 'bg-blue-400', size: 104, top: 15, left: 60 },
+  { color: 'bg-blue-400', size: 68, top: 50, left: 85 },
+]
+
+// ===========================================
+// API FUNCTIONS - DATA FETCHING
+// ===========================================
+/**
+ * Obtiene la lista de estudiantes desde la API
+ */
 const fetchStudents = async () => {
   try {
-    // Realiza la solicitud GET al endpoint de estudiantes
     const response = await axios.get('http://localhost:8000/api/alumnos')
-    // Asigna específicamente el array de alumnos al estado
-    students.value = response.data // <-- Aquí extraemos 'alumnos'
-    // console.log(students.value) // Verifica que ahora sea un array
+    students.value = response.data
   } catch (err) {
     console.error('Error al obtener los estudiantes:', err)
     error.value = 'No se pudo cargar la lista de estudiantes'
   } finally {
-    loading.value = false // Finaliza la carga
+    loading.value = false
   }
 }
 
-// const fetchTutors = async () => {
-//   try {
-//     // Realiza la solicitud GET al endpoint de estudiantes
-//     const response = await axios.get('http://localhost:8000/api/tutores')
-//     // Asigna específicamente el array de alumnos al estado
-//     tutors.value = response.data.tutores // <-- Aquí extraemos 'alumnos'
-//     // console.log(students.value) // Verifica que ahora sea un array
-//   } catch (err) {
-//     console.error('Error al obtener los tutores:', err)
-//     error.value = 'No se pudo cargar la lista de tutores'
-//   } finally {
-//     loading.value = false // Finaliza la carga
-//   }
-// }
-
-onMounted(() => {
-  fetchStudents()
-  fetchTutors()
-})
-
-const handleLogout = () => {
-  localStorage.removeItem('administrador') // Limpia los datos del almacenamiento
-  router.push('/login_admin') // Redirige al login
+/**
+ * Obtiene la lista de tutores desde la API
+ */
+const fetchTutors = async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/api/tutores')
+    tutors.value = response.data
+  } catch (err) {
+    console.error('Error al obtener los tutores:', err)
+    error.value = 'No se pudo cargar la lista de tutores'
+  } finally {
+    loading.value = false
+  }
 }
 
-const openModal = (type, mode = 'add', item = null) => {
-  modalType.value = type
-  modalMode.value = mode
-  showModal.value = true
-  clearErrors()
-
-  // Reset formData
-  Object.keys(formData).forEach((key) => delete formData[key])
-
-  if (mode === 'edit' && item) {
-    // Clone the item to avoid directly modifying the original data
-    /* eslint-disable-next-line no-unused-vars */
-    const { contraseña, ...rest } = item
-    Object.assign(formData, rest)
-    formData.contraseña = '' // Ensure password field is empty
-    console.log(formData)
-  } else {
-    // Set default values based on the type
-    if (type === 'student') {
-      Object.assign(formData, {
-        nombre: '',
-        apellido_p: '',
-        apellido_m: '',
-        num_control: '',
-        contraseña: '',
-        carrera: '',
-        semestre_actual: '',
-        estado: 'activo',
-      })
-    } else if (type === 'tutor') {
-      Object.assign(formData, {
-        nombre: '',
-        apellido_p: '',
-        apellido_m: '',
-        especialidad: '',
-        correo: '',
-        contraseña: '',
-        telefono: '',
-      })
+/**
+ * Obtiene las tutorías de un estudiante específico
+ */
+const fetchStudentTutorings = async (studentId) => {
+  try {
+    const response = await axios.get(`http://localhost:8000/api/tutorias/alumno/${studentId}`)
+    studentTutorings.value = response.data
+    if (studentTutorings.value.length > 0) {
+      tutoringForm.tutoring_id = studentTutorings.value[0].id_tutoria
+      await loadTutoringData(studentTutorings.value[0])
     }
+  } catch (error) {
+    console.error('Error al obtener las tutorías del alumno:', error)
   }
 }
 
-const closeModal = () => {
-  showModal.value = false
-  showPassword.value = false
-  clearErrors()
-}
-
-const editItem = (item, type) => {
-  openModal(type, 'edit', item)
-}
-const errors = ref({})
-
+// ===========================================
+// API FUNCTIONS - CRUD OPERATIONS
+// ===========================================
+/**
+ * Envía el formulario para crear o editar estudiantes/tutores
+ */
 const submitForm = async () => {
   try {
-    errors.value = {} // Limpiar errores anteriores
+    errors.value = {}
     let response
+
     if (modalMode.value === 'add') {
+      // Crear nuevo registro
       if (modalType.value === 'student') {
         response = await axios.post('http://localhost:8000/api/alumnos', formData)
         if (response.status === 201) {
-          const nuevoAlumno = response.data
-          students.value.push(nuevoAlumno)
+          students.value.push(response.data)
           console.log('Alumno agregado exitosamente:', response.data)
           closeModal()
         }
       } else if (modalType.value === 'tutor') {
         response = await axios.post('http://localhost:8000/api/tutores', formData)
         if (response.status === 201) {
-          console.log(response.data)
-          const nuevoTutor = response.data
-          tutors.value.push(nuevoTutor)
+          tutors.value.push(response.data)
           console.log('Tutor agregado exitosamente:', response.data)
           closeModal()
         }
       }
     } else if (modalMode.value === 'edit') {
+      // Actualizar registro existente
       if (modalType.value === 'student') {
         response = await axios.put(
           `http://localhost:8000/api/alumnos/${formData.id_alumno}`,
           formData,
         )
         if (response.status === 200) {
-          const updatedStudent = response.data
           const index = students.value.findIndex(
-            (student) => student.id_alumno === updatedStudent.id_alumno,
+            (student) => student.id_alumno === response.data.id_alumno,
           )
           if (index !== -1) {
-            students.value[index] = updatedStudent
+            students.value[index] = response.data
           }
           console.log('Alumno actualizado exitosamente:', response.data)
           closeModal()
@@ -1521,10 +1596,9 @@ const submitForm = async () => {
           formData,
         )
         if (response.status === 200) {
-          const updatedTutor = response.data
-          const index = tutors.value.findIndex((tutor) => tutor.id_tutor === updatedTutor.id_tutor)
+          const index = tutors.value.findIndex((tutor) => tutor.id_tutor === response.data.id_tutor)
           if (index !== -1) {
-            tutors.value[index] = updatedTutor
+            tutors.value[index] = response.data
           }
           console.log('Tutor actualizado exitosamente:', response.data)
           closeModal()
@@ -1541,207 +1615,9 @@ const submitForm = async () => {
   }
 }
 
-const clearErrors = () => {
-  errors.value = {}
-}
-
-// Pagination and search state
-
-const currentPage = ref(1)
-const itemsPerPage = ref(5)
-
-// Computed property for paginated students
-const paginatedStudents = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return filteredStudents.value.slice(start, end)
-})
-
-// Computed property for total pages
-const totalPages = computed(() => {
-  return Math.ceil(filteredStudents.value.length / itemsPerPage.value)
-})
-
-// Navigation methods
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++
-  }
-}
-
-const prevPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--
-  }
-}
-
-const goToPage = (page) => {
-  currentPage.value = page
-}
-
-// Reset to first page when search query changes
-// watch(searchQuery, () => {
-//   currentPage.value = 1
-// })
-
-// Tutors search and pagination state
-const tutorSearchQuery = ref('')
-const tutorCurrentPage = ref(1)
-const tutorItemsPerPage = ref(5)
-
-// Computed property for filtered tutors
-const filteredTutors = computed(() => {
-  return tutors.value.filter((tutor) => {
-    const searchTerm = tutorSearchQuery.value.toLowerCase()
-    return (
-      tutor.nombre.toLowerCase().includes(searchTerm) ||
-      tutor.correo.toLowerCase().includes(searchTerm) ||
-      tutor.especialidad.toLowerCase().includes(searchTerm)
-    )
-  })
-})
-
-// Computed property for paginated tutors
-const paginatedTutors = computed(() => {
-  const start = (tutorCurrentPage.value - 1) * tutorItemsPerPage.value
-  const end = start + tutorItemsPerPage.value
-  return filteredTutors.value.slice(start, end)
-})
-
-// Computed property for total tutor pages
-const totalTutorPages = computed(() => {
-  return Math.ceil(filteredTutors.value.length / tutorItemsPerPage.value)
-})
-
-// Tutor navigation methods
-const nextTutorPage = () => {
-  if (tutorCurrentPage.value < totalTutorPages.value) {
-    tutorCurrentPage.value++
-  }
-}
-
-const prevTutorPage = () => {
-  if (tutorCurrentPage.value > 1) {
-    tutorCurrentPage.value--
-  }
-}
-
-const goToTutorPage = (page) => {
-  tutorCurrentPage.value = page
-}
-
-const showTutoringModal = ref(false)
-const selectedStudent = ref(null)
-const studentTutorings = ref([])
-const tutoringForm = reactive({
-  tutoring_id: null,
-  tutorSearch: '',
-  tutor_id: null,
-  periodo: '',
-  observaciones: '',
-  dia: 'Lunes',
-  hora: '',
-  estado: 'en curso',
-})
-
-// Modify the existing fetchTutors function to store all tutors
-const fetchTutors = async () => {
-  try {
-    const response = await axios.get('http://localhost:8000/api/tutores')
-    tutors.value = response.data
-  } catch (err) {
-    console.error('Error al obtener los tutores:', err)
-    error.value = 'No se pudo cargar la lista de tutores'
-  } finally {
-    loading.value = false
-  }
-}
-
-// Función modificada para abrir el modal de tutoría
-const openTutoringModal = async (student) => {
-  selectedStudent.value = student
-  showTutoringModal.value = true
-  await fetchTutors() // Asegurarse de que tenemos la lista de tutores actualizada
-  await fetchStudentTutorings(student.id_alumno)
-}
-
-const fetchStudentTutorings = async (studentId) => {
-  try {
-    const response = await axios.get(`http://localhost:8000/api/tutorias/alumno/${studentId}`)
-    studentTutorings.value = response.data
-    if (studentTutorings.value.length > 0) {
-      tutoringForm.tutoring_id = studentTutorings.value[0].id_tutoria
-      await loadTutoringData(studentTutorings.value[0])
-    }
-  } catch (error) {
-    console.error('Error al obtener las tutorías del alumno:', error)
-  }
-}
-
-const loadTutoringData = async (tutoring) => {
-  tutoringForm.tutoring_id = tutoring.id_tutoria
-  tutoringForm.tutor_id = tutoring.tutor_id
-  tutoringForm.periodo = tutoring.periodo
-  tutoringForm.observaciones = tutoring.observaciones
-  tutoringForm.dia = tutoring.dia
-  tutoringForm.hora = tutoring.hora
-  tutoringForm.estado = tutoring.estado || 'en curso'
-
-  // Buscar la información del tutor
-  const tutor = tutors.value.find((t) => t.id_tutor === tutoring.tutor_id)
-  if (tutor) {
-    tutoringForm.tutorSearch = `${tutor.nombre} ${tutor.apellido_p} (${tutor.correo})`
-  } else {
-    tutoringForm.tutorSearch = ``
-  }
-}
-
-watch(
-  () => tutoringForm.tutoring_id,
-  (newTutoringId) => {
-    const selectedTutoring = studentTutorings.value.find((t) => t.id_tutoria === newTutoringId)
-    if (selectedTutoring) {
-      loadTutoringData(selectedTutoring)
-    }
-  },
-)
-
-// New function to close tutoring modal
-const closeTutoringModal = () => {
-  showTutoringModal.value = false
-  selectedStudent.value = null
-  studentTutorings.value = []
-  Object.keys(tutoringForm).forEach((key) => {
-    if (key === 'estado') {
-      tutoringForm[key] = 'en curso'
-    } else {
-      tutoringForm[key] = ''
-    }
-  })
-}
-
-// New function to search tutors
-const searchTutors = computed(() => {
-  if (tutoringForm.tutorSearch.length > 2) {
-    const searchTerm = tutoringForm.tutorSearch.toLowerCase()
-    return tutors.value.filter(
-      (tutor) =>
-        tutor.nombre.toLowerCase().includes(searchTerm) ||
-        tutor.apellido_p.toLowerCase().includes(searchTerm) ||
-        tutor.apellido_m.toLowerCase().includes(searchTerm) ||
-        tutor.correo.toLowerCase().includes(searchTerm),
-    )
-  }
-  return []
-})
-
-// New function to select a tutor
-const selectTutor = (tutor) => {
-  tutoringForm.tutor_id = tutor.id_tutor
-  tutoringForm.tutorSearch = `${tutor.nombre} ${tutor.apellido_p} (${tutor.correo})`
-}
-
-// New function to submit tutoring assignment
+/**
+ * Actualiza una tutoría existente
+ */
 const submitTutoring = async () => {
   if (!tutoringForm.tutoring_id) {
     console.error('No se ha seleccionado una tutoría para actualizar')
@@ -1772,7 +1648,6 @@ const submitTutoring = async () => {
     )
     if (response.status === 200) {
       console.log('Tutoría actualizada exitosamente:', response.data)
-      // Actualizar la lista de tutorías del estudiante si es necesario
       await fetchStudentTutorings(selectedStudent.value.id_alumno)
       closeTutoringModal()
     } else {
@@ -1783,48 +1658,312 @@ const submitTutoring = async () => {
   }
 }
 
-const generatePeriodOptions = (yearsAhead = 3) => {
-  const currentYear = new Date().getFullYear()
-  const options = []
-  for (let i = 0; i < yearsAhead; i++) {
-    const year = currentYear + i
-    options.push(`Enero-Junio ${year}`)
-    options.push(`Agosto-Diciembre ${year}`)
+// ===========================================
+// DELETE FUNCTIONS
+// ===========================================
+/**
+ * Elimina un estudiante de la base de datos
+ */
+const confirmDelete = async () => {
+  if (studentToDelete.value) {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8000/api/alumnos/${studentToDelete.value.id_alumno}`,
+      )
+      if (response.status === 204) {
+        students.value = students.value.filter(
+          (s) => s.id_alumno !== studentToDelete.value.id_alumno,
+        )
+        console.log('Estudiante eliminado exitosamente')
+      } else {
+        console.error('Error al eliminar el estudiante:', response.data)
+      }
+    } catch (error) {
+      console.error('Error al eliminar el estudiante:', error)
+    } finally {
+      showDeleteModal.value = false
+      studentToDelete.value = null
+    }
   }
-  return options
 }
 
-const periodOptions = ref(generatePeriodOptions())
-console.log(periodOptions.value)
+/**
+ * Elimina un tutor de la base de datos
+ */
+const confirmDeleteTutor = async () => {
+  if (tutorToDelete.value) {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8000/api/tutores/${tutorToDelete.value.id_tutor}`,
+      )
+      if (response.status === 204) {
+        tutors.value = tutors.value.filter((t) => t.id_tutor !== tutorToDelete.value.id_tutor)
+        console.log('Tutor eliminado exitosamente')
+      } else {
+        console.error('Error al eliminar el tutor:', response.data)
+      }
+    } catch (error) {
+      console.error('Error al eliminar el tutor:', error)
+    } finally {
+      showDeleteTutorModal.value = false
+      tutorToDelete.value = null
+    }
+  }
+}
 
-const circles = [
-  { color: 'bg-blue-500', size: 96, top: 10, left: 5 },
-  { color: 'bg-blue-600', size: 64, top: 20, left: 80 },
-  { color: 'bg-blue-400', size: 128, top: 70, left: 20 },
-  { color: 'bg-blue-300', size: 80, top: 40, left: 95 },
-  { color: 'bg-blue-300', size: 112, top: 85, left: 70 },
-  { color: 'bg-blue-400', size: 48, top: 55, left: 10 },
-  { color: 'bg-blue-600', size: 72, top: 60, left: 50 },
-  { color: 'bg-blue-500', size: 56, top: 5, left: 90 },
-  { color: 'bg-blue-500', size: 88, top: 80, left: 40 },
-  { color: 'bg-blue-300', size: 40, top: 90, left: 10 },
-  { color: 'bg-blue-400', size: 104, top: 15, left: 60 },
-  { color: 'bg-blue-400', size: 68, top: 50, left: 85 },
-]
+// ===========================================
+// MODAL FUNCTIONS
+// ===========================================
+/**
+ * Abre el modal para crear o editar estudiantes/tutores
+ */
+const openModal = (type, mode = 'add', item = null) => {
+  modalType.value = type
+  modalMode.value = mode
+  showModal.value = true
+  clearErrors()
 
-// Barra de busqueda
-const searchQuery = ref('')
+  // Reset formData
+  Object.keys(formData).forEach((key) => delete formData[key])
 
-const filteredStudents = computed(() => {
-  return students.value.filter((student) => {
-    const fullName = `${student.nombre} ${student.apellido_p} ${student.apellido_m}`.toLowerCase()
-    const searchTerm = searchQuery.value.toLowerCase()
-    return (
-      fullName.includes(searchTerm) ||
-      student.num_control.toLowerCase().includes(searchTerm) ||
-      student.carrera.toLowerCase().includes(searchTerm)
-    )
+  if (mode === 'edit' && item) {
+    // Clonar el item para evitar modificar directamente los datos originales
+    const { contraseña, ...rest } = item
+    Object.assign(formData, rest)
+    formData.contraseña = '' // Asegurar que el campo de contraseña esté vacío
+  } else {
+    // Establecer valores por defecto según el tipo
+    if (type === 'student') {
+      Object.assign(formData, {
+        nombre: '',
+        apellido_p: '',
+        apellido_m: '',
+        num_control: '',
+        contraseña: '',
+        carrera: '',
+        semestre_actual: '',
+        estado: 'activo',
+      })
+    } else if (type === 'tutor') {
+      Object.assign(formData, {
+        nombre: '',
+        apellido_p: '',
+        apellido_m: '',
+        especialidad: '',
+        correo: '',
+        contraseña: '',
+        telefono: '',
+      })
+    }
+  }
+}
+
+/**
+ * Cierra el modal principal y resetea el estado
+ */
+const closeModal = () => {
+  showModal.value = false
+  showPassword.value = false
+  clearErrors()
+}
+
+/**
+ * Abre el modal de asignación de tutorías para un estudiante
+ */
+const openTutoringModal = async (student) => {
+  selectedStudent.value = student
+  showTutoringModal.value = true
+  await fetchTutors() // Asegurar que tenemos la lista de tutores actualizada
+  await fetchStudentTutorings(student.id_alumno)
+}
+
+/**
+ * Cierra el modal de tutorías y resetea el estado
+ */
+const closeTutoringModal = () => {
+  showTutoringModal.value = false
+  selectedStudent.value = null
+  studentTutorings.value = []
+  Object.keys(tutoringForm).forEach((key) => {
+    if (key === 'estado') {
+      tutoringForm[key] = 'en curso'
+    } else {
+      tutoringForm[key] = ''
+    }
   })
+}
+
+// ===========================================
+// UTILITY FUNCTIONS
+// ===========================================
+/**
+ * Limpia los errores de validación
+ */
+const clearErrors = () => {
+  errors.value = {}
+}
+
+/**
+ * Carga los datos de una tutoría específica en el formulario
+ */
+const loadTutoringData = async (tutoring) => {
+  tutoringForm.tutoring_id = tutoring.id_tutoria
+  tutoringForm.tutor_id = tutoring.tutor_id
+  tutoringForm.periodo = tutoring.periodo
+  tutoringForm.observaciones = tutoring.observaciones
+  tutoringForm.dia = tutoring.dia
+  tutoringForm.hora = tutoring.hora
+  tutoringForm.estado = tutoring.estado || 'en curso'
+
+  // Buscar la información del tutor
+  const tutor = tutors.value.find((t) => t.id_tutor === tutoring.tutor_id)
+  if (tutor) {
+    tutoringForm.tutorSearch = `${tutor.nombre} ${tutor.apellido_p} (${tutor.correo})`
+  } else {
+    tutoringForm.tutorSearch = ``
+  }
+}
+
+/**
+ * Selecciona un tutor del dropdown de búsqueda
+ */
+const selectTutor = (tutor) => {
+  tutoringForm.tutor_id = tutor.id_tutor
+  tutoringForm.tutorSearch = `${tutor.nombre} ${tutor.apellido_p} (${tutor.correo})`
+}
+
+// ===========================================
+// EVENT HANDLERS
+// ===========================================
+/**
+ * Maneja el cierre de sesión del administrador
+ */
+const handleLogout = () => {
+  localStorage.removeItem('administrador')
+  router.push('/login_admin')
+}
+
+/**
+ * Abre el modal de edición para un item específico
+ */
+const editItem = (item, type) => {
+  openModal(type, 'edit', item)
+}
+
+/**
+ * Inicia el proceso de eliminación de un estudiante
+ */
+const deleteItem = (student) => {
+  studentToDelete.value = student
+  showDeleteModal.value = true
+}
+
+/**
+ * Cancela la eliminación de un estudiante
+ */
+const cancelDelete = () => {
+  showDeleteModal.value = false
+  studentToDelete.value = null
+}
+
+/**
+ * Inicia el proceso de eliminación de un tutor
+ */
+const deleteTutor = (tutor) => {
+  tutorToDelete.value = tutor
+  showDeleteTutorModal.value = true
+}
+
+/**
+ * Cancela la eliminación de un tutor
+ */
+const cancelDeleteTutor = () => {
+  showDeleteTutorModal.value = false
+  tutorToDelete.value = null
+}
+
+// ===========================================
+// PAGINATION FUNCTIONS - STUDENTS
+// ===========================================
+/**
+ * Navega a la siguiente página de estudiantes
+ */
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++
+  }
+}
+
+/**
+ * Navega a la página anterior de estudiantes
+ */
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--
+  }
+}
+
+/**
+ * Navega a una página específica de estudiantes
+ */
+const goToPage = (page) => {
+  currentPage.value = page
+}
+
+// ===========================================
+// PAGINATION FUNCTIONS - TUTORS
+// ===========================================
+/**
+ * Navega a la siguiente página de tutores
+ */
+const nextTutorPage = () => {
+  if (tutorCurrentPage.value < totalTutorPages.value) {
+    tutorCurrentPage.value++
+  }
+}
+
+/**
+ * Navega a la página anterior de tutores
+ */
+const prevTutorPage = () => {
+  if (tutorCurrentPage.value > 1) {
+    tutorCurrentPage.value--
+  }
+}
+
+/**
+ * Navega a una página específica de tutores
+ */
+const goToTutorPage = (page) => {
+  tutorCurrentPage.value = page
+}
+
+// ===========================================
+// WATCHERS
+// ===========================================
+/**
+ * Observa cambios en el ID de tutoría seleccionada y carga los datos correspondientes
+ */
+watch(
+  () => tutoringForm.tutoring_id,
+  (newTutoringId) => {
+    const selectedTutoring = studentTutorings.value.find((t) => t.id_tutoria === newTutoringId)
+    if (selectedTutoring) {
+      loadTutoringData(selectedTutoring)
+    }
+  },
+)
+
+// ===========================================
+// LIFECYCLE HOOKS
+// ===========================================
+/**
+ * Se ejecuta cuando el componente se monta
+ * Carga los datos iniciales de estudiantes y tutores
+ */
+onMounted(() => {
+  fetchStudents()
+  fetchTutors()
 })
 </script>
 
