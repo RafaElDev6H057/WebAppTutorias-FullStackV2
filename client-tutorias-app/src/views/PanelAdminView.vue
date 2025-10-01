@@ -81,21 +81,12 @@
 
         <!-- Panel de Estudiantes -->
         <div v-if="activeTab === 'students'">
-          <!-- <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold text-gray-900">Gestión de Estudiantes</h2>
-            <button
-              @click="openModal('student')"
-              class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out"
-            >
-              Añadir Estudiante
-            </button>
-          </div> -->
-
           <!-- Add search input before the table -->
           <div class="mb-4 flex justify-between items-center">
             <h2 class="text-2xl font-bold text-gray-900">Gestión de Estudiantes</h2>
             <div class="flex items-center gap-4">
-              <div class="relative">
+              <BaseSearchInput v-model="searchQuery" placeholder="Buscar Estudiante..." />
+              <!-- <div class="relative">
                 <input
                   v-model="searchQuery"
                   type="text"
@@ -116,7 +107,7 @@
                     />
                   </svg>
                 </div>
-              </div>
+              </div> -->
               <button
                 @click="openModal('student')"
                 class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out"
@@ -1304,6 +1295,7 @@ import DeleteIcon from '@/components/icons/DeleteIcon.vue'
 import EditIcon from '@/components/icons/EditIcon.vue'
 import ShowEye from '@/components/icons/ShowEye.vue'
 import HideEye from '@/components/icons/HideEye.vue'
+import BaseSearchInput from '@/components/ui/BaseSearchInput.vue'
 
 const router = useRouter()
 
@@ -1554,22 +1546,9 @@ const clearErrors = () => {
 }
 
 // Pagination and search state
-const searchQuery = ref('')
+
 const currentPage = ref(1)
 const itemsPerPage = ref(5)
-
-// Computed property for filtered students
-const filteredStudents = computed(() => {
-  return students.value.filter((student) => {
-    const fullName = `${student.nombre} ${student.apellido_p} ${student.apellido_m}`.toLowerCase()
-    const searchTerm = searchQuery.value.toLowerCase()
-    return (
-      fullName.includes(searchTerm) ||
-      student.num_control.toLowerCase().includes(searchTerm) ||
-      student.carrera.toLowerCase().includes(searchTerm)
-    )
-  })
-})
 
 // Computed property for paginated students
 const paginatedStudents = computed(() => {
@@ -1832,6 +1811,21 @@ const circles = [
   { color: 'bg-blue-400', size: 104, top: 15, left: 60 },
   { color: 'bg-blue-400', size: 68, top: 50, left: 85 },
 ]
+
+// Barra de busqueda
+const searchQuery = ref('')
+
+const filteredStudents = computed(() => {
+  return students.value.filter((student) => {
+    const fullName = `${student.nombre} ${student.apellido_p} ${student.apellido_m}`.toLowerCase()
+    const searchTerm = searchQuery.value.toLowerCase()
+    return (
+      fullName.includes(searchTerm) ||
+      student.num_control.toLowerCase().includes(searchTerm) ||
+      student.carrera.toLowerCase().includes(searchTerm)
+    )
+  })
+})
 </script>
 
 <style>
