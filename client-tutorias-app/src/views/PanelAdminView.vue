@@ -82,6 +82,8 @@
         <!-- Panel de Estudiantes -->
         <div v-if="activeTab === 'students'">
           <!-- Add search input before the table -->
+          <CargarAlumnos @file-selected="handleFileUpload" />
+          <p v-if="uploadMessage">{{ uploadMessage }}</p>
           <div class="mb-4 flex justify-between items-center">
             <h2 class="text-2xl font-bold text-gray-900">Gestión de Estudiantes</h2>
             <div class="flex items-center gap-4">
@@ -125,11 +127,7 @@
 
           <div class="bg-white shadow overflow-hidden sm:rounded-lg">
             <!-- Tabla de estudiantes -->
-            <table
-              table
-              v-if="!loading && paginatedStudents.length > 0"
-              class="min-w-full divide-y divide-gray-200"
-            >
+            <table table v-if="students.length > 0" class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
                   <th
@@ -165,7 +163,7 @@
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="student in paginatedStudents" :key="student.id">
+                <tr v-for="student in students" :key="student.id">
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                       <!-- <div class="flex-shrink-0 h-10 w-10">
@@ -193,9 +191,9 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span
-                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                      class="px-2 text-xs leading-5 font-semibold rounded-full flex justify-center"
                       :class="
-                        student.estado === 'activo'
+                        student.estado === 'A'
                           ? 'bg-green-100 text-green-800'
                           : 'bg-red-100 text-red-800'
                       "
@@ -234,7 +232,7 @@
           <div
             class="bg-white mt-2 rounded-xl px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
           >
-            <div class="flex-1 flex justify-between sm:hidden">
+            <!-- <div class="flex-1 flex justify-end">
               <button
                 @click="prevPage"
                 :disabled="currentPage === 1"
@@ -244,23 +242,21 @@
               </button>
               <button
                 @click="nextPage"
-                :disabled="currentPage === totalPages"
+                :disabled="!hayMasAlumnos"
                 class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
               >
                 Siguiente
               </button>
-            </div>
+            </div> -->
             <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
                 <p class="text-sm text-gray-700">
                   Mostrando
                   <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
                   a
-                  <span class="font-medium">{{
-                    Math.min(currentPage * itemsPerPage, filteredStudents.length)
-                  }}</span>
+                  <span class="font-medium">{{ Math.min(currentPage * itemsPerPage) }}</span>
                   de
-                  <span class="font-medium">{{ filteredStudents.length }}</span>
+                  <span class="font-medium">{{ totalStudents }}</span>
                   resultados
                 </p>
               </div>
@@ -274,7 +270,6 @@
                     :disabled="currentPage === 1"
                     class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                   >
-                    <span class="sr-only">Anterior</span>
                     <svg
                       class="h-5 w-5"
                       xmlns="http://www.w3.org/2000/svg"
@@ -287,9 +282,10 @@
                         clip-rule="evenodd"
                       />
                     </svg>
+                    <span>Anterior</span>
                   </button>
 
-                  <template v-for="page in totalPages" :key="page">
+                  <!-- <template v-for="page in totalPages" :key="page">
                     <button
                       @click="goToPage(page)"
                       :class="[
@@ -301,14 +297,14 @@
                     >
                       {{ page }}
                     </button>
-                  </template>
+                  </template> -->
 
                   <button
                     @click="nextPage"
-                    :disabled="currentPage === totalPages"
+                    :disabled="!hayMasAlumnos"
                     class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                   >
-                    <span class="sr-only">Siguiente</span>
+                    <span>Siguiente</span>
                     <svg
                       class="h-5 w-5"
                       xmlns="http://www.w3.org/2000/svg"
@@ -1299,6 +1295,8 @@ import EditIcon from '@/components/icons/EditIcon.vue'
 import ShowEye from '@/components/icons/ShowEye.vue'
 import HideEye from '@/components/icons/HideEye.vue'
 import BaseSearchInput from '@/components/ui/BaseSearchInput.vue'
+import AlumnoService from '@/services/AlumnoService'
+import CargarAlumnos from '@/components/student/CargarAlumnos.vue'
 
 // ===========================================
 // ROUTER
@@ -1361,8 +1359,11 @@ const tutoringForm = reactive({
 // ===========================================
 // Paginación de estudiantes
 const currentPage = ref(1)
-const itemsPerPage = ref(5)
+const itemsPerPage = ref(10)
 const searchQuery = ref('')
+const hayMasAlumnos = ref(true)
+const totalStudents = ref(0)
+const uploadMessage = ref('')
 
 // Paginación de tutores
 const tutorSearchQuery = ref('')
@@ -1376,33 +1377,33 @@ const tutorItemsPerPage = ref(5)
  * Filtra estudiantes según el término de búsqueda
  * Busca en nombre completo, número de control y carrera
  */
-const filteredStudents = computed(() => {
-  return students.value.filter((student) => {
-    const fullName = `${student.nombre} ${student.apellido_p} ${student.apellido_m}`.toLowerCase()
-    const searchTerm = searchQuery.value.toLowerCase()
-    return (
-      fullName.includes(searchTerm) ||
-      student.num_control.toLowerCase().includes(searchTerm) ||
-      student.carrera.toLowerCase().includes(searchTerm)
-    )
-  })
-})
+// const filteredStudents = computed(() => {
+//   return students.value.filter((student) => {
+//     const fullName = `${student.nombre} ${student.apellido_p} ${student.apellido_m}`.toLowerCase()
+//     const searchTerm = searchQuery.value.toLowerCase()
+//     return (
+//       fullName.includes(searchTerm) ||
+//       student.num_control.toLowerCase().includes(searchTerm) ||
+//       student.carrera.toLowerCase().includes(searchTerm)
+//     )
+//   })
+// })
 
 /**
  * Retorna los estudiantes paginados para la tabla actual
  */
-const paginatedStudents = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return filteredStudents.value.slice(start, end)
-})
+// const paginatedStudents = computed(() => {
+//   const start = (currentPage.value - 1) * itemsPerPage.value
+//   const end = start + itemsPerPage.value
+//   return filteredStudents.value.slice(start, end)
+// })
 
 /**
  * Calcula el total de páginas para estudiantes
  */
-const totalPages = computed(() => {
-  return Math.ceil(filteredStudents.value.length / itemsPerPage.value)
-})
+// const totalPages = computed(() => {
+//   return Math.ceil(filteredStudents.value.length / itemsPerPage.value)
+// })
 
 // ===========================================
 // COMPUTED PROPERTIES - TUTORS
@@ -1502,10 +1503,12 @@ const circles = [
 /**
  * Obtiene la lista de estudiantes desde la API
  */
-const fetchStudents = async () => {
+const fetchStudents = async (page) => {
   try {
-    const response = await axios.get('http://localhost:8000/api/alumnos')
-    students.value = response.data
+    const response = await AlumnoService.getAlumnos(page, 10)
+    students.value = response.data.alumnos
+    hayMasAlumnos.value = response.data.alumnos.length === 10
+    totalStudents.value = response.data.total_alumnos
   } catch (err) {
     console.error('Error al obtener los estudiantes:', err)
     error.value = 'No se pudo cargar la lista de estudiantes'
@@ -1548,6 +1551,27 @@ const fetchStudentTutorings = async (studentId) => {
 // ===========================================
 // API FUNCTIONS - CRUD OPERATIONS
 // ===========================================
+
+/**
+ * Subir el archivo de Excel para poblar datos en la DB
+ */
+const handleFileUpload = async (file) => {
+  if (!file) return
+
+  uploadMessage.value = 'Cargando archivo...'
+  try {
+    await AlumnoService.uploadAlumnos(file)
+    uploadMessage.value = '¡Éxito! Archivo cargado y datos procesados.'
+
+    // Refrescamos la lista de alumnos para mostrar los nuevos datos
+    currentPage.value = 1 // Volvemos a la página 1
+    fetchStudents(currentPage.value)
+  } catch (error) {
+    uploadMessage.value = 'Error al cargar el archivo.'
+    console.error('Error en la carga:', error)
+  }
+}
+
 /**
  * Envía el formulario para crear o editar estudiantes/tutores
  */
@@ -1890,9 +1914,8 @@ const cancelDeleteTutor = () => {
  * Navega a la siguiente página de estudiantes
  */
 const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++
-  }
+  currentPage.value++
+  fetchStudents(currentPage.value)
 }
 
 /**
@@ -1901,15 +1924,16 @@ const nextPage = () => {
 const prevPage = () => {
   if (currentPage.value > 1) {
     currentPage.value--
+    fetchStudents(currentPage.value)
   }
 }
 
 /**
  * Navega a una página específica de estudiantes
  */
-const goToPage = (page) => {
-  currentPage.value = page
-}
+// const goToPage = (page) => {
+//   currentPage.value = page
+// }
 
 // ===========================================
 // PAGINATION FUNCTIONS - TUTORS
@@ -1963,7 +1987,7 @@ watch(
  * Carga los datos iniciales de estudiantes y tutores
  */
 onMounted(() => {
-  fetchStudents()
+  fetchStudents(currentPage.value)
   fetchTutors()
 })
 </script>
