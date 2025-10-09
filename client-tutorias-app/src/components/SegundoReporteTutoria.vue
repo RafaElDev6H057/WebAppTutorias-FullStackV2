@@ -2,7 +2,7 @@
   <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Segundo Reporte de Tutoría</h2>
 
-    <form @submit.prevent="enviarFormulario" class="space-y-8">
+    <form @submit.prevent="guardarReporteGeneral2" class="space-y-8">
       <!-- Sección: Información del Tutor -->
       <div class="bg-indigo-50 p-5 rounded-lg">
         <h3 class="text-lg font-semibold mb-4 text-indigo-800 border-b border-indigo-200 pb-2">
@@ -15,7 +15,7 @@
               Selecciona tu nombre según corresponda:
             </label>
             <select
-              v-model="formData.nombreTutor"
+              v-model="formData.nombre_tutor"
               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 bg-white p-2"
               required
             >
@@ -58,7 +58,7 @@
                 <option value="7">7mo Semestre</option>
                 <option value="8">8vo Semestre</option>
                 <option value="9">9no Semestre</option> -->
-                <option value="otro">Otro</option>
+                <!-- <option value="otro">Otro</option> -->
               </select>
 
               <select
@@ -70,18 +70,18 @@
                 <option value="A">A</option>
                 <option value="B">B</option>
                 <option value="C">C</option>
-                <option value="otro">Otro</option>
+                <!-- <option value="otro">Otro</option> -->
               </select>
             </div>
 
-            <div v-if="formData.semestre === 'otro' || formData.grupo === 'otro'" class="mt-2">
+            <!-- <div v-if="formData.semestre === 'otro' || formData.grupo === 'otro'" class="mt-2">
               <input
                 v-model="formData.semestreGrupoOtro"
                 type="text"
                 placeholder="Especifica el semestre y grupo"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 bg-white p-2"
               />
-            </div>
+            </div> -->
           </div>
 
           <div>
@@ -103,7 +103,7 @@
               Fecha de corte del segundo reporte:
             </label>
             <input
-              v-model="formData.fechaCorte"
+              v-model="formData.fecha_corte"
               type="date"
               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 bg-white p-2"
               required
@@ -124,7 +124,7 @@
               Total de alumnos/as en el grupo de tutorías con corte a la fecha del segundo reporte:
             </label>
             <input
-              v-model="formData.totalAlumnos"
+              v-model="formData.total_alumnos"
               type="number"
               min="0"
               class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 bg-white p-2"
@@ -139,9 +139,9 @@
             <div class="flex space-x-4">
               <label class="inline-flex items-center">
                 <input
-                  v-model="formData.hayAlumnosDesercion"
+                  v-model="formData.baja_definitiva"
                   type="radio"
-                  value="Si"
+                  :value="true"
                   class="form-radio h-4 w-4 text-blue-600"
                   required
                 />
@@ -149,9 +149,9 @@
               </label>
               <label class="inline-flex items-center">
                 <input
-                  v-model="formData.hayAlumnosDesercion"
+                  v-model="formData.baja_definitiva"
                   type="radio"
-                  value="No"
+                  :value="false"
                   class="form-radio h-4 w-4 text-blue-600"
                   required
                 />
@@ -160,13 +160,13 @@
             </div>
           </div>
 
-          <div v-if="formData.hayAlumnosDesercion === 'Si'" class="space-y-4">
+          <div v-if="formData.baja_definitiva" class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 Cantidad de alumnos en deserción:
               </label>
               <input
-                v-model="formData.alumnosDesercion"
+                v-model="formData.cantidad_baja"
                 type="number"
                 min="0"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 bg-white p-2"
@@ -282,9 +282,9 @@
             <div class="flex space-x-4">
               <label class="inline-flex items-center">
                 <input
-                  v-model="formData.canalizacionesPsicologia"
+                  v-model="formData.canalizacion_psicologia"
                   type="radio"
-                  value="Si"
+                  :value="true"
                   class="form-radio h-4 w-4 text-blue-600"
                   required
                 />
@@ -292,9 +292,9 @@
               </label>
               <label class="inline-flex items-center">
                 <input
-                  v-model="formData.canalizacionesPsicologia"
+                  v-model="formData.canalizacion_psicologia"
                   type="radio"
-                  value="No"
+                  :value="false"
                   class="form-radio h-4 w-4 text-blue-600"
                   required
                 />
@@ -303,16 +303,16 @@
             </div>
           </div>
 
-          <div v-if="formData.canalizacionesPsicologia === 'Si'">
+          <div v-if="formData.canalizacion_psicologia">
             <label class="block text-sm font-medium text-gray-700 mb-2">
               ¿Cuentas con retroalimentación del proceso y atención de la canalización a Psicología?
             </label>
             <div class="flex space-x-4">
               <label class="inline-flex items-center">
                 <input
-                  v-model="formData.retroalimentacionPsicologia"
+                  v-model="formData.retroalimentacion_psicologia"
                   type="radio"
-                  value="Si"
+                  :value="true"
                   class="form-radio h-4 w-4 text-blue-600"
                   required
                 />
@@ -320,9 +320,9 @@
               </label>
               <label class="inline-flex items-center">
                 <input
-                  v-model="formData.retroalimentacionPsicologia"
+                  v-model="formData.retroalimentacion_psicologia"
                   type="radio"
-                  value="No"
+                  :value="false"
                   class="form-radio h-4 w-4 text-blue-600"
                   required
                 />
@@ -338,9 +338,9 @@
             <div class="flex space-x-4">
               <label class="inline-flex items-center">
                 <input
-                  v-model="formData.alumnosDiscapacidad"
+                  v-model="formData.atiende_discapacidad"
                   type="radio"
-                  value="Si"
+                  :value="true"
                   class="form-radio h-4 w-4 text-blue-600"
                   required
                 />
@@ -348,9 +348,9 @@
               </label>
               <label class="inline-flex items-center">
                 <input
-                  v-model="formData.alumnosDiscapacidad"
+                  v-model="formData.atiende_discapacidad"
                   type="radio"
-                  value="No"
+                  :value="false"
                   class="form-radio h-4 w-4 text-blue-600"
                   required
                 />
@@ -359,7 +359,7 @@
             </div>
           </div>
 
-          <div v-if="formData.alumnosDiscapacidad === 'Si'">
+          <div v-if="formData.atiende_discapacidad">
             <label class="block text-sm font-medium text-gray-700 mb-1">
               Buscar y agregar alumnos con discapacidad:
             </label>
@@ -593,7 +593,7 @@
             </div>
           </div>
 
-          <div v-if="alumnosAsesoriaLista.length > 0">
+          <!-- <div v-if="alumnosAsesoriaLista.length > 0">
             <label class="block text-sm font-medium text-gray-700 mb-2">
               ¿Tienes retroalimentación de la canalización a la asesoría académica?
             </label>
@@ -619,7 +619,7 @@
                 <span class="ml-2">No</span>
               </label>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -636,14 +636,14 @@
             </label>
             <div class="flex items-center space-x-4">
               <input
-                v-model="formData.porcentajeAvance"
+                v-model="formData.porcentaje_avance"
                 type="range"
                 min="10"
                 max="100"
                 step="10"
                 class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
               />
-              <span class="text-sm font-medium">{{ formData.porcentajeAvance }}%</span>
+              <span class="text-sm font-medium">{{ formData.porcentaje_avance }}%</span>
             </div>
           </div>
 
@@ -652,13 +652,13 @@
               Actividades realizadas hasta este segundo corte:
             </label>
             <textarea
-              v-model="formData.actividades"
+              v-model="formData.actividades_realizadas"
               rows="4"
               class="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-300 focus:ring focus:ring-amber-200 focus:ring-opacity-50 bg-white p-2"
             ></textarea>
           </div>
 
-          <div>
+          <!-- <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
               Adjunta las evidencias de este segundo avance de proyecto:
             </label>
@@ -693,7 +693,7 @@
             <div v-if="formData.evidencia" class="mt-2 text-sm text-gray-600">
               Archivo seleccionado: {{ formData.evidencia.name }}
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -719,6 +719,7 @@
 
 <script setup>
 import { reactive, ref, computed, watch } from 'vue'
+import axios from 'axios'
 
 const emit = defineEmits(['cerrar', 'guardar'])
 
@@ -794,9 +795,9 @@ const asignaturaAReforzar = ref('')
 
 // Validación para la cantidad de alumnos en deserción
 const validacionDesercion = computed(() => {
-  if (formData.alumnosDesercion && alumnosDesercionLista.value.length > 0) {
-    if (parseInt(formData.alumnosDesercion) !== alumnosDesercionLista.value.length) {
-      return `La cantidad de alumnos (${formData.alumnosDesercion}) no coincide con la lista (${alumnosDesercionLista.value.length})`
+  if (formData.cantidad_baja && alumnosDesercionLista.value.length > 0) {
+    if (parseInt(formData.cantidad_baja) !== alumnosDesercionLista.value.length) {
+      return `La cantidad de alumnos (${formData.cantidad_baja}) no coincide con la lista (${alumnosDesercionLista.value.length})`
     }
   }
   return ''
@@ -804,31 +805,31 @@ const validacionDesercion = computed(() => {
 
 const formData = reactive({
   // Información del tutor
-  nombreTutor: '',
+  nombre_tutor: '',
   carrera: '',
   semestre: '',
   grupo: '',
-  semestreGrupoOtro: '',
+  // semestreGrupoOtro: '',
   periodo: '',
-  fechaCorte: '',
+  fecha_corte: '',
 
   // Información del grupo
-  totalAlumnos: null,
-  hayAlumnosDesercion: '',
-  alumnosDesercion: null,
+  total_alumnos: null,
+  baja_definitiva: '',
+  cantidad_baja: null,
 
   // Canalizaciones y necesidades especiales
-  canalizacionesPsicologia: '',
-  retroalimentacionPsicologia: '',
-  alumnosDiscapacidad: '',
+  canalizacion_psicologia: '',
+  retroalimentacion_psicologia: null,
+  atiende_discapacidad: '',
 
   // Asesoría académica
-  retroalimentacionAsesoria: '',
+  // retroalimentacionAsesoria: '',
 
   // Proyecto institucional
-  porcentajeAvance: 10,
-  actividades: '',
-  evidencia: null,
+  porcentaje_avance: 10,
+  actividades_realizadas: '',
+  // evidencia: null,
 })
 
 // Funciones para alumnos en deserción
@@ -859,14 +860,14 @@ const agregarAlumnoDesercion = (alumno) => {
   resultadosBusqueda.value = []
 
   // Actualizar automáticamente el número de alumnos en deserción
-  formData.alumnosDesercion = alumnosDesercionLista.value.length
+  formData.cantidad_baja = alumnosDesercionLista.value.length
 }
 
 const eliminarAlumnoDesercion = (index) => {
   alumnosDesercionLista.value.splice(index, 1)
 
   // Actualizar automáticamente el número de alumnos en deserción
-  formData.alumnosDesercion = alumnosDesercionLista.value.length
+  formData.cantidad_baja = alumnosDesercionLista.value.length
 }
 
 const limpiarBusqueda = () => {
@@ -968,10 +969,10 @@ const limpiarBusquedaAsesoria = () => {
 
 // Observar cambios en hayAlumnosDesercion para resetear valores cuando cambia a "No"
 watch(
-  () => formData.hayAlumnosDesercion,
+  () => formData.baja_definitiva,
   (newValue) => {
-    if (newValue === 'No') {
-      formData.alumnosDesercion = null
+    if (newValue === false) {
+      formData.cantidad_baja = null
       alumnosDesercionLista.value = []
     }
   },
@@ -979,9 +980,9 @@ watch(
 
 // Observar cambios en alumnosDiscapacidad para resetear valores cuando cambia a "No"
 watch(
-  () => formData.alumnosDiscapacidad,
+  () => formData.atiende_discapacidad,
   (newValue) => {
-    if (newValue === 'No') {
+    if (newValue === false) {
       alumnosDiscapacidadLista.value = []
     }
   },
@@ -989,41 +990,67 @@ watch(
 
 // Observar cambios en canalizacionesPsicologia para resetear valores cuando cambia a "No"
 watch(
-  () => formData.canalizacionesPsicologia,
+  () => formData.canalizacion_psicologia,
   (newValue) => {
-    if (newValue === 'No') {
-      formData.retroalimentacionPsicologia = ''
+    if (newValue === false) {
+      formData.retroalimentacion_psicologia = false
     }
   },
 )
 
 // Función para manejar la carga de archivos
-const handleFileUpload = (event) => {
-  formData.evidencia = event.target.files[0]
-}
+// const handleFileUpload = (event) => {
+//   formData.evidencia = event.target.files[0]
+// }
 
 // Función para enviar el formulario
-const enviarFormulario = () => {
-  // Validar que la cantidad de alumnos en deserción coincida con la lista
-  if (
-    formData.hayAlumnosDesercion === 'Si' &&
-    parseInt(formData.alumnosDesercion) !== alumnosDesercionLista.value.length
-  ) {
-    alert('La cantidad de alumnos en deserción no coincide con la lista de alumnos agregados.')
-    return
-  }
+// const enviarFormulario = () => {
+//   // Validar que la cantidad de alumnos en deserción coincida con la lista
+//   if (
+//     formData.hayAlumnosDesercion === 'Si' &&
+//     parseInt(formData.alumnosDesercion) !== alumnosDesercionLista.value.length
+//   ) {
+//     alert('La cantidad de alumnos en deserción no coincide con la lista de alumnos agregados.')
+//     return
+//   }
 
-  // Preparar datos para enviar
-  const datosEnviar = {
-    ...formData,
-    alumnosDesercionDetalle: alumnosDesercionLista.value,
-    alumnosDiscapacidadDetalle: alumnosDiscapacidadLista.value,
-    alumnosAsesoriaDetalle: alumnosAsesoriaLista.value,
-  }
+//   // Preparar datos para enviar
+//   const datosEnviar = {
+//     ...formData,
+//     alumnos_baja: alumnosDesercionLista.value,
+//     alumnos_discapacidad: alumnosDiscapacidadLista.value,
+//     alumnos_asesoria: alumnosAsesoriaLista.value,
+//   }
 
-  // Aquí iría la lógica para enviar el formulario
-  emit('guardar', datosEnviar)
-  console.log('Datos del formulario:', datosEnviar)
+//   // Aquí iría la lógica para enviar el formulario
+//   emit('guardar', datosEnviar)
+//   console.log('Datos del formulario:', datosEnviar)
+// }
+
+const guardarReporteGeneral2 = async () => {
+  try {
+    const datosEnviar = {
+      ...formData,
+      alumnos_baja: JSON.stringify(alumnosDesercionLista.value),
+      alumnos_discapacidad: JSON.stringify(alumnosDiscapacidadLista.value),
+      alumnos_asesoria: JSON.stringify(alumnosAsesoriaLista.value),
+    }
+    // 3. Realiza la petición POST a tu endpoint de FastAPI
+    const response = await axios.post('http://localhost:8000/api/reportes/general-2', datosEnviar)
+
+    // 4. Maneja la respuesta exitosa
+    if (response.status === 201) {
+      console.log('Reporte guardado exitosamente:', response.data)
+      // Aquí puedes mostrar una notificación de éxito al usuario
+      alert('¡Reporte guardado con éxito!')
+      // Opcional: limpiar el formulario o redirigir al usuario
+    }
+  } catch (error) {
+    // 5. Maneja cualquier error que ocurra
+    console.error('Error al guardar el reporte:', error)
+    // Muestra una notificación de error al usuario
+    alert('Ocurrió un error al guardar el reporte. Inténtalo de nuevo.')
+  }
 }
 </script>
 
