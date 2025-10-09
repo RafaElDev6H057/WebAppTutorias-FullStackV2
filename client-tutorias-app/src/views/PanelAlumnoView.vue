@@ -27,9 +27,9 @@
           <div class="flex items-center space-x-4">
             <div class="flex-shrink-0">
               <img
-                class="h-12 w-12 rounded-full object-cover"
-                src="/login_alumno.jpg"
-                alt="Foto del estudiante"
+                class="h-12 w-12 border-2 border-white"
+                src="/EscudoITSF.png"
+                alt="Escudo ITSF"
               />
             </div>
             <div>

@@ -27,7 +27,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between h-16">
             <div class="flex items-center">
-              <img class="h-10 w-10 rounded-full" src="/login_tutor.jpg" alt="Foto del tutor" />
+              <img
+                class="h-12 w-12 border-2 border-white"
+                src="/EscudoITSF.png"
+                alt="Escudo ITSF"
+              />
               <div class="ml-4">
                 <div class="text-lg font-medium text-gray-900">
                   {{

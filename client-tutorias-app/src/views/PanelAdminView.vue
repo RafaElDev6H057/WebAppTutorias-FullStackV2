@@ -24,11 +24,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
           <div class="flex items-center">
-            <img
-              class="h-10 w-10 rounded-full border-2 border-white"
-              src="/login_admin.jpg"
-              alt="Foto del administrador"
-            />
+            <img class="h-12 w-12 border-2 border-white" src="/EscudoITSF.png" alt="Escudo ITSF" />
             <div class="ml-4">
               <div class="text-lg font-medium text-white">Administrador</div>
               <div class="text-sm text-indigo-200">Instituto Tecnológico Superior de Fresnillo</div>
