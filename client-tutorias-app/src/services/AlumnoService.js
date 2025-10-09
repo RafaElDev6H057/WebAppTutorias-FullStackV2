@@ -1,3 +1,5 @@
+// src/services/AlumnoService.js
+
 import axios from 'axios'
 
 const apiClient = axios.create({
@@ -8,20 +10,26 @@ const apiClient = axios.create({
 })
 
 export default {
-  getAlumnos(page = 1, size = 10) {
-    return apiClient.get(`/alumnos?page=${page}&size=${size}`)
+  // MODIFICAMOS ESTE MÉTODO
+  getAlumnos(page = 1, size = 10, search = '') {
+    // Construimos la URL base con la paginación
+    let url = `/alumnos?page=${page}&size=${size}`
+
+    // Si el término de búsqueda no está vacío, lo añadimos como parámetro
+    if (search) {
+      url += `&search=${search}`
+    }
+
+    // Hacemos la petición con la URL construida
+    return apiClient.get(url)
   },
 
-  // --- NUEVO MÉTODO PARA SUBIR EL ARCHIVO ---
   uploadAlumnos(file) {
-    // FormData es el objeto especial para empaquetar archivos
     const formData = new FormData()
     formData.append('file', file)
-
-    // Hacemos la petición POST a la ruta /upload/excel
     return apiClient.post('alumnos/upload-excel', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data', // Header especial para archivos
+        'Content-Type': 'multipart/form-data',
       },
     })
   },

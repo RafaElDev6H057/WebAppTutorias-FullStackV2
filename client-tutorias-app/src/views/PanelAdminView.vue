@@ -1285,7 +1285,7 @@ import EditIcon from '@/components/icons/EditIcon.vue'
 import ShowEye from '@/components/icons/ShowEye.vue'
 import HideEye from '@/components/icons/HideEye.vue'
 import BaseSearchInput from '@/components/ui/BaseSearchInput.vue'
-import AlumnoService from '@/services/AlumnoService'
+import AlumnoService from '@/services/AlumnoService.js'
 import CargarAlumnos from '@/components/student/CargarAlumnos.vue'
 
 // ===========================================
@@ -1349,11 +1349,13 @@ const tutoringForm = reactive({
 // ===========================================
 // Paginación de estudiantes
 const currentPage = ref(1)
-const itemsPerPage = ref(10)
+const itemsPerPage = ref(5)
 const searchQuery = ref('')
 const hayMasAlumnos = ref(true)
 const totalStudents = ref(0)
 const uploadMessage = ref('')
+const totalPages = ref(1)
+let debounceTimer = null
 
 // Paginación de tutores
 const tutorSearchQuery = ref('')
@@ -1495,17 +1497,37 @@ const circles = [
  */
 const fetchStudents = async (page) => {
   try {
-    const response = await AlumnoService.getAlumnos(page, 5)
+    const response = await AlumnoService.getAlumnos(page, itemsPerPage.value, searchQuery.value)
     students.value = response.data.alumnos
     hayMasAlumnos.value = response.data.alumnos.length === 5
     totalStudents.value = response.data.total_alumnos
+    totalPages.value = Math.ceil(response.data.total_alumnos / itemsPerPage.value)
+    error.value = ''
   } catch (err) {
-    console.error('Error al obtener los estudiantes:', err)
-    error.value = 'No se pudo cargar la lista de estudiantes'
+    console.error('Error al obtener los estudiantes:', err.response.data.detail[0].type)
+    if (err.response.data.detail[0].type == 'string_too_short') {
+      error.value = 'Favor de ingresar mínimo 3 carácteres a buscar'
+    } else {
+      error.value = 'No se pudo cargar la lista de estudiantes'
+    }
+    students.value = []
   } finally {
     loading.value = false
   }
 }
+
+// eslint-disable-next-line
+watch(searchQuery, (newQuery, oldQuery) => {
+  // Limpiamos el temporizador anterior para evitar búsquedas innecesarias
+  clearTimeout(debounceTimer)
+
+  // Creamos un nuevo temporizador. La búsqueda no se ejecutará hasta
+  // que el usuario deje de escribir por 500ms.
+  debounceTimer = setTimeout(() => {
+    currentPage.value = 1 // Cada nueva búsqueda debe reiniciar la paginación a la página 1
+    fetchStudents()
+  }, 500) // 500ms de espera
+})
 
 /**
  * Obtiene la lista de tutores desde la API
