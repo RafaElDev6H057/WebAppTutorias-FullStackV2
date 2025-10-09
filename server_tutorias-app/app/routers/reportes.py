@@ -7,6 +7,8 @@ from app.schemas.reporte_integral import ReporteIntegralCreate, ReporteIntegralR
 from app.services import reporte_integral_service
 from app.schemas.reporte1 import Reporte1Create, Reporte1Read
 from app.services import reporte1_service
+from app.schemas.reporte2 import Reporte2Create, Reporte2Read
+from app.services import reporte2_service
 
 router = APIRouter(prefix="/reportes", tags=["Reportes"])
 
@@ -40,3 +42,18 @@ def handle_create_reporte1(
     """
     reporte1 = reporte1_service.create_reporte1(db=session, data=data)
     return reporte1
+
+@router.post(
+    "/general-2",
+    response_model=Reporte2Read,
+    status_code=status.HTTP_201_CREATED
+)
+def handle_create_reporte2(
+    data: Reporte2Create,
+    session: Session = Depends(get_session)
+):
+    """
+    Endpoint para crear un nuevo Reporte General 2.
+    """
+    reporte2 = reporte2_service.create_reporte2(db=session, data=data)
+    return reporte2

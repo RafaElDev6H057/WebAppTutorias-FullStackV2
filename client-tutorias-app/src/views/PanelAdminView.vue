@@ -127,36 +127,39 @@
 
           <div class="bg-white shadow overflow-hidden sm:rounded-lg">
             <!-- Tabla de estudiantes -->
-            <table table v-if="students.length > 0" class="min-w-full divide-y divide-gray-200">
+            <table
+              v-if="students.length > 0"
+              class="min-w-full divide-y divide-gray-200 table-fixed"
+            >
               <thead class="bg-gray-50">
                 <tr>
                   <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="w-3/12 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
                     Nombre Completo
                   </th>
                   <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="w-2/12 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
                   >
                     Número de Control
                   </th>
                   <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="w-1/12 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
                     Semestre
                   </th>
                   <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="w-3/12 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
                     Carrera
                   </th>
                   <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="w-1/12 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
                     Estado
                   </th>
                   <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="w-2/12 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
                     Acciones
                   </th>
@@ -164,20 +167,9 @@
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
                 <tr v-for="student in students" :key="student.id">
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center">
-                      <!-- <div class="flex-shrink-0 h-10 w-10">
-                        <img
-                          class="h-10 w-10 rounded-full"
-                          :src="student.avatar || '/placeholder.svg'"
-                          alt=""
-                        />
-                      </div> -->
-                      <div class="ml-4">
-                        <div class="text-sm font-medium text-gray-900">
-                          {{ `${student.nombre} ${student.apellido_p} ${student.apellido_m}` }}
-                        </div>
-                      </div>
+                  <td class="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis">
+                    <div class="text-sm font-medium text-gray-900">
+                      {{ `${student.nombre} ${student.apellido_p} ${student.apellido_m}` }}
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
@@ -186,7 +178,7 @@
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="text-sm text-gray-900">{{ student.semestre_actual }}° Semestre</div>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
+                  <td class="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis">
                     <div class="text-sm text-gray-900">{{ student.carrera }}</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
@@ -201,25 +193,27 @@
                       {{ student.estado }}
                     </span>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex">
-                    <button
-                      @click="editItem(student, 'student')"
-                      class="text-white hover:bg-indigo-900 mr-2 px-2 py-1 bg-indigo-600 rounded-xl transition-colors duration-200"
-                    >
-                      <EditIcon />
-                    </button>
-                    <button
-                      @click="deleteItem(student)"
-                      class="text-white hover:bg-red-900 mr-2 px-2 py-1 rounded-xl bg-red-600 transition-colors duration-200"
-                    >
-                      <DeleteIcon />
-                    </button>
-                    <button
-                      @click="openTutoringModal(student)"
-                      class="text-white hover:bg-orange-500 bg-orange-400 px-2 py-1 rounded-2xl transition-colors duration-200"
-                    >
-                      Administrar Tutorías
-                    </button>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div class="flex items-center">
+                      <button
+                        @click="editItem(student, 'student')"
+                        class="text-white hover:bg-indigo-900 mr-2 px-2 py-1 bg-indigo-600 rounded-xl transition-colors duration-200"
+                      >
+                        <EditIcon />
+                      </button>
+                      <button
+                        @click="deleteItem(student)"
+                        class="text-white hover:bg-red-900 mr-2 px-2 py-1 rounded-xl bg-red-600 transition-colors duration-200"
+                      >
+                        <DeleteIcon />
+                      </button>
+                      <button
+                        @click="openTutoringModal(student)"
+                        class="text-white hover:bg-orange-500 bg-orange-400 px-2 py-1 rounded-2xl transition-colors duration-200 whitespace-nowrap"
+                      >
+                        Administrar Tutorías
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -1505,9 +1499,9 @@ const circles = [
  */
 const fetchStudents = async (page) => {
   try {
-    const response = await AlumnoService.getAlumnos(page, 10)
+    const response = await AlumnoService.getAlumnos(page, 5)
     students.value = response.data.alumnos
-    hayMasAlumnos.value = response.data.alumnos.length === 10
+    hayMasAlumnos.value = response.data.alumnos.length === 5
     totalStudents.value = response.data.total_alumnos
   } catch (err) {
     console.error('Error al obtener los estudiantes:', err)
