@@ -687,6 +687,47 @@
                         </div>
                       </div>
                     </div>
+                    <!-- Correo y contraseña -->
+                    <div class="mt-6">
+                      <div class="grid grid-cols-2 gap-6">
+                        <div>
+                          <label for="correo" class="block text-sm font-medium text-gray-700"
+                            >Correo</label
+                          >
+                          <input
+                            type="text"
+                            name="correo"
+                            id="correo"
+                            v-model="formData.correo"
+                            :class="[
+                              'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                              { 'border-red-500': errors.correo },
+                            ]"
+                          />
+                          <p v-if="errors.num_control" class="mt-2 text-sm text-red-600">
+                            {{ errors.correo[0] }}
+                          </p>
+                        </div>
+                        <div>
+                          <label for="telefono" class="block text-sm font-medium text-gray-700"
+                            >Telefono</label
+                          >
+                          <input
+                            type="text"
+                            name="telefono"
+                            id="telefono"
+                            v-model="formData.telefono"
+                            :class="[
+                              'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                              { 'border-red-500': errors.telefono },
+                            ]"
+                          />
+                          <p v-if="errors.telefono" class="mt-2 text-sm text-red-600">
+                            {{ errors.telefono[0] }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                     <div class="mt-6">
                       <label for="carrera" class="block text-sm font-medium text-gray-700"
                         >Carrera</label
@@ -715,7 +756,7 @@
                         <option value="Ingeniería en Gestión Empresarial">
                           Ingeniería en Gestión Empresarial
                         </option>
-                        <option value="Ingeniería en Mineria">Ingeniería en Mineria</option>
+                        <option value="Ingeniería en Minería">Ingeniería en Minería</option>
                         <option value="Arquitectura">Arquitectura</option>
                       </select>
                       <p v-if="errors.carrera" class="mt-2 text-sm text-red-600">
@@ -1786,6 +1827,8 @@ const openModal = (type, mode = 'add', item = null) => {
         carrera: '',
         semestre_actual: '',
         estado: 'activo',
+        correo: '',
+        telefono: '',
       })
     } else if (type === 'tutor') {
       Object.assign(formData, {
