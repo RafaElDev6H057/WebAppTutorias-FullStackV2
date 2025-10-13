@@ -164,8 +164,14 @@
               <tbody class="bg-white divide-y divide-gray-200">
                 <tr v-for="student in students" :key="student.id">
                   <td class="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis">
-                    <div class="text-sm font-medium text-gray-900">
+                    <div
+                      v-if="student.apellido_m != null"
+                      class="text-sm font-medium text-gray-900"
+                    >
                       {{ `${student.nombre} ${student.apellido_p} ${student.apellido_m}` }}
+                    </div>
+                    <div v-else class="text-sm font-medium text-gray-900">
+                      {{ `${student.nombre} ${student.apellido_p}` }}
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
@@ -258,7 +264,7 @@
                   <button
                     @click="prevPage"
                     :disabled="currentPage === 1"
-                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-black hover:bg-gray-50"
                   >
                     <svg
                       class="h-5 w-5"
@@ -292,7 +298,7 @@
                   <button
                     @click="nextPage"
                     :disabled="!hayMasAlumnos"
-                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-black hover:bg-gray-50"
                   >
                     <span>Siguiente</span>
                     <svg

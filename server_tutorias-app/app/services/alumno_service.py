@@ -103,10 +103,10 @@ def process_and_load_excel(db: Session, file: UploadFile):
             "numero_control": "num_control", "nombre": "nombre",
             "apellido_paterno": "apellido_p", "apellido_materno": "apellido_m",
             "carrera": "carrera", "semestre": "semestre_actual",
-            "curp": "curp", "estatus": "estado", "email": "correo" # Cambiado 'email' a 'correo' por consistencia
+            "telefono": "telefono", "estatus": "estado", "email": "correo" # Cambiado 'email' a 'correo' por consistencia
         }
         
-        df = pd.read_excel(file.file, dtype={'numero_control': str, 'curp': str})
+        df = pd.read_excel(file.file, dtype={'numero_control': str, 'telefono': str})
         df.rename(columns=column_map, inplace=True)
         df = df.astype(object).where(pd.notnull(df), None)
         
@@ -126,7 +126,7 @@ def process_and_load_excel(db: Session, file: UploadFile):
             df['correo'] = df['correo'].str.lower()
 
         # ... (el resto de la función, incluyendo la validación, queda igual) ...
-        required_columns = ['num_control', 'nombre', 'apellido_p', 'carrera', 'semestre_actual', 'curp', 'correo']
+        required_columns = ['num_control', 'nombre', 'apellido_p', 'carrera', 'semestre_actual', 'correo']
         null_check = df[required_columns].isnull()
         if null_check.any().any():
             first_error_row = df[null_check.any(axis=1)].iloc[0]

@@ -18,7 +18,8 @@ class AlumnoBase(BaseModel):
     carrera: str = Field(..., min_length=3, max_length=100)
     semestre_actual: int = Field(..., ge=1, le=14)
     estado: str
-    curp: str = Field(..., min_length=18, max_length=18)
+    # curp: str = Field(..., min_length=18, max_length=18)
+    telefono: Optional[str] = None
     correo: EmailStr
 
     # ✅ 4. (Opcional pero recomendado) Sanitizar entradas de texto
@@ -50,7 +51,8 @@ class AlumnoUpdate(BaseModel):
     carrera: Optional[str] = Field(default=None, min_length=3, max_length=100)
     semestre_actual: Optional[int] = Field(default=None, ge=1, le=14)
     estado: Optional[str] = None
-    curp: Optional[str] = Field(default=None, min_length=18, max_length=18)
+    # curp: Optional[str] = Field(default=None, min_length=18, max_length=18)
+    telefono: Optional[str] = Field(default=None, max_length=100)
     correo: Optional[EmailStr] = None
     
     # ✅ 2. Añadimos un validador que solo se activa si se escribe una nueva contraseña
