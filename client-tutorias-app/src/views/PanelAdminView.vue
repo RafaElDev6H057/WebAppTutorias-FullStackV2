@@ -78,7 +78,7 @@
         <!-- Panel de Estudiantes -->
         <div v-if="activeTab === 'students'">
           <!-- Add search input before the table -->
-          <CargarAlumnos @file-selected="handleFileUpload" />
+          <!-- <CargarAlumnos @file-selected="handleFileUpload" /> -->
           <p v-if="uploadMessage">{{ uploadMessage }}</p>
           <div class="mb-4 flex justify-between items-center">
             <h2 class="text-2xl font-bold text-gray-900">Gestión de Estudiantes</h2>
@@ -106,6 +106,12 @@
                   </svg>
                 </div>
               </div> -->
+              <button
+                @click="showModalExcel = true"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out"
+              >
+                Cargar Excel
+              </button>
               <button
                 @click="openModal('student')"
                 class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out"
@@ -1318,6 +1324,12 @@
       </div>
     </div>
   </Transition>
+
+  <CargarAlumnosModal
+    :show="showModalExcel"
+    @close="showModalExcel = false"
+    @upload-success="handleUploadSuccess"
+  />
 </template>
 
 <script setup>
@@ -1333,7 +1345,7 @@ import ShowEye from '@/components/icons/ShowEye.vue'
 import HideEye from '@/components/icons/HideEye.vue'
 import BaseSearchInput from '@/components/ui/BaseSearchInput.vue'
 import AlumnoService from '@/services/AlumnoService.js'
-import CargarAlumnos from '@/components/student/CargarAlumnos.vue'
+import CargarAlumnosModal from '@/components/student/CargarAlumnosModal.vue'
 
 // ===========================================
 // ROUTER
@@ -1346,6 +1358,7 @@ const router = useRouter()
 // Control de pestañas y modales
 const activeTab = ref('students')
 const showModal = ref(false)
+const showModalExcel = ref(false)
 const modalType = ref('')
 const modalMode = ref('')
 const showPassword = ref(false)
@@ -1614,21 +1627,13 @@ const fetchStudentTutorings = async (studentId) => {
 /**
  * Subir el archivo de Excel para poblar datos en la DB
  */
-const handleFileUpload = async (file) => {
-  if (!file) return
+const handleUploadSuccess = () => {
+  // Cuando el modal nos avisa que todo salió bien:
+  console.log('¡Éxito! Archivo cargado y datos procesados.')
 
-  uploadMessage.value = 'Cargando archivo...'
-  try {
-    await AlumnoService.uploadAlumnos(file)
-    uploadMessage.value = '¡Éxito! Archivo cargado y datos procesados.'
-
-    // Refrescamos la lista de alumnos para mostrar los nuevos datos
-    currentPage.value = 1 // Volvemos a la página 1
-    fetchStudents(currentPage.value)
-  } catch (error) {
-    uploadMessage.value = 'Error al cargar el archivo.'
-    console.error('Error en la carga:', error)
-  }
+  // Refrescamos la lista de alumnos para mostrar los nuevos datos
+  currentPage.value = 1 // Volvemos a la página 1
+  fetchStudents() // Llamamos a la función que obtiene los datos
 }
 
 /**
@@ -1758,6 +1763,7 @@ const confirmDelete = async () => {
           (s) => s.id_alumno !== studentToDelete.value.id_alumno,
         )
         console.log('Estudiante eliminado exitosamente')
+        fetchStudents()
       } else {
         console.error('Error al eliminar el estudiante:', response.data)
       }
