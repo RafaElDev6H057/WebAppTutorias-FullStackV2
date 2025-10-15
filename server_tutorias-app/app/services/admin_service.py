@@ -2,33 +2,35 @@
 
 from fastapi import HTTPException, status
 from sqlmodel import Session, select
+from typing import Optional
 
 from app.models.administrador import Administrador
 from app.schemas.administrador import AdministradorCreate, AdministradorUpdate
-
-# Pro Tip: Estas funciones de contraseña se repiten en cada servicio.
-# Una mejora final sería crear un archivo `app/core/security.py`
-# y ponerlas ahí para importarlas desde un único lugar.
-from app.services.alumno_service import get_password_hash, verify_password
+from app.core.security import get_password_hash, verify_password
 
 
 def get_admin_by_usuario(db: Session, usuario: str) -> Administrador | None:
     """Busca un administrador por su nombre de usuario."""
     return db.exec(select(Administrador).where(Administrador.usuario == usuario)).first()
 
+def authenticate_admin(db: Session, usuario: str, contraseña: str) -> Optional[Administrador]:
+    """
+    Autentica a un administrador. Devuelve el objeto del admin si es exitoso, si no, None.
+    """
+    admin = db.exec(select(Administrador).where(Administrador.usuario == usuario)).first()
+    if not admin:
+        return None
+    if not verify_password(contraseña, admin.contraseña):
+        return None
+    return admin
+
 def create_admin(db: Session, data: AdministradorCreate) -> Administrador:
     """Crea un nuevo administrador en la base de datos."""
-    # 1. Verificamos si ya existe un admin con ese usuario
-    db_admin = get_admin_by_usuario(db, data.usuario)
+    db_admin = db.exec(select(Administrador).where(Administrador.usuario == data.usuario)).first()
     if db_admin:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"El nombre de usuario '{data.usuario}' ya está en uso."
-        )
+        raise HTTPException(status_code=409, detail="El nombre de usuario ya está en uso.")
     
     hashed_password = get_password_hash(data.contraseña)
-    
-    # Usamos el patrón consistente para crear el objeto del modelo
     admin = Administrador.model_validate(data.model_dump(), update={'contraseña': hashed_password})
     
     db.add(admin)

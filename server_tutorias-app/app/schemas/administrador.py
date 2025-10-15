@@ -46,3 +46,10 @@ class AdministradorRead(AdministradorBase):
 class AdministradorLogin(BaseModel):
     usuario: str
     contraseña: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    usuario: Optional[str] = None
