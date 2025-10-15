@@ -19,7 +19,7 @@ def create_admin_user():
         # Verificamos si el usuario ya existe
         existing_admin = session.query(Administrador).filter(Administrador.usuario == usuario).first() #type: ignore
         if existing_admin:
-            print(f"❌ Error: El usuario '{usuario}' ya existe.")
+            print(f"Error: El usuario '{usuario}' ya existe.")
             return
 
         # Hasheamos la contraseña
@@ -31,7 +31,7 @@ def create_admin_user():
         session.add(new_admin)
         session.commit()
         
-        print(f"✅ ¡Éxito! El administrador '{usuario}' ha sido creado.")
+        print(f"¡Éxito! El administrador '{usuario}' ha sido creado.")
 
 if __name__ == "__main__":
     create_admin_user()
