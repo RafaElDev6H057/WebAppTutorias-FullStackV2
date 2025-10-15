@@ -131,21 +131,37 @@ const router = useRouter()
 
 const handleSubmit = async () => {
   try {
-    const response = await axios.post('http://localhost:8000/api/administradores/login', {
-      usuario: usuario.value,
-      contraseña: password.value,
+    // 1. Preparamos los datos en el formato 'form-data'
+    const formData = new URLSearchParams()
+    formData.append('username', usuario.value)
+    formData.append('password', password.value)
+
+    // 2. Hacemos la petición POST
+    const response = await axios.post('http://localhost:8000/api/administradores/login', formData, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
     })
 
-    if (response.status === 200) {
+    // 3. Si el login es exitoso, la respuesta contendrá el token
+    if (response.status === 200 && response.data.access_token) {
       console.log('Inicio de sesión exitoso:', response.data)
-      localStorage.setItem('administrador', JSON.stringify(response.data))
+
+      // 4. Guardamos el TOKEN en localStorage, no los datos del usuario
+      localStorage.setItem('accessToken', response.data.access_token)
+
+      // (Opcional) Puedes guardar otros datos si los necesitas, pero el token es lo crucial
+      // localStorage.setItem('userRole', 'admin');
+
       router.push('/login_admin/dashboard')
-    } else {
-      errorMessage.value = response.data.message || 'Credenciales incorrectas'
     }
   } catch (error) {
     console.error('Error en la solicitud:', error)
-    errorMessage.value = 'Credenciales incorrectas.'
+    if (error.response && error.response.data && error.response.data.detail) {
+      errorMessage.value = error.response.data.detail
+    } else {
+      errorMessage.value = 'Error de conexión o credenciales incorrectas.'
+    }
   }
 }
 

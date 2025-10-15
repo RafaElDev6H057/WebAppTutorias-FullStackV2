@@ -1931,6 +1931,8 @@ const selectTutor = (tutor) => {
  * Maneja el cierre de sesión del administrador
  */
 const handleLogout = () => {
+  console.log(localStorage.getItem('accessToken'))
+  localStorage.removeItem('accessToken')
   localStorage.removeItem('administrador')
   router.push('/login_admin')
 }
