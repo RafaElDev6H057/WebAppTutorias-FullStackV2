@@ -86,100 +86,134 @@
         </div>
 
         <!-- Modal para Reporte Integral -->
-        <div
-          v-if="showReporteIntegralModal"
-          class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+        <Transition
+          enter-active-class="transition ease-out duration-300"
+          enter-from-class="opacity-0 scale-95"
+          enter-to-class="opacity-100 scale-100"
+          leave-active-class="transition ease-in duration-200"
+          leave-from-class="opacity-100 scale-100"
+          leave-to-class="opacity-0 scale-95"
         >
           <div
-            class="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white"
+            v-if="showReporteIntegralModal"
+            class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
           >
-            <div class="flex justify-end items-center mb-4">
-              <button @click="closeReporteIntegralModal" class="text-gray-500 hover:text-gray-700">
-                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
+            <div
+              class="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white"
+            >
+              <div class="flex justify-end items-center mb-4">
+                <button
+                  @click="closeReporteIntegralModal"
+                  class="text-gray-500 hover:text-gray-700"
+                >
+                  <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <ReporteIntegralTutoria
+                v-if="selectedStudent"
+                :nombre="selectedStudent.name"
+                :num_control="selectedStudent.controlNumber"
+              />
             </div>
-            <ReporteIntegralTutoria
-              v-if="selectedStudent"
-              :nombre="selectedStudent.name"
-              :num_control="selectedStudent.controlNumber"
-            />
           </div>
-        </div>
+        </Transition>
 
         <!-- Modal para Primer Reporte -->
-        <div
-          v-if="mostrarModalPrimerReporte"
-          class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        <Transition
+          enter-active-class="transition ease-out duration-300"
+          enter-from-class="opacity-0 scale-95"
+          enter-to-class="opacity-100 scale-100"
+          leave-active-class="transition ease-in duration-200"
+          leave-from-class="opacity-100 scale-100"
+          leave-to-class="opacity-0 scale-95"
         >
-          <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div class="p-4 border-b flex justify-between items-center">
-              <h2 class="text-xl font-semibold text-gray-800">Primer Reporte de Tutoría</h2>
-              <button
-                @click="mostrarModalPrimerReporte = false"
-                class="text-gray-500 hover:text-gray-700"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+          <div
+            v-if="mostrarModalPrimerReporte"
+            class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+          >
+            <div
+              class="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white"
+            >
+              <div class="p-4 border-b flex justify-end items-center">
+                <!-- <h2 class="text-xl font-semibold text-gray-800">Primer Reporte de Tutoría</h2> -->
+                <button
+                  @click="mostrarModalPrimerReporte = false"
+                  class="text-gray-500 hover:text-gray-700"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-            <div class="p-4">
-              <PrimerReporteTutoria @cerrar="mostrarModalPrimerReporte = false" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div class="p-4">
+                <PrimerReporteTutoria @cerrar="mostrarModalPrimerReporte = false" />
+              </div>
             </div>
           </div>
-        </div>
+        </Transition>
 
-        <!-- Modal para Primer Reporte -->
-        <div
-          v-if="mostrarModalSegundoReporte"
-          class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        <!-- Modal para Segundo Reporte -->
+        <Transition
+          enter-active-class="transition ease-out duration-300"
+          enter-from-class="opacity-0 scale-95"
+          enter-to-class="opacity-100 scale-100"
+          leave-active-class="transition ease-in duration-200"
+          leave-from-class="opacity-100 scale-100"
+          leave-to-class="opacity-0 scale-95"
         >
-          <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div class="p-4 border-b flex justify-between items-center">
-              <h2 class="text-xl font-semibold text-gray-800">Segundo Reporte de Tutoría</h2>
-              <button
-                @click="mostrarModalSegundoReporte = false"
-                class="text-gray-500 hover:text-gray-700"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+          <div
+            v-if="mostrarModalSegundoReporte"
+            class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+          >
+            <div
+              class="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white"
+            >
+              <div class="p-4 border-b flex justify-end items-center">
+                <!-- <h2 class="text-xl font-semibold text-gray-800">Segundo Reporte de Tutoría</h2> -->
+                <button
+                  @click="mostrarModalSegundoReporte = false"
+                  class="text-gray-500 hover:text-gray-700"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-            <div class="p-4">
-              <SegundoReporteTutoria @cerrar="mostrarModalSegundoReporte = false" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div class="p-4">
+                <SegundoReporteTutoria @cerrar="mostrarModalSegundoReporte = false" />
+              </div>
             </div>
           </div>
-        </div>
+        </Transition>
 
         <!-- Pestañas -->
         <div class="border-b border-gray-200">
