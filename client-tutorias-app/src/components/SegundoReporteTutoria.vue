@@ -161,7 +161,7 @@
           </div>
 
           <div v-if="formData.baja_definitiva" class="space-y-4">
-            <div>
+            <div class="hidden">
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 Cantidad de alumnos en deserción:
               </label>
@@ -187,7 +187,7 @@
                   type="text"
                   placeholder="Escribe el nombre del alumno..."
                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 bg-white p-2 pr-10"
-                  @input="buscarAlumnos"
+                  @input="triggerBuscarAlumnos()"
                 />
                 <button
                   type="button"
@@ -221,9 +221,9 @@
                   >
                     <div class="flex items-center">
                       <span class="font-medium block truncate">
-                        {{ alumno.nombre }} {{ alumno.apellidos }}
+                        {{ alumno.nombre }} {{ alumno.apellido_p }} {{ alumno.apellido_m }}
                       </span>
-                      <span class="text-gray-500 ml-2 text-xs"> #{{ alumno.numControl }} </span>
+                      <span class="text-gray-500 ml-2 text-xs"> #{{ alumno.num_control }} </span>
                     </div>
                   </div>
                 </div>
@@ -239,8 +239,10 @@
                     class="px-4 py-3 flex justify-between items-center hover:bg-gray-50"
                   >
                     <div>
-                      <span class="font-medium">{{ alumno.nombre }} {{ alumno.apellidos }}</span>
-                      <span class="text-gray-500 ml-2 text-sm">#{{ alumno.numControl }}</span>
+                      <span class="font-medium"
+                        >{{ alumno.nombre }} {{ alumno.apellido_p }} {{ alumno.apellido_m }}</span
+                      >
+                      <span class="text-gray-500 ml-2 text-sm">#{{ alumno.num_control }}</span>
                     </div>
                     <button
                       type="button"
@@ -369,7 +371,7 @@
                 type="text"
                 placeholder="Escribe el nombre del alumno..."
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50 bg-white p-2 pr-10"
-                @input="buscarAlumnosDiscapacidad"
+                @input="triggerBuscarAlumnosDiscapacidad()"
               />
               <button
                 type="button"
@@ -403,9 +405,9 @@
                 >
                   <div class="flex items-center">
                     <span class="font-medium block truncate">
-                      {{ alumno.nombre }} {{ alumno.apellidos }}
+                      {{ alumno.nombre }} {{ alumno.apellido_p }} {{ alumno.apellido_m }}
                     </span>
-                    <span class="text-gray-500 ml-2 text-xs"> #{{ alumno.numControl }} </span>
+                    <span class="text-gray-500 ml-2 text-xs"> #{{ alumno.num_control }} </span>
                   </div>
                 </div>
               </div>
@@ -421,8 +423,10 @@
                   class="px-4 py-3 flex justify-between items-center hover:bg-gray-50"
                 >
                   <div>
-                    <span class="font-medium">{{ alumno.nombre }} {{ alumno.apellidos }}</span>
-                    <span class="text-gray-500 ml-2 text-sm">#{{ alumno.numControl }}</span>
+                    <span class="font-medium"
+                      >{{ alumno.nombre }} {{ alumno.apellido_p }} {{ alumno.apellido_m }}</span
+                    >
+                    <span class="text-gray-500 ml-2 text-sm">#{{ alumno.num_control }}</span>
                   </div>
                   <button
                     type="button"
@@ -466,7 +470,7 @@
                 type="text"
                 placeholder="Escribe el nombre del alumno..."
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50 bg-white p-2 pr-10"
-                @input="buscarAlumnosAsesoria"
+                @input="triggerBuscarAlumnosAsesoria()"
               />
               <button
                 type="button"
@@ -500,9 +504,9 @@
                 >
                   <div class="flex items-center">
                     <span class="font-medium block truncate">
-                      {{ alumno.nombre }} {{ alumno.apellidos }}
+                      {{ alumno.nombre }} {{ alumno.apellido_p }} {{ alumno.apellido_m }}
                     </span>
-                    <span class="text-gray-500 ml-2 text-xs"> #{{ alumno.numControl }} </span>
+                    <span class="text-gray-500 ml-2 text-xs"> #{{ alumno.num_control }} </span>
                   </div>
                 </div>
               </div>
@@ -518,10 +522,11 @@
                   <span class="font-medium">Alumno seleccionado: </span>
                   <span
                     >{{ alumnoAsesoriaSeleccionado.nombre }}
-                    {{ alumnoAsesoriaSeleccionado.apellidos }}</span
+                    {{ alumnoAsesoriaSeleccionado.apellido_p }}
+                    {{ alumnoAsesoriaSeleccionado.apellido_m }}</span
                   >
                   <span class="text-gray-500 ml-2 text-sm"
-                    >#{{ alumnoAsesoriaSeleccionado.numControl }}</span
+                    >#{{ alumnoAsesoriaSeleccionado.num_control }}</span
                   >
                 </div>
                 <div class="flex space-x-2">
@@ -563,9 +568,10 @@
                 >
                   <div>
                     <span class="font-medium"
-                      >{{ item.alumno.nombre }} {{ item.alumno.apellidos }}</span
+                      >{{ item.alumno.nombre }} {{ item.alumno.apellido_p }}
+                      {{ item.alumno.apellido_m }}</span
                     >
-                    <span class="text-gray-500 ml-2 text-sm">#{{ item.alumno.numControl }}</span>
+                    <span class="text-gray-500 ml-2 text-sm">#{{ item.alumno.num_control }}</span>
                     <span class="block text-purple-600 text-sm mt-1"
                       >Asignatura: {{ item.asignatura }}</span
                     >
@@ -718,8 +724,9 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, watch } from 'vue'
+import { reactive, ref, computed, watch, onUnmounted } from 'vue'
 import axios from 'axios'
+import AlumnoService from '@/services/AlumnoService'
 
 const emit = defineEmits(['cerrar', 'guardar'])
 
@@ -746,20 +753,6 @@ const tutores = [
   { id: 5, nombre: 'Roberto Hernández Torres' },
 ]
 
-// Lista de alumnos (simulada - en producción se obtendría de una API)
-const todosLosAlumnos = [
-  { id: 1, nombre: 'Luis', apellidos: 'Martínez Gómez', numControl: '19041234' },
-  { id: 2, nombre: 'Ana', apellidos: 'Sánchez Pérez', numControl: '19041235' },
-  { id: 3, nombre: 'Carlos', apellidos: 'Rodríguez López', numControl: '19041236' },
-  { id: 4, nombre: 'María', apellidos: 'González Hernández', numControl: '19041237' },
-  { id: 5, nombre: 'José', apellidos: 'Pérez Martínez', numControl: '19041238' },
-  { id: 6, nombre: 'Laura', apellidos: 'Hernández García', numControl: '19041239' },
-  { id: 7, nombre: 'Pedro', apellidos: 'López Sánchez', numControl: '19041240' },
-  { id: 8, nombre: 'Sofía', apellidos: 'García Rodríguez', numControl: '19041241' },
-  { id: 9, nombre: 'Miguel', apellidos: 'Torres Flores', numControl: '19041242' },
-  { id: 10, nombre: 'Fernanda', apellidos: 'Flores Torres', numControl: '19041243' },
-]
-
 // Generar periodos automáticamente
 const generarPeriodos = () => {
   const periodos = []
@@ -780,11 +773,13 @@ const periodos = generarPeriodos()
 const busquedaAlumno = ref('')
 const resultadosBusqueda = ref([])
 const alumnosDesercionLista = ref([])
+let buscarTimeout = null
 
 // Variables para la búsqueda de alumnos con discapacidad
 const busquedaAlumnoDiscapacidad = ref('')
 const resultadosDiscapacidad = ref([])
 const alumnosDiscapacidadLista = ref([])
+let buscarDiscapacidadTimeout = null
 
 // Variables para la búsqueda de alumnos que requieren asesoría
 const busquedaAlumnoAsesoria = ref('')
@@ -792,6 +787,7 @@ const resultadosAsesoria = ref([])
 const alumnosAsesoriaLista = ref([])
 const alumnoAsesoriaSeleccionado = ref(null)
 const asignaturaAReforzar = ref('')
+let buscarAsesoriaTimeout = null
 
 // Validación para la cantidad de alumnos en deserción
 const validacionDesercion = computed(() => {
@@ -833,26 +829,39 @@ const formData = reactive({
 })
 
 // Funciones para alumnos en deserción
-const buscarAlumnos = () => {
+const buscarAlumnos = async () => {
   if (busquedaAlumno.value.length < 2) {
     resultadosBusqueda.value = []
     return
   }
 
-  const termino = busquedaAlumno.value.toLowerCase()
-  resultadosBusqueda.value = todosLosAlumnos.filter((alumno) => {
-    // Filtrar alumnos que ya están en la lista
-    const yaAgregado = alumnosDesercionLista.value.some((a) => a.id === alumno.id)
-    if (yaAgregado) return false
+  try {
+    // 1. Obtenemos los resultados DIRECTAMENTE del backend, que ya vienen filtrados.
+    const response = await AlumnoService.getAlumnos(1, 100, busquedaAlumno.value)
+    const alumnosEncontrados = response.data.alumnos
 
-    // Buscar por nombre, apellidos o número de control
-    return (
-      alumno.nombre.toLowerCase().includes(termino) ||
-      alumno.apellidos.toLowerCase().includes(termino) ||
-      alumno.numControl.includes(termino)
-    )
-  })
+    // 2. Ahora, filtramos esa lista ÚNICAMENTE para quitar los que ya están en la lista de deserción.
+    // Esta es la única comprobación que el frontend necesita hacer.
+    resultadosBusqueda.value = alumnosEncontrados.filter((alumno) => {
+      return !alumnosDesercionLista.value.some((a) => a.id_alumno === alumno.id_alumno)
+      // Nota: Asegúrate de usar el mismo campo de ID en ambos lados (ej: id_alumno o id).
+    })
+  } catch (err) {
+    console.log(err)
+    resultadosBusqueda.value = [] // Limpiamos en caso de error
+  }
 }
+
+const triggerBuscarAlumnos = (ms = 350) => {
+  if (buscarTimeout) clearTimeout(buscarTimeout)
+  buscarTimeout = setTimeout(() => {
+    buscarAlumnos()
+  }, ms)
+}
+
+onUnmounted(() => {
+  if (buscarTimeout) clearTimeout(buscarTimeout)
+})
 
 const agregarAlumnoDesercion = (alumno) => {
   alumnosDesercionLista.value.push(alumno)
@@ -876,26 +885,42 @@ const limpiarBusqueda = () => {
 }
 
 // Funciones para alumnos con discapacidad
-const buscarAlumnosDiscapacidad = () => {
+const buscarAlumnosDiscapacidad = async () => {
+  // No busca si el texto es muy corto
   if (busquedaAlumnoDiscapacidad.value.length < 2) {
     resultadosDiscapacidad.value = []
     return
   }
 
-  const termino = busquedaAlumnoDiscapacidad.value.toLowerCase()
-  resultadosDiscapacidad.value = todosLosAlumnos.filter((alumno) => {
-    // Filtrar alumnos que ya están en la lista
-    const yaAgregado = alumnosDiscapacidadLista.value.some((a) => a.id === alumno.id)
-    if (yaAgregado) return false
+  try {
+    // 1. Llamamos al servicio para que el backend haga la búsqueda
+    const response = await AlumnoService.getAlumnos(1, 100, busquedaAlumnoDiscapacidad.value)
+    const alumnosEncontrados = response.data.alumnos
 
-    // Buscar por nombre, apellidos o número de control
-    return (
-      alumno.nombre.toLowerCase().includes(termino) ||
-      alumno.apellidos.toLowerCase().includes(termino) ||
-      alumno.numControl.includes(termino)
-    )
-  })
+    // 2. Filtramos en el frontend SOLO para quitar los que ya agregamos
+    resultadosDiscapacidad.value = alumnosEncontrados.filter((alumno) => {
+      // Usamos `some` para verificar si el `id_alumno` ya existe en la lista
+      return !alumnosDiscapacidadLista.value.some((a) => a.id_alumno === alumno.id_alumno)
+    })
+  } catch (err) {
+    console.error('Error buscando alumnos para discapacidad:', err)
+    resultadosDiscapacidad.value = [] // Limpiamos si hay un error
+  }
 }
+
+const triggerBuscarAlumnosDiscapacidad = (ms = 350) => {
+  // Limpia el temporizador anterior si el usuario sigue escribiendo
+  if (buscarDiscapacidadTimeout) clearTimeout(buscarDiscapacidadTimeout)
+
+  // Crea un nuevo temporizador
+  buscarDiscapacidadTimeout = setTimeout(() => {
+    buscarAlumnosDiscapacidad()
+  }, ms)
+}
+
+onUnmounted(() => {
+  if (buscarDiscapacidadTimeout) clearTimeout(buscarDiscapacidadTimeout)
+})
 
 const agregarAlumnoDiscapacidad = (alumno) => {
   alumnosDiscapacidadLista.value.push(alumno)
@@ -913,26 +938,39 @@ const limpiarBusquedaDiscapacidad = () => {
 }
 
 // Funciones para alumnos que requieren asesoría
-const buscarAlumnosAsesoria = () => {
+const buscarAlumnosAsesoria = async () => {
   if (busquedaAlumnoAsesoria.value.length < 2) {
     resultadosAsesoria.value = []
     return
   }
 
-  const termino = busquedaAlumnoAsesoria.value.toLowerCase()
-  resultadosAsesoria.value = todosLosAlumnos.filter((alumno) => {
-    // Filtrar alumnos que ya están en la lista
-    const yaAgregado = alumnosAsesoriaLista.value.some((item) => item.alumno.id === alumno.id)
-    if (yaAgregado) return false
+  try {
+    // 1. Llamamos al servicio para que el backend filtre por nombre/control
+    const response = await AlumnoService.getAlumnos(1, 100, busquedaAlumnoAsesoria.value)
+    const alumnosEncontrados = response.data.alumnos
 
-    // Buscar por nombre, apellidos o número de control
-    return (
-      alumno.nombre.toLowerCase().includes(termino) ||
-      alumno.apellidos.toLowerCase().includes(termino) ||
-      alumno.numControl.includes(termino)
-    )
-  })
+    // 2. Filtramos en el frontend solo para quitar a los alumnos ya agregados
+    resultadosAsesoria.value = alumnosEncontrados.filter((alumno) => {
+      // La lógica aquí es un poco diferente porque tu lista guarda objetos { alumno, asignatura }
+      return !alumnosAsesoriaLista.value.some((item) => item.alumno.id_alumno === alumno.id_alumno)
+    })
+  } catch (err) {
+    console.error('Error buscando alumnos para asesoría:', err)
+    resultadosAsesoria.value = []
+  }
 }
+
+const triggerBuscarAlumnosAsesoria = (ms = 350) => {
+  if (buscarAsesoriaTimeout) clearTimeout(buscarAsesoriaTimeout)
+
+  buscarAsesoriaTimeout = setTimeout(() => {
+    buscarAlumnosAsesoria()
+  }, ms)
+}
+
+onUnmounted(() => {
+  if (buscarAsesoriaTimeout) clearTimeout(buscarAsesoriaTimeout)
+})
 
 const seleccionarAlumnoAsesoria = (alumno) => {
   alumnoAsesoriaSeleccionado.value = alumno
