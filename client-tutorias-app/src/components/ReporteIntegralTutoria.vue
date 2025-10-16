@@ -22,6 +22,7 @@
               min="0"
               max="16"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 bg-white p-2"
+              required
             />
           </div>
           <div>
@@ -30,8 +31,9 @@
               v-model="datos.tutoria_individual"
               type="number"
               min="0"
-              max="2"
+              max="5"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 bg-white p-2"
+              required
             />
           </div>
         </div>
