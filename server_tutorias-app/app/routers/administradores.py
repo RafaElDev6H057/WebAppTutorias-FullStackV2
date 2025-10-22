@@ -18,34 +18,9 @@ from app.schemas.administrador import (
 from app.services import admin_service
 from app.core import security
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
+from app.core.dependencies import get_current_admin_user
 
 router = APIRouter(prefix="/administradores", tags=["Administradores"])
-
-# ✅ LA CORRECCIÓN: La ruta es relativa al prefijo del router.
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/administradores/login")
-
-
-# --- DEPENDENCIA PARA PROTEGER RUTAS ---
-def get_current_admin_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_session)) -> Administrador:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="No se pudieron validar las credenciales",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        usuario: Optional[str] = payload.get("sub")
-        if usuario is None:
-            raise credentials_exception
-        token_data = TokenData(usuario=usuario)
-    except JWTError:
-        raise credentials_exception
-    
-    user = admin_service.get_admin_by_usuario(db, usuario=token_data.usuario) # type:ignore
-    if user is None:
-        raise credentials_exception
-    return user
-
 
 # --- ENDPOINTS ---
 

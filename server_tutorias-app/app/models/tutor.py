@@ -1,9 +1,9 @@
-# models/tutor.py
+# app/models/tutor.py
 
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List, TYPE_CHECKING
-from datetime import datetime, timezone # Importar timezone
-from sqlalchemy import Column, DateTime # Necesario para el onupdate
+from datetime import datetime, timezone
+from sqlalchemy import Column, DateTime
 
 if TYPE_CHECKING:
     from app.models.tutoria import Tutoria
@@ -14,17 +14,16 @@ class Tutor(SQLModel, table=True):
     nombre: str = Field(max_length=100)
     apellido_p: str = Field(max_length=100)
     apellido_m: Optional[str] = Field(default=None, max_length=100)
-    especialidad: str = Field(max_length=100)
-    correo: str = Field(index=True, unique=True, max_length=255) # max_length es buena práctica
+    correo: str = Field(index=True, unique=True, max_length=255)
     contraseña: str
-    telefono: str = Field(max_length=20)
+    
+    # ✅ Añadimos la bandera, igual que en Alumno
+    requires_password_change: bool = Field(default=True)
 
-    # ✅ 1. Usamos timestamps con zona horaria para consistencia
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
     
-    # ✅ 2. Hacemos que updated_at se actualice automáticamente
     updated_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         sa_column=Column(
