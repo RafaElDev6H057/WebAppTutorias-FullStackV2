@@ -595,11 +595,11 @@
             <!-- Formulario para agregar asignatura a reforzar -->
             <div
               v-if="alumnoAsesoriaSeleccionado"
-              class="mt-3 p-3 bg-white rounded-md border border-purple-200"
+              class="mt-3 p-4 bg-white rounded-md border border-purple-200 shadow-lg"
             >
-              <div class="flex flex-col space-y-3">
+              <div class="flex flex-col space-y-4">
                 <div>
-                  <span class="font-medium">Alumno seleccionado: </span>
+                  <span class="font-medium text-gray-900">Alumno: </span>
                   <span
                     >{{ alumnoAsesoriaSeleccionado.nombre }}
                     {{ alumnoAsesoriaSeleccionado.apellido_p }}
@@ -609,20 +609,86 @@
                     >#{{ alumnoAsesoriaSeleccionado.num_control }}</span
                   >
                 </div>
-                <div class="flex space-x-2">
-                  <input
-                    v-model="asignaturaAReforzar"
-                    type="text"
-                    placeholder="Asignatura a reforzar (ej: Cálculo Diferencial)"
-                    class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50 bg-white p-2"
-                  />
+
+                <div class="relative">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Añadir asignaturas (una por una):
+                  </label>
+                  <div class="flex space-x-2">
+                    <input
+                      v-model="asignaturaAReforzar"
+                      type="text"
+                      placeholder="Escribe la materia (ej: Cálculo) o un tema..."
+                      class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50 bg-white p-2"
+                      autocomplete="off"
+                      @keydown.enter.prevent="agregarMateriaTemporal"
+                    />
+                    <button
+                      type="button"
+                      class="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors"
+                      @click="agregarMateriaTemporal"
+                      :disabled="!asignaturaAReforzar"
+                    >
+                      Añadir
+                    </button>
+                  </div>
+
+                  <div
+                    v-if="sugerenciasDeMaterias.length > 0"
+                    class="absolute z-20 mt-1 w-full bg-white shadow-lg max-h-48 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+                  >
+                    <div
+                      v-for="materia in sugerenciasDeMaterias"
+                      :key="materia"
+                      class="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-purple-100"
+                      @click="seleccionarSugerenciaMateria(materia)"
+                    >
+                      <span class="font-medium block truncate">{{ materia }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="materiasTemporales.length > 0" class="border-t pt-3">
+                  <h5 class="text-sm font-medium text-gray-700 mb-2">
+                    Materias para {{ alumnoAsesoriaSeleccionado.nombre }}:
+                  </h5>
+                  <ul class="space-y-1">
+                    <li
+                      v-for="(materia, index) in materiasTemporales"
+                      :key="index"
+                      class="flex justify-between items-center p-2 bg-purple-50 rounded-md"
+                    >
+                      <span class="text-purple-800">{{ materia }}</span>
+                      <button
+                        type="button"
+                        class="text-red-500 hover:text-red-700"
+                        @click="eliminarMateriaTemporal(index)"
+                      >
+                        <svg
+                          class="h-4 w-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="flex space-x-2 border-t pt-4">
                   <button
                     type="button"
-                    class="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors"
+                    class="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
                     @click="agregarAlumnoAsesoria"
-                    :disabled="!asignaturaAReforzar"
+                    :disabled="materiasTemporales.length === 0"
                   >
-                    Agregar
+                    Agregar Alumno y Materias
                   </button>
                   <button
                     type="button"
@@ -839,6 +905,7 @@
 import { reactive, ref, computed, watch, onUnmounted } from 'vue'
 import axios from 'axios'
 import AlumnoService from '@/services/AlumnoService.js'
+import { listaDeMaterias } from '@/data/materias.js'
 
 const emit = defineEmits(['cerrar', 'guardar'])
 
@@ -907,6 +974,8 @@ const resultadosAsesoria = ref([])
 const alumnosAsesoriaLista = ref([])
 const alumnoAsesoriaSeleccionado = ref(null)
 const asignaturaAReforzar = ref('')
+const materiasTemporales = ref([])
+const sugerenciasDeMaterias = ref([])
 let buscarAsesoriaTimeout = null
 
 // const students = ref([])
@@ -1147,19 +1216,42 @@ const seleccionarAlumnoAsesoria = (alumno) => {
   alumnoAsesoriaSeleccionado.value = alumno
   busquedaAlumnoAsesoria.value = ''
   resultadosAsesoria.value = []
+
+  // Limpiamos los estados del mini-formulario anterior
+  materiasTemporales.value = []
+  asignaturaAReforzar.value = ''
+  sugerenciasDeMaterias.value = []
+}
+
+const agregarMateriaTemporal = () => {
+  const materia = asignaturaAReforzar.value.trim()
+  // Evita vacíos y duplicados en la lista temporal
+  if (materia && !materiasTemporales.value.includes(materia)) {
+    materiasTemporales.value.push(materia)
+  }
+  asignaturaAReforzar.value = '' // Limpia el input para la siguiente materia
+}
+
+const eliminarMateriaTemporal = (index) => {
+  materiasTemporales.value.splice(index, 1)
 }
 
 const agregarAlumnoAsesoria = () => {
-  if (alumnoAsesoriaSeleccionado.value && asignaturaAReforzar.value) {
+  if (!alumnoAsesoriaSeleccionado.value || materiasTemporales.value.length === 0) {
+    // No hacer nada si no hay alumno o no hay materias
+    return
+  }
+
+  // Por cada materia en la lista temporal, creamos una entrada en la lista FINAL
+  materiasTemporales.value.forEach((materia) => {
     alumnosAsesoriaLista.value.push({
       alumno: alumnoAsesoriaSeleccionado.value,
-      asignatura: asignaturaAReforzar.value,
+      asignatura: materia,
     })
+  })
 
-    // Limpiar selección
-    alumnoAsesoriaSeleccionado.value = null
-    asignaturaAReforzar.value = ''
-  }
+  // Limpia y cierra el mini-formulario
+  cancelarSeleccionAsesoria()
 }
 
 const eliminarAlumnoAsesoria = (index) => {
@@ -1169,6 +1261,8 @@ const eliminarAlumnoAsesoria = (index) => {
 const cancelarSeleccionAsesoria = () => {
   alumnoAsesoriaSeleccionado.value = null
   asignaturaAReforzar.value = ''
+  materiasTemporales.value = []
+  sugerenciasDeMaterias.value = []
 }
 
 const limpiarBusquedaAsesoria = () => {
@@ -1234,28 +1328,22 @@ const guardarReporteGeneral1 = async () => {
   }
 }
 
-// const fetchStudents = async (page) => {
-//   try {
-//     const response = await AlumnoService.getAlumnos(page, 100, busquedaAlumno.value)
-//     students.value = response.data.alumnos
-//     // hayMasAlumnos.value = response.data.alumnos.length === 5
-//     // totalStudents.value = response.data.total_alumnos
-//     // totalPages.value = Math.ceil(response.data.total_alumnos / itemsPerPage.value)
-//     // error.value = ''
-//   } catch (err) {
-//     console.error('Error al obtener los estudiantes:', err.response.data.detail[0].type)
-//     if (err.response.data.detail[0].type == 'string_too_short') {
-//       console.log('Favor de ingresar mínimo 3 carácteres a buscar')
-//       // error.value = 'Favor de ingresar mínimo 3 carácteres a buscar'
-//     } else {
-//       console.log('No se pudo cargar la lista de estudiantes')
-//       // error.value = 'No se pudo cargar la lista de estudiantes'
-//     }
-//     students.value = []
-//   } finally {
-//     // loading.value = false
-//   }
-// }
+watch(asignaturaAReforzar, (nuevoValor) => {
+  sugerenciasDeMaterias.value = []
+  if (nuevoValor.length < 2) {
+    return
+  }
+  const termino = nuevoValor.toLowerCase()
+  sugerenciasDeMaterias.value = listaDeMaterias.filter((materia) =>
+    materia.toLowerCase().includes(termino),
+  )
+  //.slice(0, 30) // Mostramos solo 5 sugerencias
+})
+
+const seleccionarSugerenciaMateria = (materia) => {
+  asignaturaAReforzar.value = materia // Rellena el input
+  sugerenciasDeMaterias.value = [] // Oculta la lista
+}
 </script>
 
 <style scoped>
