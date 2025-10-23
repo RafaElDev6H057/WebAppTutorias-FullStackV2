@@ -2,92 +2,53 @@
 
 from fastapi import HTTPException, status, UploadFile
 from sqlmodel import Session, select, delete
-from passlib.context import CryptContext
 import pandas as pd
 
 from app.models.alumno import Alumno
 from app.schemas.alumno import AlumnoCreate, AlumnoUpdate, AlumnoSetPassword, AlumnoUpdatePassword
-from app.models.tutoria import Tutoria
+from app.models.tutoria import Tutoria # Sigue siendo necesario para imports si se usan relaciones
 from app.database import engine
+from app.core.security import get_password_hash, verify_password
 
-# Mueve el contexto de la contraseña aquí, ya que es parte de la lógica de negocio
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-def get_password_hash(password: str) -> str:
-    """Genera el hash de una contraseña."""
-    return pwd_context.hash(password)
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verifica una contraseña contra su hash."""
-    return pwd_context.verify(plain_password, hashed_password)
+# --- Funciones de Servicio para Alumno ---
 
 def get_alumno_by_num_control(db: Session, num_control: str) -> Alumno | None:
     """Busca un alumno por su número de control."""
     return db.exec(select(Alumno).where(Alumno.num_control == num_control)).first()
 
 def create_alumno(db: Session, data: AlumnoCreate) -> Alumno:
-    """Crea un nuevo alumno y sus 4 tutorías base por defecto."""
-    
-    # Verificamos si ya existe un alumno con ese número de control
+    """Crea un nuevo alumno (sin tutorías por defecto)."""
     db_alumno = get_alumno_by_num_control(db, data.num_control)
     if db_alumno:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"El número de control '{data.num_control}' ya está registrado."
         )
-    
+
     hashed_password = get_password_hash(data.contraseña)
-    
     alumno = Alumno.model_validate(
-        data.model_dump(), 
+        data.model_dump(),
         update={
             'contraseña': hashed_password,
-            'requires_password_change': False 
+            'requires_password_change': False
         }
     )
-    
     db.add(alumno)
     db.commit()
-    db.refresh(alumno) # En este punto, `alumno.id_alumno` ya está disponible
-
-    # ✅ 2. Lógica para crear las 4 tutorías base
-    if alumno.id_alumno is None:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="No se pudo obtener el id_alumno después de crear el alumno."
-        )
-    for semestre_tutoria in range(1, 5):
-        tutoria_base = Tutoria(
-            alumno_id=alumno.id_alumno,
-            semestre=semestre_tutoria
-            # Los demás campos (tutor_id, estado, etc.) usarán sus valores por defecto
-        )
-        db.add(tutoria_base)
-    
-    db.commit() # Guardamos las 4 nuevas tutorías en la base de datos
-    db.refresh(alumno) # Opcional: refresca el objeto alumno para cargar la relación de tutorías
-
+    db.refresh(alumno)
     return alumno
 
 def update_alumno(db: Session, alumno: Alumno, data: AlumnoUpdate) -> Alumno:
     """Actualiza los datos de un alumno."""
     update_data = data.model_dump(exclude_unset=True)
-
-    # ✅ Manejo especial y explícito de la contraseña
     if "contraseña" in update_data:
         new_password = update_data["contraseña"]
-        
-        # Si se proporcionó una nueva contraseña (no es None ni un string vacío)
         if new_password:
             update_data["contraseña"] = get_password_hash(new_password)
-        # Si la contraseña es None o un string vacío ""
         else:
-            # La eliminamos del diccionario para que no se actualice en la base de datos
             del update_data["contraseña"]
-    
     for key, value in update_data.items():
         setattr(alumno, key, value)
-    
     db.add(alumno)
     db.commit()
     db.refresh(alumno)
@@ -95,52 +56,47 @@ def update_alumno(db: Session, alumno: Alumno, data: AlumnoUpdate) -> Alumno:
 
 def process_and_load_excel(db: Session, file: UploadFile):
     """
-    Procesa un archivo Excel, valida los datos, borra los alumnos existentes 
-    y carga los nuevos con una contraseña temporal.
+    Procesa Excel, valida datos, borra alumnos y carga los nuevos
+    con contraseña temporal (SIN CURP).
     """
     try:
+        # ✅ Mapa de columnas actualizado SIN CURP
         column_map = {
             "numero_control": "num_control", "nombre": "nombre",
             "apellido_paterno": "apellido_p", "apellido_materno": "apellido_m",
             "carrera": "carrera", "semestre": "semestre_actual",
-            "telefono": "telefono", "estatus": "estado", "email": "correo" # Cambiado 'email' a 'correo' por consistencia
+            "estatus": "estado", "email": "correo" # Asumiendo que Excel usa 'correo' ahora
         }
-        
-        df = pd.read_excel(file.file, dtype={'numero_control': str, 'telefono': str})
+
+        # Asumiendo que el Excel ya no tiene columna 'curp'
+        df = pd.read_excel(file.file, dtype={'numero_control': str}) # Quitamos dtype de curp
         df.rename(columns=column_map, inplace=True)
         df = df.astype(object).where(pd.notnull(df), None)
-        
-        # ✅ LÓGICA DE NORMALIZACIÓN DE TEXTO ACTUALIZADA
-        # 1. Normalizamos nombres y apellidos como antes
+
+        # Normalización de texto
         name_columns = ['nombre', 'apellido_p', 'apellido_m']
         for col in name_columns:
-            if col in df.columns:
-                df[col] = df[col].str.title()
-        
-        # 2. Aplicamos la regla especial para la columna 'carrera'
+            if col in df.columns: df[col] = df[col].str.title()
         if 'carrera' in df.columns:
             df['carrera'] = df['carrera'].str.title().str.replace(" En ", " en ")
+        if 'correo' in df.columns: df['correo'] = df['correo'].str.lower()
 
-        # 3. Normalizamos el correo a minúsculas
-        if 'correo' in df.columns:
-            df['correo'] = df['correo'].str.lower()
-
-        # ... (el resto de la función, incluyendo la validación, queda igual) ...
+        # ✅ Validación de columnas obligatorias actualizada SIN CURP
         required_columns = ['num_control', 'nombre', 'apellido_p', 'carrera', 'semestre_actual', 'correo']
         null_check = df[required_columns].isnull()
         if null_check.any().any():
             first_error_row = df[null_check.any(axis=1)].iloc[0]
             raise HTTPException(
                 status_code=400,
-                detail=f"Error de datos: El archivo contiene filas con valores vacíos en columnas obligatorias. "
-                        f"Por ejemplo, el alumno con número de control '{first_error_row['num_control']}' tiene datos faltantes. "
-                        "Por favor, revise el archivo."
-            )
+                detail=f"Error de datos: Faltan valores obligatorios. Revise al alumno '{first_error_row['num_control']}'.")
 
         alumnos_a_crear = []
         for _, row in df.iterrows():
             row_data = row.to_dict()
+            if 'estado' not in row_data and 'estatus' in row_data:
+                row_data['estado'] = row_data.pop('estatus')
             row_data["contraseña"] = f'{row_data["num_control"]}itsf'
+            # ✅ La creación del Alumno ya no espera 'curp'
             alumnos_a_crear.append(Alumno(**row_data))
 
         db.execute(delete(Alumno))
@@ -151,68 +107,36 @@ def process_and_load_excel(db: Session, file: UploadFile):
 
     except KeyError as e:
         db.rollback()
-        raise HTTPException(status_code=400, detail=f"La columna requerida {e} no se encontró en el Excel.")
+        # ✅ Mensaje de error más genérico si falta una columna mapeada
+        raise HTTPException(status_code=400, detail=f"Columna '{e}' esperada no encontrada en Excel o en el mapeo.")
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
-    
+        raise HTTPException(status_code=500, detail=f"Error al procesar archivo: {str(e)}")
+
+
 def set_permanent_password(db: Session, data: AlumnoSetPassword):
-    """
-    Establece una contraseña permanente y hasheada para un alumno
-    que actualmente tiene una contraseña temporal.
-    """
-    # 1. Buscar al alumno por su número de control
+    """Establece contraseña permanente para un alumno con temporal."""
     alumno = get_alumno_by_num_control(db, data.num_control)
-    if not alumno:
-        raise HTTPException(status_code=404, detail="El alumno no fue encontrado.")
-
-    # 2. Verificar que el alumno realmente necesite un cambio de contraseña
+    if not alumno: raise HTTPException(status_code=404, detail="Alumno no encontrado.")
     if not alumno.requires_password_change:
-        raise HTTPException(
-            status_code=400, 
-            detail="Este alumno ya tiene una contraseña permanente."
-        )
-        
-    # 3. Validar que la contraseña actual (temporal) sea correcta
+        raise HTTPException(status_code=400, detail="Este alumno ya tiene contraseña permanente.")
     if data.contraseña_actual != alumno.contraseña:
-        raise HTTPException(
-            status_code=401,
-            detail="La contraseña actual es incorrecta."
-        )
-
-    # 4. Hashear y actualizar la nueva contraseña
+        raise HTTPException(status_code=401, detail="La contraseña actual es incorrecta.")
     hashed_password = get_password_hash(data.nueva_contraseña)
     alumno.contraseña = hashed_password
-    alumno.requires_password_change = False # 👈 Cambiamos la bandera
-
+    alumno.requires_password_change = False
     db.add(alumno)
     db.commit()
-
     return {"message": "Contraseña actualizada exitosamente."}
 
 def change_password(db: Session, alumno: Alumno, data: AlumnoUpdatePassword):
-    """
-    Permite a un alumno con una contraseña permanente cambiarla por una nueva.
-    """
-    # 1. Validar que el alumno NO tenga una contraseña temporal
+    """Permite a un alumno con contraseña permanente cambiarla."""
     if alumno.requires_password_change:
-        raise HTTPException(
-            status_code=400,
-            detail="Este alumno debe usar la ruta /set-password para establecer su contraseña inicial."
-        )
-
-    # 2. Verificar que la contraseña actual que proporcionó sea correcta
+        raise HTTPException(status_code=400, detail="Debe usar /set-password primero.")
     if not verify_password(data.contraseña_actual, alumno.contraseña):
-        raise HTTPException(
-            status_code=401,
-            detail="La contraseña actual es incorrecta."
-        )
-    
-    # 3. Hashear y guardar la nueva contraseña
+        raise HTTPException(status_code=401, detail="La contraseña actual es incorrecta.")
     hashed_password = get_password_hash(data.nueva_contraseña)
     alumno.contraseña = hashed_password
-    
     db.add(alumno)
     db.commit()
-
     return {"message": "Su contraseña ha sido actualizada exitosamente."}

@@ -13,6 +13,42 @@ def get_tutor_by_email(db: Session, email: str) -> Tutor | None:
     """Busca un tutor por su correo electrónico."""
     return db.exec(select(Tutor).where(Tutor.correo == email)).first()
 
+def get_tutor_by_full_name_case_insensitive(db: Session, csv_full_name: str) -> Tutor | None:
+    """
+    Busca un tutor en la base de datos comparando su nombre completo
+    (nombre + apellidos) de forma no sensible a mayúsculas/minúsculas.
+
+    Args:
+        db: La sesión de la base de datos.
+        csv_full_name: El nombre completo del tutor extraído del archivo CSV.
+
+    Returns:
+        El objeto Tutor si se encuentra una coincidencia, de lo contrario None.
+    """
+    # 1. Normalizamos el nombre del CSV a mayúsculas y quitamos espacios extra
+    normalized_csv_name = ' '.join(csv_full_name.upper().split())
+
+    # 2. Obtenemos todos los tutores de la base de datos
+    all_tutores = db.exec(select(Tutor)).all()
+
+    # 3. Iteramos y comparamos nombres
+    for tutor in all_tutores:
+        # Construimos el nombre completo desde la base de datos
+        db_name_parts = [tutor.nombre, tutor.apellido_p]
+        if tutor.apellido_m:
+            db_name_parts.append(tutor.apellido_m)
+        
+        # Normalizamos el nombre de la BD igual que el del CSV
+        db_full_name = " ".join(part for part in db_name_parts if part) # Une solo si no es None/vacío
+        normalized_db_name = ' '.join(db_full_name.upper().split())
+
+        # Comparamos
+        if normalized_db_name == normalized_csv_name:
+            return tutor # ¡Encontrado!
+
+    # Si el bucle termina sin encontrar coincidencia
+    return None
+
 def create_tutor(db: Session, data: TutorCreate) -> Tutor:
     """Crea un nuevo tutor en la base de datos (por un admin)."""
     db_tutor = get_tutor_by_email(db, data.correo)
