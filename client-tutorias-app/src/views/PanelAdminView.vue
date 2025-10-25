@@ -84,28 +84,7 @@
             <h2 class="text-2xl font-bold text-gray-900">Gestión de Estudiantes</h2>
             <div class="flex items-center gap-4">
               <BaseSearchInput v-model="searchQuery" placeholder="Buscar Estudiante..." />
-              <!-- <div class="relative">
-                <input
-                  v-model="searchQuery"
-                  type="text"
-                  placeholder="Buscar estudiante..."
-                  class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 block w-64"
-                />
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg
-                    class="h-5 w-5 text-gray-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </div>
-              </div> -->
+
               <button
                 @click="showModalExcel = true"
                 class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out"
@@ -118,6 +97,8 @@
               >
                 Añadir Estudiante
               </button>
+
+              <AssignmentUploader />
             </div>
           </div>
 
@@ -354,6 +335,35 @@
                   </svg>
                 </div>
               </div>
+
+              <button
+                @click="openAssignmentModal"
+                class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out flex items-center gap-2"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                  ></path>
+                </svg>
+                Asignar Tutorías
+              </button>
+
+              <!-- Modal de Asignaciones -->
+              <AssignmentUploader
+                :show="showAssignmentModal"
+                @close="closeAssignmentModal"
+                @success="handleAssignmentSuccess"
+              />
+
               <button
                 @click="openModal('tutor')"
                 class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out"
@@ -542,6 +552,8 @@
           </div>
         </div>
       </div>
+
+      <!-- <AssignmentUploader /> -->
     </main>
 
     <!-- Modal para añadir/editar estudiante o tutor -->
@@ -573,7 +585,7 @@
           <div
             class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
           >
-            <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-4 py-3 sm:px-6">
+            <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-3 sm:px-6">
               <h3 class="text-lg leading-6 font-medium text-white" id="modal-title">
                 {{ modalMode === 'add' ? 'Añadir' : 'Editar' }}
                 {{ modalType === 'student' ? 'Estudiante' : 'Tutor' }}
@@ -974,7 +986,7 @@
               <button
                 @click="submitForm"
                 type="button"
-                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
               >
                 {{ modalMode === 'add' ? 'Añadir' : 'Guardar cambios' }}
               </button>
@@ -1346,11 +1358,15 @@ import HideEye from '@/components/icons/HideEye.vue'
 import BaseSearchInput from '@/components/ui/BaseSearchInput.vue'
 import AlumnoService from '@/services/AlumnoService.js'
 import CargarAlumnosModal from '@/components/student/CargarAlumnosModal.vue'
+import AssignmentUploader from '@/components/tutor/AssignmentUploader.vue'
 
 // ===========================================
 // ROUTER
 // ===========================================
 const router = useRouter()
+
+// MODAL ASIGNAR TUTORIAS
+const showAssignmentModal = ref(false)
 
 // ===========================================
 // REACTIVE STATE - UI CONTROL
@@ -1593,12 +1609,37 @@ watch(searchQuery, (newQuery, oldQuery) => {
  * Obtiene la lista de tutores desde la API
  */
 const fetchTutors = async () => {
+  loading.value = true
+  error.value = null // Clear previous errors
   try {
-    const response = await axios.get('http://localhost:8000/api/tutores')
+    // 1. Get the token from localStorage
+    const token = localStorage.getItem('accessToken') // Make sure the key matches what you used in login
+
+    if (!token) {
+      // Handle case where user is not logged in (e.g., redirect)
+      error.value = 'No estás autenticado.'
+      console.error('No se encontró el token de acceso.')
+      // router.push('/login_admin'); // Example redirect
+      return // Stop execution
+    }
+
+    // 2. Make the request, adding the Authorization header
+    const response = await axios.get('http://localhost:8000/api/tutores', {
+      headers: {
+        Authorization: `Bearer ${token}`, // <--- THE IMPORTANT PART
+      },
+    })
+
     tutors.value = response.data
   } catch (err) {
     console.error('Error al obtener los tutores:', err)
-    error.value = 'No se pudo cargar la lista de tutores'
+    if (err.response && err.response.status === 401) {
+      error.value =
+        'Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo.'
+      // Optionally redirect to login here
+    } else {
+      error.value = 'No se pudo cargar la lista de tutores.'
+    }
   } finally {
     loading.value = false
   }
@@ -1848,6 +1889,24 @@ const openModal = (type, mode = 'add', item = null) => {
       })
     }
   }
+}
+
+// ABRE EL MODAL DE ASIGNAR TUTORÏAS
+const openAssignmentModal = () => {
+  showAssignmentModal.value = true
+}
+
+// Función para cerrar el modal de asignación de tutorías
+const closeAssignmentModal = () => {
+  showAssignmentModal.value = false
+}
+
+// Función que se ejecuta cuando el procesamiento es exitoso
+const handleAssignmentSuccess = () => {
+  // Aquí puedes recargar tus datos si es necesario
+  console.log('Asignaciones procesadas exitosamente')
+  // Por ejemplo: fetchTutorias() o lo que necesites
+  // fetchTutorias()
 }
 
 /**
