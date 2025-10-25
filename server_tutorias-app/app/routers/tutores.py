@@ -74,6 +74,17 @@ def login_tutor(
 
     return {"access_token": access_token, "token_type": "bearer"}
 
+@router.get("/me", response_model=TutorRead, summary="Obtener datos del Tutor autenticado")
+def read_current_tutor(
+    current_tutor: Tutor = Depends(get_current_tutor_user) # Reutilizamos la dependencia!
+):
+    """
+    Obtiene los datos del tutor que está actualmente autenticado
+    mediante el token JWT enviado en la cabecera Authorization.
+    """
+    # La dependencia ya hizo el trabajo de encontrar al tutor
+    return current_tutor
+
 @router.post("/set-password", summary="Establecer contraseña permanente para un Tutor")
 def set_password(data: TutorSetPassword, session: Session = Depends(get_session)):
     """
@@ -162,5 +173,7 @@ def delete_tutor(
     session.delete(tutor)
     session.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
 
 # --- FIN DEL ARCHIVO ---
