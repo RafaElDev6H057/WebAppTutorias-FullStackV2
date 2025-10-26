@@ -258,7 +258,7 @@
                     </tr>
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
-                    <tr v-for="student in paginatedStudents" :key="student.id">
+                    <tr v-for="student in students" :key="student.id">
                       <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
                           <div class="ml-4">
@@ -556,6 +556,7 @@ import SegundoReporteTutoria from '@/components/SegundoReporteTutoria.vue'
 const tutor = ref(null)
 const students = ref([])
 const router = useRouter()
+const isLoading = ref(true)
 
 const searchQuery = ref('')
 const currentTab = ref('current')
@@ -581,72 +582,114 @@ const closeReporteIntegralModal = () => {
 }
 
 onMounted(async () => {
-  const storedTutor = localStorage.getItem('tutor')
-  if (storedTutor) {
-    tutor.value = JSON.parse(storedTutor)
-    await fetchActiveTutoringSessions()
-    await fetchInactiveTutoringSessions()
-  } else {
-    console.log('no hay nada')
-  }
+  // const storedTutor = localStorage.getItem('tutor')
+  // tutor.value = JSON.parse(storedTutor)
+  await fetchCurrentTutor()
+  // await fetchActiveTutoringSessions()
+  // await fetchInactiveTutoringSessions()
 })
+
+const fetchCurrentTutor = async () => {
+  try {
+    const token = localStorage.getItem('accessToken')
+
+    if (!token) {
+      console.log('No hay token, redirigiendo al login...')
+      router.push('/login_tutor')
+      return
+    }
+
+    // Petición al endpoint /me con el token
+    const response = await axios.get('http://localhost:8000/api/tutores/me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    if (response.status === 200) {
+      tutor.value = response.data
+      console.log('Tutor cargado:', tutor.value)
+
+      // Ahora que tienes los datos, puedes hacer las otras peticiones
+      await fetchActiveTutoringSessions()
+      // await fetchInactiveTutoringSessions()
+    }
+  } catch (error) {
+    console.error('Error al obtener datos del tutor:', error)
+
+    // Si el token es inválido o expiró, redirige al login
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('userRole')
+      router.push('/login_tutor')
+    }
+  } finally {
+    isLoading.value = false
+  }
+}
 
 const fetchActiveTutoringSessions = async () => {
   try {
     const response = await axios.get(
-      `http://localhost:8000/api/tutorias/tutor/${tutor.value.id_tutor}?es_activa=true`,
+      `http://localhost:8000/api/tutorias/tutor/${tutor.value.id_tutor}`,
     )
     const activeTutorings = response.data
+    console.log('TUTORIAS ACTIVAS', activeTutorings)
+
     students.value = await Promise.all(
       activeTutorings.map(async (tutoring) => {
         const studentResponse = await axios.get(
           `http://localhost:8000/api/alumnos/${tutoring.alumno_id}`,
         )
         const student = studentResponse.data
+        // console.log('ALUMNO', student)
+        // console.log('TUTORIA', tutoring)
+
         return {
           id: student.id_alumno,
           name: `${student.nombre} ${student.apellido_p} ${student.apellido_m}`,
           controlNumber: student.num_control,
           semester: tutoring.semestre,
-          status: tutoring.estado,
+          status: student.estado,
           tutorialPeriod: tutoring.periodo,
           tutoringId: tutoring.id_tutoria,
         }
       }),
     )
+    // console.log('STUDENTS', students.value)
   } catch (error) {
     console.error('Error fetching active tutoring sessions:', error)
   }
 }
 
-const fetchInactiveTutoringSessions = async () => {
-  try {
-    const response = await axios.get(
-      `http://localhost:8000/api/tutorias/tutor/${tutor.value.id_tutor}?es_activa=false`,
-    )
-    const inactiveTutorings = response.data
-    const inactiveStudents = await Promise.all(
-      inactiveTutorings.map(async (tutoring) => {
-        const studentResponse = await axios.get(
-          `http://localhost:8000/api/alumnos/${tutoring.alumno_id}`,
-        )
-        const student = studentResponse.data
-        return {
-          id: student.id_alumno,
-          name: `${student.nombre} ${student.apellido_p} ${student.apellido_m}`,
-          controlNumber: student.num_control,
-          semester: tutoring.semestre,
-          status: tutoring.estado,
-          tutorialPeriod: tutoring.periodo,
-          tutoringId: tutoring.id_tutoria,
-        }
-      }),
-    )
-    students.value = [...students.value, ...inactiveStudents]
-  } catch (error) {
-    console.error('Error fetching inactive tutoring sessions:', error)
-  }
-}
+// const fetchInactiveTutoringSessions = async () => {
+//   try {
+//     const response = await axios.get(
+//       `http://localhost:8000/api/tutorias/tutor/${tutor.value.id_tutor}?es_activa=false`,
+//     )
+//     const inactiveTutorings = response.data
+//     const inactiveStudents = await Promise.all(
+//       inactiveTutorings.map(async (tutoring) => {
+//         const studentResponse = await axios.get(
+//           `http://localhost:8000/api/alumnos/${tutoring.alumno_id}`,
+//         )
+//         const student = studentResponse.data
+//         return {
+//           id: student.id_alumno,
+//           name: `${student.nombre} ${student.apellido_p} ${student.apellido_m}`,
+//           controlNumber: student.num_control,
+//           semester: tutoring.semestre,
+//           status: tutoring.estado,
+//           tutorialPeriod: tutoring.periodo,
+//           tutoringId: tutoring.id_tutoria,
+//         }
+//       }),
+//     )
+//     students.value = [...students.value, ...inactiveStudents]
+//   } catch (error) {
+//     console.error('Error fetching inactive tutoring sessions:', error)
+//   }
+// }
 
 const viewDetails = async (student) => {
   try {
@@ -655,8 +698,14 @@ const viewDetails = async (student) => {
     //   `http://localhost:8000/api/alumnos/${student.id}/detalle-tutoria`,
     // )
     const tutoringResponse = await axios.get(
-      `http://localhost:8000/api/tutorias/${student.tutoringId}`,
+      `http://localhost:8000/api/tutorias/alumno/${student.tutoringId}`,
     )
+    console.log('STUDENT', student)
+
+    console.log('TUTORIA RESPONSE', tutoringResponse)
+    console.log('TUTORIA RESPONSE', tutoringResponse)
+
+    // const student = tutoringResponse.value.id
 
     selectedStudent.value = {
       ...tutoringResponse.data.alumno,
@@ -711,20 +760,11 @@ const filteredStudents = computed(() => {
 
 const totalPages = computed(() => Math.ceil(filteredStudents.value.length / itemsPerPage))
 
-const paginatedStudents = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage
-  const end = start + itemsPerPage
-  return filteredStudents.value.slice(start, end)
-})
-
-// const sortBy = (key) => {
-//   if (sortKey.value === key) {
-//     sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
-//   } else {
-//     sortKey.value = key
-//     sortOrder.value = 'asc'
-//   }
-// }
+// const paginatedStudents = computed(() => {
+//   const start = (currentPage.value - 1) * itemsPerPage
+//   const end = start + itemsPerPage
+//   return filteredStudents.value.slice(start, end)
+// })
 
 const prevPage = () => {
   if (currentPage.value > 1) {

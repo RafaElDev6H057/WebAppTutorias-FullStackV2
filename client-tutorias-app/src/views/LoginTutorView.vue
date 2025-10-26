@@ -130,28 +130,42 @@ const router = useRouter()
 
 const handleSubmit = async () => {
   try {
-    // Llama al endpoint de login en el backend
-    const response = await axios.post('http://localhost:8000/api/tutores/login', {
-      correo: correo.value,
-      contraseña: password.value,
+    // 1. Preparamos los datos en el formato 'form-data'
+    const formData = new URLSearchParams()
+    formData.append('username', correo.value) // El endpoint probablemente espera 'username'
+    formData.append('password', password.value)
+
+    // 2. Hacemos la petición POST
+    const response = await axios.post('http://localhost:8000/api/tutores/login', formData, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
     })
 
-    // Verifica si la respuesta fue exitosa
-    if (response.status === 200) {
+    // 3. Si el login es exitoso, la respuesta contendrá el token
+    if (response.status === 200 && response.data.access_token) {
       console.log('Inicio de sesión exitoso:', response.data)
 
-      // Opcional: guarda el token o datos del usuario en el almacenamiento local
-      localStorage.setItem('tutor', JSON.stringify(response.data))
+      // 4. Guardamos el TOKEN en localStorage, no los datos del usuario
+      localStorage.setItem('accessToken', response.data.access_token)
 
-      // Redirige al dashboard
+      // (Opcional) Si necesitas diferenciar el rol
+      localStorage.setItem('userRole', 'tutor')
+
+      // (Opcional) Si el backend devuelve datos del tutor, puedes guardarlos
+      // if (response.data.tutor) {
+      //   localStorage.setItem('tutorData', JSON.stringify(response.data.tutor))
+      // }
+
       router.push('/login_tutor/dashboard')
-    } else {
-      // Maneja errores como credenciales inválidas
-      errorMessage.value = response.data.message || 'Credenciales incorrectas'
     }
   } catch (error) {
     console.error('Error en la solicitud:', error)
-    errorMessage.value = 'Credenciales incorrectas.'
+    if (error.response && error.response.data && error.response.data.detail) {
+      errorMessage.value = error.response.data.detail
+    } else {
+      errorMessage.value = 'Error de conexión o credenciales incorrectas.'
+    }
   }
 }
 
