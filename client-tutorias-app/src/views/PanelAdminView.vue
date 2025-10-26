@@ -426,10 +426,12 @@
                     <div class="text-sm text-gray-900">{{ tutor.correo }}</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{ tutor.telefono }}</div>
+                    <!-- <div class="text-sm text-gray-900">{{ tutor.telefono }}</div> -->
+                    <div class="text-sm text-gray-900">---</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{ tutor.especialidad }}</div>
+                    <!-- <div class="text-sm text-gray-900">{{ tutor.especialidad }}</div> -->
+                    <div class="text-sm text-gray-900">---</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex">
                     <button
@@ -940,7 +942,7 @@
                           {{ errors.contraseña[0] }}
                         </p>
                       </div>
-                      <div>
+                      <!-- <div>
                         <label for="especialidad" class="block text-sm font-medium text-gray-700"
                           >Departamento</label
                         >
@@ -957,9 +959,9 @@
                         <p v-if="errors.especialidad" class="mt-2 text-sm text-red-600">
                           {{ errors.especialidad[0] }}
                         </p>
-                      </div>
+                      </div> -->
 
-                      <div>
+                      <!-- <div>
                         <label for="telefono" class="block text-sm font-medium text-gray-700"
                           >Teléfono</label
                         >
@@ -976,7 +978,7 @@
                         <p v-if="errors.telefono" class="mt-2 text-sm text-red-600">
                           {{ errors.telefono[0] }}
                         </p>
-                      </div>
+                      </div> -->
                     </div>
                   </div>
                 </form>
@@ -1682,6 +1684,14 @@ const handleUploadSuccess = () => {
  */
 const submitForm = async () => {
   try {
+    const token = localStorage.getItem('accessToken')
+
+    if (!token) {
+      console.log('No hay token, redirigiendo al login...')
+      router.push('/login_tutor')
+      return
+    }
+
     errors.value = {}
     let response
 
@@ -1695,7 +1705,11 @@ const submitForm = async () => {
           closeModal()
         }
       } else if (modalType.value === 'tutor') {
-        response = await axios.post('http://localhost:8000/api/tutores', formData)
+        response = await axios.post('http://localhost:8000/api/tutores', formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         if (response.status === 201) {
           tutors.value.push(response.data)
           console.log('Tutor agregado exitosamente:', response.data)
@@ -1723,6 +1737,11 @@ const submitForm = async () => {
         response = await axios.put(
           `http://localhost:8000/api/tutores/${formData.id_tutor}`,
           formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
         )
         if (response.status === 200) {
           const index = tutors.value.findIndex((tutor) => tutor.id_tutor === response.data.id_tutor)
@@ -1821,10 +1840,16 @@ const confirmDelete = async () => {
  * Elimina un tutor de la base de datos
  */
 const confirmDeleteTutor = async () => {
+  const token = localStorage.getItem('accessToken')
   if (tutorToDelete.value) {
     try {
       const response = await axios.delete(
         `http://localhost:8000/api/tutores/${tutorToDelete.value.id_tutor}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       )
       if (response.status === 204) {
         tutors.value = tutors.value.filter((t) => t.id_tutor !== tutorToDelete.value.id_tutor)
