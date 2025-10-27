@@ -48,3 +48,7 @@ class TutoriaReadWithDetails(TutoriaRead):
 
     class Config:
         from_attributes = True
+
+class TutoriasPage(BaseModel):
+    total_tutorias: int
+    tutorias: List[TutoriaReadWithDetails]

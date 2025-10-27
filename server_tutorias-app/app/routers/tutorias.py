@@ -1,16 +1,18 @@
 # app/routers/tutorias.py
-from fastapi import APIRouter, Depends, HTTPException, status, Response, UploadFile, File # 👈 Añadido UploadFile, File
-from sqlmodel import Session, select
-from typing import List, Optional # 👈 Añadido Optional
+from fastapi import APIRouter, Depends, HTTPException, status, Response, UploadFile, File, Query # 👈 Añadido UploadFile, File
+from sqlmodel import Session, select, or_, func
+from typing import List, Optional, Union # 👈 Añadido Optional
 
 # Imports de la app
 from app.database import get_session
 from app.models.tutoria import Tutoria
-from app.schemas.tutoria import TutoriaCreate, TutoriaUpdate, TutoriaReadWithDetails
+from app.schemas.tutoria import TutoriaCreate, TutoriaUpdate, TutoriaReadWithDetails, TutoriasPage
 from app.services import tutoria_service
+from app.models.alumno import Alumno
+from app.models.tutor import Tutor
 
 # Imports para protección
-from app.core.dependencies import get_current_admin_user # 👈 Necesario para proteger la nueva ruta
+from app.core.dependencies import get_current_admin_user, get_current_user, get_current_tutor_user, oauth2_scheme_admin, oauth2_scheme_tutor # 👈 Necesario para proteger la nueva ruta
 from app.models.administrador import Administrador # Para type hinting
 
 router = APIRouter(prefix="/tutorias", tags=["Tutorias"])
@@ -90,21 +92,55 @@ def get_tutorias_by_alumno(
     tutorias = session.exec(select(Tutoria).where(Tutoria.alumno_id == id_alumno)).all()
     return tutorias
 
-@router.get("/tutor/{id_tutor}", response_model=List[TutoriaReadWithDetails], summary="Obtener Tutorías por Tutor")
+# 🔹 Obtener Tutorías por Tutor (PAGINADO, BUSCABLE Y PROTEGIDO)
+@router.get("/tutor/{id_tutor}", response_model=TutoriasPage, summary="Obtener Tutorías por Tutor", dependencies=[Depends(oauth2_scheme_admin), Depends(oauth2_scheme_tutor)])
 def get_tutorias_by_tutor(
     id_tutor: int,
-    # Podríamos añadir filtro por periodo aquí: periodo: Optional[str] = Query(None)
     session: Session = Depends(get_session),
-    # Podríamos proteger esto para que solo el admin o el propio tutor puedan verlo
-    # current_user: Union[Administrador, Tutor] = Depends(...)
+    current_user: Union[Administrador, Tutor] = Depends(get_current_user),
+    page: int = Query(1, gt=0),
+    size: int = Query(10, gt=0, le=100),
+    search: Optional[str] = Query(None, min_length=3)
 ):
-    """Obtiene todos los registros de tutoría asociados a un tutor específico."""
-    query = select(Tutoria).where(Tutoria.tutor_id == id_tutor)
-    # if periodo:
-    #     query = query.where(Tutoria.periodo == periodo)
-    tutorias = session.exec(query).all()
-    return tutorias
+    # ... (Validación de Permisos - sin cambios) ...
+    is_allowed = False
+    if isinstance(current_user, Administrador): is_allowed = True
+    elif isinstance(current_user, Tutor) and current_user.id_tutor == id_tutor: is_allowed = True
+    if not is_allowed: raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No tienes permiso.")
 
+    # --- Lógica de Consulta Revisada ---
+
+    # 1. Crear la base de la consulta para OBTENER las tutorías (con JOIN)
+    base_query = select(Tutoria).join(Alumno).where(Tutoria.tutor_id == id_tutor)
+
+    # 2. Crear una consulta SEPARADA solo para CONTAR
+    count_base_query = select(func.count(Tutoria.id_tutoria)).where(Tutoria.tutor_id == id_tutor) # type: ignore
+
+    # 3. Aplicar el filtro de búsqueda a AMBAS consultas si es necesario
+    if search:
+        search_term = f"%{search}%"
+        search_filter = or_(
+            Alumno.nombre.ilike(search_term),      # type: ignore
+            Alumno.apellido_p.ilike(search_term), # type: ignore
+            Alumno.apellido_m.ilike(search_term), # type: ignore
+            Alumno.num_control.ilike(search_term) # type: ignore
+        )
+        # Aplicar al query principal (que ya tiene el JOIN)
+        base_query = base_query.where(search_filter)
+        # Aplicar al query de conteo (necesita el JOIN aquí también)
+        count_base_query = count_base_query.join(Alumno).where(search_filter) # type: ignore
+
+    # 4. Ejecutar la consulta de conteo
+    total_tutorias = session.exec(count_base_query).one()
+
+    # 5. Aplicar paginación y ejecutar la consulta principal
+    offset = (page - 1) * size
+    tutorias = session.exec(
+        base_query.offset(offset).limit(size)
+    ).all()
+
+    # 6. Devolver el resultado
+    return TutoriasPage(total_tutorias=total_tutorias, tutorias=tutorias) # type: ignore
 # ============================================
 # === NUEVO ENDPOINT PARA CARGAR CSV ===
 # ============================================

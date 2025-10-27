@@ -4,7 +4,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session
 from jose import JWTError, jwt
-from typing import Optional
+from typing import Optional, Union
 
 from app.database import get_session
 from app.models.administrador import Administrador
@@ -112,3 +112,35 @@ def get_current_tutor_user(
         raise credentials_exception
     print("--- DEBUG: get_current_tutor_user completado exitosamente ---") # DEBUG 14
     return user
+
+async def get_current_user(
+    token: str = Depends(oauth2_scheme_tutor), # Intenta con tutor primero por defecto
+    db: Session = Depends(get_session)
+) -> Union[Administrador, Tutor]:
+    """
+    Intenta obtener el usuario actual, ya sea Tutor o Admin.
+    Lanza excepción 401 si el token es inválido para ambos.
+    """
+    # Intenta validar como Tutor
+    try:
+        # Nota: Usamos la función original que ya tiene los prints de debug
+        tutor = get_current_tutor_user(token=token, db=db)
+        print("DEBUG COMBINED: Usuario validado como Tutor.")
+        return tutor
+    except HTTPException as tutor_exc:
+        # Si falla como tutor (401), intenta como admin
+        if tutor_exc.status_code == 401:
+            try:
+                # Necesitamos pasar el mismo token a la función de admin
+                admin = get_current_admin_user(token=token, db=db)
+                print("DEBUG COMBINED: Usuario validado como Admin.")
+                return admin
+            except HTTPException as admin_exc:
+                # Si falla también como admin, lanzamos el error original (o el de admin)
+                print("DEBUG COMBINED: Falló como Tutor y como Admin.")
+                raise tutor_exc # O raise admin_exc
+        else:
+            # Si el error de tutor no fue 401, lo relanzamos
+            raise tutor_exc
+    # Fallback por si acaso
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciales inválidas")

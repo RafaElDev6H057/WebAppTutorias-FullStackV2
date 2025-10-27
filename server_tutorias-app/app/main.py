@@ -28,8 +28,8 @@ def on_startup():
     create_db_and_tables()
 
 # Incluir routers
-app.include_router(tutores.router, prefix="/api")
-app.include_router(alumnos.router, prefix="/api")
 app.include_router(administradores.router, prefix="/api")
+app.include_router(alumnos.router, prefix="/api")
+app.include_router(tutores.router, prefix="/api")
 app.include_router(tutorias.router, prefix="/api")
 app.include_router(reportes.router, prefix="/api")
