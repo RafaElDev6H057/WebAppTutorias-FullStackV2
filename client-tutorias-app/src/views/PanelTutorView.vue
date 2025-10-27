@@ -142,7 +142,6 @@
               class="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white"
             >
               <div class="p-4 border-b flex justify-end items-center">
-                <!-- <h2 class="text-xl font-semibold text-gray-800">Primer Reporte de Tutoría</h2> -->
                 <button
                   @click="mostrarModalPrimerReporte = false"
                   class="text-gray-500 hover:text-gray-700"
@@ -187,7 +186,6 @@
               class="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white"
             >
               <div class="p-4 border-b flex justify-end items-center">
-                <!-- <h2 class="text-xl font-semibold text-gray-800">Segundo Reporte de Tutoría</h2> -->
                 <button
                   @click="mostrarModalSegundoReporte = false"
                   class="text-gray-500 hover:text-gray-700"
@@ -249,11 +247,7 @@
                         scope="col"
                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        <!-- @click="sortBy(header.key)" -->
                         {{ header.label }}
-                        <!-- <span v-if="sortKey === header.key">
-                          {{ sortOrder === 'asc' ? '▲' : '▼' }}
-                        </span> -->
                       </th>
                     </tr>
                   </thead>
@@ -306,8 +300,8 @@
                     </tr>
                   </tbody>
                 </table>
-                <div v-if="students.length === 0" class="text-center text-gray-500">
-                  No se le está aplicando tutoria a ningún alumno.
+                <div v-if="students.length === 0" class="text-center text-gray-500 py-8">
+                  No se le está aplicando tutoría a ningún alumno.
                 </div>
               </div>
             </div>
@@ -408,6 +402,7 @@
             </div>
           </div>
         </div>
+
         <!-- Modal de detalles -->
         <Transition
           enter-active-class="transition ease-out duration-300"
@@ -494,7 +489,7 @@
                       </h3>
                       <div class="space-y-2">
                         <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Nivel de Tutoria:</span>
+                          <span class="text-gray-600 font-medium">Nivel de Tutoría:</span>
                           <span class="col-span-2 text-gray-900"
                             >{{ selectedStudent.tutoring.semestre }}°</span
                           >
@@ -553,42 +548,70 @@ import ReporteIntegralTutoria from '@/components/ReporteIntegralTutoria.vue'
 import PrimerReporteTutoria from '@/components/PrimerReporteTutoria.vue'
 import SegundoReporteTutoria from '@/components/SegundoReporteTutoria.vue'
 
+// ==================== ROUTER ====================
+const router = useRouter()
+
+// ==================== STATE ====================
 const tutor = ref(null)
 const students = ref([])
-const router = useRouter()
-const isLoading = ref(true)
+const selectedStudent = ref(null)
 
+// ==================== UI STATE ====================
 const searchQuery = ref('')
 const currentTab = ref('current')
-const sortKey = ref('name')
-const sortOrder = ref('asc')
 const currentPage = ref(1)
 const itemsPerPage = 10
 
+// ==================== MODALS STATE ====================
 const showModal = ref(false)
-const selectedStudent = ref(null)
 const showReporteIntegralModal = ref(false)
 const mostrarModalPrimerReporte = ref(false)
 const mostrarModalSegundoReporte = ref(false)
 
-const openReporteIntegralModal = (student) => {
-  selectedStudent.value = student // Almacenar el estudiante seleccionado
-  showReporteIntegralModal.value = true
-}
+// ==================== CONSTANTS ====================
+const tabs = [
+  { id: 'current', name: 'Tutorados Actuales' },
+  { id: 'past', name: 'Tutorados Anteriores' },
+]
 
-const closeReporteIntegralModal = () => {
-  showReporteIntegralModal.value = false
-  selectedStudent.value = null // Limpiar el estudiante al cerrar
-}
+const tableHeaders = [
+  { key: 'name', label: 'Estudiante' },
+  { key: 'semester', label: 'Nivel de Tutoría' },
+  { key: 'status', label: 'Estado' },
+  { key: 'tutorialPeriod', label: 'Periodo' },
+  { key: 'actions', label: 'Acciones' },
+]
 
-onMounted(async () => {
-  // const storedTutor = localStorage.getItem('tutor')
-  // tutor.value = JSON.parse(storedTutor)
-  await fetchCurrentTutor()
-  // await fetchActiveTutoringSessions()
-  // await fetchInactiveTutoringSessions()
+const circles = [
+  { color: 'bg-coral-500', size: 96, top: 10, left: 5 },
+  { color: 'bg-navy-600', size: 64, top: 20, left: 80 },
+  { color: 'bg-coral-400', size: 128, top: 70, left: 20 },
+  { color: 'bg-navy-300', size: 80, top: 40, left: 95 },
+  { color: 'bg-coral-300', size: 112, top: 85, left: 70 },
+  { color: 'bg-navy-400', size: 48, top: 55, left: 10 },
+  { color: 'bg-coral-600', size: 72, top: 60, left: 50 },
+  { color: 'bg-navy-500', size: 56, top: 5, left: 90 },
+  { color: 'bg-coral-500', size: 88, top: 80, left: 40 },
+  { color: 'bg-navy-300', size: 40, top: 90, left: 10 },
+  { color: 'bg-coral-400', size: 104, top: 15, left: 60 },
+  { color: 'bg-navy-400', size: 68, top: 50, left: 85 },
+]
+
+// ==================== COMPUTED ====================
+const filteredStudents = computed(() => {
+  return students.value.filter(
+    (student) =>
+      (currentTab.value === 'current'
+        ? student.status === 'en curso'
+        : student.status === 'completada') &&
+      (student.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        student.controlNumber.includes(searchQuery.value)),
+  )
 })
 
+const totalPages = computed(() => Math.ceil(filteredStudents.value.length / itemsPerPage))
+
+// ==================== API CALLS ====================
 const fetchCurrentTutor = async () => {
   try {
     const token = localStorage.getItem('accessToken')
@@ -599,7 +622,6 @@ const fetchCurrentTutor = async () => {
       return
     }
 
-    // Petición al endpoint /me con el token
     const response = await axios.get('http://localhost:8000/api/tutores/me', {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -609,22 +631,16 @@ const fetchCurrentTutor = async () => {
     if (response.status === 200) {
       tutor.value = response.data
       console.log('Tutor cargado:', tutor.value)
-
-      // Ahora que tienes los datos, puedes hacer las otras peticiones
       await fetchActiveTutoringSessions()
-      // await fetchInactiveTutoringSessions()
     }
   } catch (error) {
     console.error('Error al obtener datos del tutor:', error)
 
-    // Si el token es inválido o expiró, redirige al login
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
       localStorage.removeItem('accessToken')
       localStorage.removeItem('userRole')
       router.push('/login_tutor')
     }
-  } finally {
-    isLoading.value = false
   }
 }
 
@@ -642,8 +658,6 @@ const fetchActiveTutoringSessions = async () => {
           `http://localhost:8000/api/alumnos/${tutoring.alumno_id}`,
         )
         const student = studentResponse.data
-        // console.log('ALUMNO', student)
-        // console.log('TUTORIA', tutoring)
 
         return {
           id: student.id_alumno,
@@ -656,56 +670,29 @@ const fetchActiveTutoringSessions = async () => {
         }
       }),
     )
-    // console.log('STUDENTS', students.value)
   } catch (error) {
     console.error('Error fetching active tutoring sessions:', error)
   }
 }
 
-// const fetchInactiveTutoringSessions = async () => {
-//   try {
-//     const response = await axios.get(
-//       `http://localhost:8000/api/tutorias/tutor/${tutor.value.id_tutor}?es_activa=false`,
-//     )
-//     const inactiveTutorings = response.data
-//     const inactiveStudents = await Promise.all(
-//       inactiveTutorings.map(async (tutoring) => {
-//         const studentResponse = await axios.get(
-//           `http://localhost:8000/api/alumnos/${tutoring.alumno_id}`,
-//         )
-//         const student = studentResponse.data
-//         return {
-//           id: student.id_alumno,
-//           name: `${student.nombre} ${student.apellido_p} ${student.apellido_m}`,
-//           controlNumber: student.num_control,
-//           semester: tutoring.semestre,
-//           status: tutoring.estado,
-//           tutorialPeriod: tutoring.periodo,
-//           tutoringId: tutoring.id_tutoria,
-//         }
-//       }),
-//     )
-//     students.value = [...students.value, ...inactiveStudents]
-//   } catch (error) {
-//     console.error('Error fetching inactive tutoring sessions:', error)
-//   }
-// }
+// ==================== MODAL HANDLERS ====================
+const openReporteIntegralModal = (student) => {
+  selectedStudent.value = student
+  showReporteIntegralModal.value = true
+}
+
+const closeReporteIntegralModal = () => {
+  showReporteIntegralModal.value = false
+  selectedStudent.value = null
+}
 
 const viewDetails = async (student) => {
   try {
-    // const studentResponse = await axios.get(`http://localhost:8000/api/alumnos/${student.id}`)
-    // const tutoringResponse = await axios.get(
-    //   `http://localhost:8000/api/alumnos/${student.id}/detalle-tutoria`,
-    // )
     const tutoringResponse = await axios.get(
       `http://localhost:8000/api/tutorias/alumno/${student.tutoringId}`,
     )
     console.log('STUDENT', student)
-
     console.log('TUTORIA RESPONSE', tutoringResponse)
-    console.log('TUTORIA RESPONSE', tutoringResponse)
-
-    // const student = tutoringResponse.value.id
 
     selectedStudent.value = {
       ...tutoringResponse.data.alumno,
@@ -722,50 +709,7 @@ const closeModal = () => {
   selectedStudent.value = null
 }
 
-const handleLogout = () => {
-  localStorage.removeItem('tutor') // Limpia los datos del almacenamiento
-  router.push('/login_tutor') // Redirige al login
-}
-
-const tabs = [
-  { id: 'current', name: 'Tutorados Actuales' },
-  { id: 'past', name: 'Tutorados Anteriores' },
-]
-
-const tableHeaders = [
-  { key: 'name', label: 'Estudiante' },
-  { key: 'semester', label: 'Nivel de Tutoria' },
-  { key: 'status', label: 'Estado' },
-  { key: 'tutorialPeriod', label: 'Periodo' },
-  { key: 'actions', label: 'Acciones' },
-]
-
-const filteredStudents = computed(() => {
-  return students.value
-    .filter(
-      (student) =>
-        (currentTab.value === 'current'
-          ? student.status === 'en curso'
-          : student.status === 'completada') &&
-        (student.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-          student.controlNumber.includes(searchQuery.value)),
-    )
-    .sort((a, b) => {
-      let modifier = sortOrder.value === 'asc' ? 1 : -1
-      if (a[sortKey.value] < b[sortKey.value]) return -1 * modifier
-      if (a[sortKey.value] > b[sortKey.value]) return 1 * modifier
-      return 0
-    })
-})
-
-const totalPages = computed(() => Math.ceil(filteredStudents.value.length / itemsPerPage))
-
-// const paginatedStudents = computed(() => {
-//   const start = (currentPage.value - 1) * itemsPerPage
-//   const end = start + itemsPerPage
-//   return filteredStudents.value.slice(start, end)
-// })
-
+// ==================== PAGINATION ====================
 const prevPage = () => {
   if (currentPage.value > 1) {
     currentPage.value--
@@ -782,42 +726,35 @@ const goToPage = (page) => {
   currentPage.value = page
 }
 
+// ==================== UTILITY FUNCTIONS ====================
 const capitalize = (tutoria) => {
   if (tutoria.dia != null) {
-    const capitalizedStr = tutoria.dia.charAt(0).toUpperCase() + tutoria.dia.slice(1)
-    console.log(capitalizedStr)
-    return capitalizedStr
-  } else {
-    return null
+    return tutoria.dia.charAt(0).toUpperCase() + tutoria.dia.slice(1)
   }
+  return null
 }
 
 const formatoHora = (tutoria) => {
   if (tutoria.hora != null) {
-    /* eslint-disable-next-line no-unused-vars */
-    const [horas, minutos, segundos] = tutoria.hora.split(':').map(Number)
+    const [horas, minutos] = tutoria.hora.split(':').map(Number)
     const ampm = horas < 12 ? 'AM' : 'PM'
     const horaFormateada = `${horas % 12 || 12}:${minutos.toString().padStart(2, '0')} ${ampm}`
     return horaFormateada
-  } else {
-    return null
   }
+  return null
 }
 
-const circles = [
-  { color: 'bg-coral-500', size: 96, top: 10, left: 5 },
-  { color: 'bg-navy-600', size: 64, top: 20, left: 80 },
-  { color: 'bg-coral-400', size: 128, top: 70, left: 20 },
-  { color: 'bg-navy-300', size: 80, top: 40, left: 95 },
-  { color: 'bg-coral-300', size: 112, top: 85, left: 70 },
-  { color: 'bg-navy-400', size: 48, top: 55, left: 10 },
-  { color: 'bg-coral-600', size: 72, top: 60, left: 50 },
-  { color: 'bg-navy-500', size: 56, top: 5, left: 90 },
-  { color: 'bg-coral-500', size: 88, top: 80, left: 40 },
-  { color: 'bg-navy-300', size: 40, top: 90, left: 10 },
-  { color: 'bg-coral-400', size: 104, top: 15, left: 60 },
-  { color: 'bg-navy-400', size: 68, top: 50, left: 85 },
-]
+// ==================== AUTH ====================
+const handleLogout = () => {
+  localStorage.removeItem('accessToken')
+  localStorage.removeItem('userRole')
+  router.push('/login_tutor')
+}
+
+// ==================== LIFECYCLE ====================
+onMounted(async () => {
+  await fetchCurrentTutor()
+})
 </script>
 
 <style>
