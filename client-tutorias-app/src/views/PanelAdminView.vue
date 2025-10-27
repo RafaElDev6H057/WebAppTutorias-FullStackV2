@@ -215,22 +215,6 @@
           <div
             class="bg-white mt-2 rounded-xl px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
           >
-            <!-- <div class="flex-1 flex justify-end">
-              <button
-                @click="prevPage"
-                :disabled="currentPage === 1"
-                class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-              >
-                Anterior
-              </button>
-              <button
-                @click="nextPage"
-                :disabled="!hayMasAlumnos"
-                class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-              >
-                Siguiente
-              </button>
-            </div> -->
             <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
                 <p class="text-sm text-gray-700">
@@ -268,20 +252,6 @@
                     <span>Anterior</span>
                   </button>
 
-                  <!-- <template v-for="page in totalPages" :key="page">
-                    <button
-                      @click="goToPage(page)"
-                      :class="[
-                        currentPage === page
-                          ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50',
-                        'relative inline-flex items-center px-4 py-2 border text-sm font-medium',
-                      ]"
-                    >
-                      {{ page }}
-                    </button>
-                  </template> -->
-
                   <button
                     @click="nextPage"
                     :disabled="!hayMasAlumnos"
@@ -313,28 +283,7 @@
           <div class="mb-4 flex justify-between items-center">
             <h2 class="text-2xl font-bold text-gray-900">Gestión de Tutores</h2>
             <div class="flex items-center gap-4">
-              <div class="relative">
-                <input
-                  v-model="tutorSearchQuery"
-                  type="text"
-                  placeholder="Buscar tutor..."
-                  class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 block w-64"
-                />
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg
-                    class="h-5 w-5 text-gray-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </div>
-              </div>
+              <BaseSearchInput v-model="searchQueryTutor" placeholder="Buscar Tutor..." />
 
               <button
                 @click="openAssignmentModal"
@@ -372,8 +321,15 @@
               </button>
             </div>
           </div>
+
+          <!-- TABLA TUTORES -->
+          <!-- Estado de carga -->
+          <div v-if="loadingTutor" class="text-center text-gray-500">Cargando Tutores...</div>
+
+          <!-- Mensaje de error -->
+          <div v-if="errorTutor" class="text-red-500 text-center">{{ errorTutor }}</div>
           <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-            <table v-if="paginatedTutors.length > 0" class="min-w-full divide-y divide-gray-200">
+            <table v-if="tutors.length > 0" class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
                   <th
@@ -409,7 +365,7 @@
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="tutor in paginatedTutors" :key="tutor.id">
+                <tr v-for="tutor in tutors" :key="tutor.id">
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                       <!-- <div class="flex-shrink-0 h-10 w-10">
@@ -458,35 +414,19 @@
           <div
             class="bg-white mt-2 rounded-xl px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
           >
-            <div class="flex-1 flex justify-between sm:hidden">
-              <button
-                @click="prevTutorPage"
-                :disabled="tutorCurrentPage === 1"
-                class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-              >
-                Anterior
-              </button>
-              <button
-                @click="nextTutorPage"
-                :disabled="tutorCurrentPage === totalTutorPages"
-                class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-              >
-                Siguiente
-              </button>
-            </div>
             <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
                 <p class="text-sm text-gray-700">
                   Mostrando
                   <span class="font-medium">{{
-                    (tutorCurrentPage - 1) * tutorItemsPerPage + 1
+                    (currentPageTutor - 1) * itemsPerPageTutor + 1
                   }}</span>
                   a
                   <span class="font-medium">{{
-                    Math.min(tutorCurrentPage * tutorItemsPerPage, filteredTutors.length)
+                    Math.min(currentPageTutor * itemsPerPageTutor)
                   }}</span>
                   de
-                  <span class="font-medium">{{ filteredTutors.length }}</span>
+                  <span class="font-medium">{{ totalTutors }}</span>
                   resultados
                 </p>
               </div>
@@ -496,11 +436,10 @@
                   aria-label="Pagination"
                 >
                   <button
-                    @click="prevTutorPage"
-                    :disabled="tutorCurrentPage === 1"
-                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                    @click="prevPageTutor"
+                    :disabled="currentPageTutor === 1"
+                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-black hover:bg-gray-50"
                   >
-                    <span class="sr-only">Anterior</span>
                     <svg
                       class="h-5 w-5"
                       xmlns="http://www.w3.org/2000/svg"
@@ -513,28 +452,15 @@
                         clip-rule="evenodd"
                       />
                     </svg>
+                    <span>Anterior</span>
                   </button>
 
-                  <template v-for="page in totalTutorPages" :key="page">
-                    <button
-                      @click="goToTutorPage(page)"
-                      :class="[
-                        tutorCurrentPage === page
-                          ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50',
-                        'relative inline-flex items-center px-4 py-2 border text-sm font-medium',
-                      ]"
-                    >
-                      {{ page }}
-                    </button>
-                  </template>
-
                   <button
-                    @click="nextTutorPage"
-                    :disabled="tutorCurrentPage === totalTutorPages"
-                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                    @click="nextPageTutor"
+                    :disabled="!hayMasTutores"
+                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-black hover:bg-gray-50"
                   >
-                    <span class="sr-only">Siguiente</span>
+                    <span>Siguiente</span>
                     <svg
                       class="h-5 w-5"
                       xmlns="http://www.w3.org/2000/svg"
@@ -1350,7 +1276,7 @@
 // ===========================================
 // IMPORTS
 // ===========================================
-import { ref, reactive, onMounted, computed, watch } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import DeleteIcon from '@/components/icons/DeleteIcon.vue'
@@ -1359,6 +1285,7 @@ import ShowEye from '@/components/icons/ShowEye.vue'
 import HideEye from '@/components/icons/HideEye.vue'
 import BaseSearchInput from '@/components/ui/BaseSearchInput.vue'
 import AlumnoService from '@/services/AlumnoService.js'
+import TutorService from '@/services/TutorService'
 import CargarAlumnosModal from '@/components/student/CargarAlumnosModal.vue'
 import AssignmentUploader from '@/components/tutor/AssignmentUploader.vue'
 
@@ -1402,6 +1329,8 @@ const studentTutorings = ref([])
 // Estados de carga y errores
 const loading = ref(true)
 const error = ref(null)
+const loadingTutor = ref(true)
+const errorTutor = ref(null)
 const errors = ref({})
 
 // ===========================================
@@ -1436,9 +1365,15 @@ const totalPages = ref(1)
 let debounceTimer = null
 
 // Paginación de tutores
-const tutorSearchQuery = ref('')
-const tutorCurrentPage = ref(1)
-const tutorItemsPerPage = ref(5)
+const currentPageTutor = ref(1)
+const itemsPerPageTutor = ref(5)
+const searchQueryTutor = ref('')
+const hayMasTutores = ref(true)
+const totalTutors = ref(0)
+// const uploadMessageTutor = ref('')
+const totalPagesTutor = ref(1)
+let debounceTimerTutor = null
+// const tutorItemsPerPage = ref(5)
 
 // ===========================================
 // COMPUTED PROPERTIES - STUDENTS
@@ -1447,88 +1382,6 @@ const tutorItemsPerPage = ref(5)
  * Filtra estudiantes según el término de búsqueda
  * Busca en nombre completo, número de control y carrera
  */
-// const filteredStudents = computed(() => {
-//   return students.value.filter((student) => {
-//     const fullName = `${student.nombre} ${student.apellido_p} ${student.apellido_m}`.toLowerCase()
-//     const searchTerm = searchQuery.value.toLowerCase()
-//     return (
-//       fullName.includes(searchTerm) ||
-//       student.num_control.toLowerCase().includes(searchTerm) ||
-//       student.carrera.toLowerCase().includes(searchTerm)
-//     )
-//   })
-// })
-
-/**
- * Retorna los estudiantes paginados para la tabla actual
- */
-// const paginatedStudents = computed(() => {
-//   const start = (currentPage.value - 1) * itemsPerPage.value
-//   const end = start + itemsPerPage.value
-//   return filteredStudents.value.slice(start, end)
-// })
-
-/**
- * Calcula el total de páginas para estudiantes
- */
-// const totalPages = computed(() => {
-//   return Math.ceil(filteredStudents.value.length / itemsPerPage.value)
-// })
-
-// ===========================================
-// COMPUTED PROPERTIES - TUTORS
-// ===========================================
-/**
- * Filtra tutores según el término de búsqueda
- * Busca en nombre, correo y especialidad
- */
-const filteredTutors = computed(() => {
-  return tutors.value.filter((tutor) => {
-    const searchTerm = tutorSearchQuery.value.toLowerCase()
-    return (
-      tutor.nombre.toLowerCase().includes(searchTerm) ||
-      tutor.correo.toLowerCase().includes(searchTerm) ||
-      tutor.especialidad.toLowerCase().includes(searchTerm)
-    )
-  })
-})
-
-/**
- * Retorna los tutores paginados para la tabla actual
- */
-const paginatedTutors = computed(() => {
-  const start = (tutorCurrentPage.value - 1) * tutorItemsPerPage.value
-  const end = start + tutorItemsPerPage.value
-  return filteredTutors.value.slice(start, end)
-})
-
-/**
- * Calcula el total de páginas para tutores
- */
-const totalTutorPages = computed(() => {
-  return Math.ceil(filteredTutors.value.length / tutorItemsPerPage.value)
-})
-
-// ===========================================
-// COMPUTED PROPERTIES - TUTORING
-// ===========================================
-/**
- * Busca tutores para el modal de asignación de tutorías
- * Filtra por nombre, apellidos y correo
- */
-const searchTutors = computed(() => {
-  if (tutoringForm.tutorSearch.length > 2) {
-    const searchTerm = tutoringForm.tutorSearch.toLowerCase()
-    return tutors.value.filter(
-      (tutor) =>
-        tutor.nombre.toLowerCase().includes(searchTerm) ||
-        tutor.apellido_p.toLowerCase().includes(searchTerm) ||
-        tutor.apellido_m.toLowerCase().includes(searchTerm) ||
-        tutor.correo.toLowerCase().includes(searchTerm),
-    )
-  }
-  return []
-})
 
 // ===========================================
 // STATIC DATA
@@ -1610,42 +1463,43 @@ watch(searchQuery, (newQuery, oldQuery) => {
 /**
  * Obtiene la lista de tutores desde la API
  */
-const fetchTutors = async () => {
-  loading.value = true
-  error.value = null // Clear previous errors
+const fetchTutors = async (page) => {
   try {
-    // 1. Get the token from localStorage
-    const token = localStorage.getItem('accessToken') // Make sure the key matches what you used in login
-
-    if (!token) {
-      // Handle case where user is not logged in (e.g., redirect)
-      error.value = 'No estás autenticado.'
-      console.error('No se encontró el token de acceso.')
-      // router.push('/login_admin'); // Example redirect
-      return // Stop execution
-    }
-
-    // 2. Make the request, adding the Authorization header
-    const response = await axios.get('http://localhost:8000/api/tutores', {
-      headers: {
-        Authorization: `Bearer ${token}`, // <--- THE IMPORTANT PART
-      },
-    })
-
-    tutors.value = response.data
+    const response = await TutorService.getTutores(
+      page,
+      itemsPerPageTutor.value,
+      searchQueryTutor.value,
+    )
+    tutors.value = response.data.tutores
+    hayMasTutores.value = response.data.tutores.length === 5
+    totalTutors.value = response.data.total_tutores
+    totalPagesTutor.value = Math.ceil(response.data.total_tutores / itemsPerPageTutor.value)
+    errorTutor.value = ''
   } catch (err) {
-    console.error('Error al obtener los tutores:', err)
-    if (err.response && err.response.status === 401) {
-      error.value =
-        'Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo.'
-      // Optionally redirect to login here
+    console.error('Error al obtener los tutores:', err.response.data.detail[0].type)
+    if (err.response.data.detail[0].type == 'string_too_short') {
+      errorTutor.value = 'Favor de ingresar mínimo 3 carácteres a buscar'
     } else {
-      error.value = 'No se pudo cargar la lista de tutores.'
+      errorTutor.value = 'No se pudo cargar la lista de estudiantes'
     }
+    tutors.value = []
   } finally {
-    loading.value = false
+    loadingTutor.value = false
   }
 }
+
+// eslint-disable-next-line
+watch(searchQueryTutor, (newQuery, oldQuery) => {
+  // Limpiamos el temporizador anterior para evitar búsquedas innecesarias
+  clearTimeout(debounceTimerTutor)
+
+  // Creamos un nuevo temporizador. La búsqueda no se ejecutará hasta
+  // que el usuario deje de escribir por 500ms.
+  debounceTimerTutor = setTimeout(() => {
+    currentPageTutor.value = 1 // Cada nueva búsqueda debe reiniciar la paginación a la página 1
+    fetchTutors()
+  }, 500) // 500ms de espera
+})
 
 /**
  * Obtiene las tutorías de un estudiante específico
@@ -2081,6 +1935,18 @@ const prevPage = () => {
   }
 }
 
+const nextPageTutor = () => {
+  currentPageTutor.value++
+  fetchTutors(currentPageTutor.value)
+}
+
+const prevPageTutor = () => {
+  if (currentPageTutor.value > 1) {
+    currentPageTutor.value--
+    fetchTutors(currentPageTutor.value)
+  }
+}
+
 /**
  * Navega a una página específica de estudiantes
  */
@@ -2094,27 +1960,27 @@ const prevPage = () => {
 /**
  * Navega a la siguiente página de tutores
  */
-const nextTutorPage = () => {
-  if (tutorCurrentPage.value < totalTutorPages.value) {
-    tutorCurrentPage.value++
-  }
-}
+// const nextTutorPage = () => {
+//   if (tutorCurrentPage.value < totalTutorPages.value) {
+//     tutorCurrentPage.value++
+//   }
+// }
 
 /**
  * Navega a la página anterior de tutores
  */
-const prevTutorPage = () => {
-  if (tutorCurrentPage.value > 1) {
-    tutorCurrentPage.value--
-  }
-}
+// const prevTutorPage = () => {
+//   if (tutorCurrentPage.value > 1) {
+//     tutorCurrentPage.value--
+//   }
+// }
 
 /**
  * Navega a una página específica de tutores
  */
-const goToTutorPage = (page) => {
-  tutorCurrentPage.value = page
-}
+// const goToTutorPage = (page) => {
+//   tutorCurrentPage.value = page
+// }
 
 // ===========================================
 // WATCHERS
@@ -2141,7 +2007,7 @@ watch(
  */
 onMounted(() => {
   fetchStudents(currentPage.value)
-  fetchTutors()
+  fetchTutors(currentPageTutor.value)
 })
 </script>
 
