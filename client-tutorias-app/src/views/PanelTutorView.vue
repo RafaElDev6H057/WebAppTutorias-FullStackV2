@@ -45,7 +45,7 @@
             <div class="flex items-center">
               <button
                 @click="handleLogout"
-                class="bg-coral-500 hover:bg-coral-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+                class="bg-coral-500 hover:bg-coral-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 Cerrar Sesión
               </button>
@@ -76,14 +76,62 @@
             2° Reporte
           </button>
           <div class="w-full sm:w-64">
-            <input
+            <!-- <input
               v-model="searchQuery"
               type="text"
               placeholder="Buscar estudiante..."
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-coral-500 focus:border-coral-500"
+              :disabled="loading"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-coral-500 focus:border-coral-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            /> -->
+            <BaseSearchInput
+              v-model="searchQuery"
+              :disabled="loading"
+              placeholder="Buscar estudiante..."
             />
           </div>
         </div>
+
+        <!-- Mensaje de Error -->
+        <Transition
+          enter-active-class="transition ease-out duration-300"
+          enter-from-class="opacity-0 translate-y-2"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition ease-in duration-200"
+          leave-from-class="opacity-100"
+          leave-to-class="opacity-0"
+        >
+          <div
+            v-if="error"
+            class="mx-4 mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-md flex items-start"
+          >
+            <svg
+              class="w-5 h-5 text-red-500 mr-3 flex-shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-red-800">{{ error }}</p>
+            </div>
+            <button @click="error = null" class="text-red-500 hover:text-red-700 ml-4">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </Transition>
 
         <!-- Modal para Reporte Integral -->
         <Transition
@@ -238,7 +286,51 @@
           <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
               <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg bg-white">
-                <table v-if="students.length > 0" class="min-w-full divide-y divide-gray-200">
+                <!-- Loading State -->
+                <div v-if="loading" class="p-8">
+                  <div class="flex flex-col items-center justify-center space-y-4">
+                    <svg
+                      class="animate-spin h-12 w-12 text-coral-500"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"
+                      ></circle>
+                      <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    <p class="text-gray-600 text-sm font-medium">Cargando estudiantes...</p>
+                  </div>
+
+                  <!-- Skeleton Loader -->
+                  <div class="mt-6 space-y-3 animate-pulse">
+                    <div
+                      v-for="i in 5"
+                      :key="i"
+                      class="flex items-center space-x-4 p-4 border-t border-gray-200"
+                    >
+                      <div class="flex-1 space-y-2">
+                        <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                      </div>
+                      <div class="h-6 bg-gray-200 rounded w-20"></div>
+                      <div class="h-8 bg-gray-200 rounded w-32"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tabla con datos -->
+                <table v-else-if="students.length > 0" class="min-w-full divide-y divide-gray-200">
                   <thead class="bg-gray-50">
                     <tr>
                       <th
@@ -252,7 +344,11 @@
                     </tr>
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
-                    <tr v-for="student in students" :key="student.id">
+                    <tr
+                      v-for="student in students"
+                      :key="student.id"
+                      class="hover:bg-gray-50 transition-colors"
+                    >
                       <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
                           <div class="ml-4">
@@ -300,8 +396,32 @@
                     </tr>
                   </tbody>
                 </table>
-                <div v-if="students.length === 0" class="text-center text-gray-500 py-8">
-                  No se le está aplicando tutoría a ningún alumno.
+
+                <!-- Estado vacío -->
+                <div v-else-if="!loading && students.length === 0" class="text-center py-12 px-4">
+                  <svg
+                    class="mx-auto h-16 w-16 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                    />
+                  </svg>
+                  <h3 class="mt-4 text-lg font-medium text-gray-900">
+                    No se encontraron estudiantes
+                  </h3>
+                  <p class="mt-2 text-sm text-gray-500">
+                    {{
+                      searchQuery
+                        ? 'No hay estudiantes que coincidan con tu búsqueda.'
+                        : 'No se le está aplicando tutoría a ningún alumno.'
+                    }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -309,19 +429,22 @@
         </div>
 
         <!-- Paginación -->
-        <div class="py-3 flex items-center justify-between bg-white mt-4 rounded-lg px-4">
+        <div
+          v-if="!loading && students.length > 0"
+          class="py-3 flex items-center justify-between bg-white mt-4 rounded-lg px-4"
+        >
           <div class="flex-1 flex justify-between sm:hidden">
             <button
               @click="prevPage"
-              :disabled="currentPage === 1"
-              class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              :disabled="currentPage === 1 || loading"
+              class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Anterior
             </button>
             <button
               @click="nextPage"
-              :disabled="currentPage === totalPages"
-              class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              :disabled="currentPage === totalPages || loading"
+              class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Siguiente
             </button>
@@ -333,10 +456,10 @@
                 <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
                 a
                 <span class="font-medium">{{
-                  Math.min(currentPage * itemsPerPage, filteredStudents.length)
+                  Math.min(currentPage * itemsPerPage, totalItems)
                 }}</span>
                 de
-                <span class="font-medium">{{ filteredStudents.length }}</span>
+                <span class="font-medium">{{ totalItems }}</span>
                 resultados
               </p>
             </div>
@@ -347,8 +470,8 @@
               >
                 <button
                   @click="prevPage"
-                  :disabled="currentPage === 1"
-                  class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  :disabled="currentPage === 1 || loading"
+                  class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span class="sr-only">Anterior</span>
                   <svg
@@ -369,19 +492,20 @@
                   v-for="page in totalPages"
                   :key="page"
                   @click="goToPage(page)"
+                  :disabled="loading"
                   :class="[
                     currentPage === page
                       ? 'z-10 bg-coral-50 border-coral-500 text-coral-600'
                       : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50',
-                    'relative inline-flex items-center px-4 py-2 border text-sm font-medium',
+                    'relative inline-flex items-center px-4 py-2 border text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed',
                   ]"
                 >
                   {{ page }}
                 </button>
                 <button
                   @click="nextPage"
-                  :disabled="currentPage === totalPages"
-                  class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  :disabled="currentPage === totalPages || loading"
+                  class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span class="sr-only">Siguiente</span>
                   <svg
@@ -541,26 +665,32 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import TutorService from '@/services/TutorService.js' // Ajusta la ruta según tu estructura
 import ReporteIntegralTutoria from '@/components/ReporteIntegralTutoria.vue'
 import PrimerReporteTutoria from '@/components/PrimerReporteTutoria.vue'
 import SegundoReporteTutoria from '@/components/SegundoReporteTutoria.vue'
+import BaseSearchInput from '@/components/ui/BaseSearchInput.vue'
 
 // ==================== ROUTER ====================
 const router = useRouter()
 
 // ==================== STATE ====================
 const tutor = ref(null)
-const students = ref([])
+const studentsData = ref([])
 const selectedStudent = ref(null)
+const totalItems = ref(0)
+let debounceTimer = null
 
 // ==================== UI STATE ====================
 const searchQuery = ref('')
 const currentTab = ref('current')
 const currentPage = ref(1)
-const itemsPerPage = 10
+const itemsPerPage = ref(5)
+const loading = ref(false)
+const error = ref(null)
 
 // ==================== MODALS STATE ====================
 const showModal = ref(false)
@@ -598,18 +728,17 @@ const circles = [
 ]
 
 // ==================== COMPUTED ====================
-const filteredStudents = computed(() => {
-  return students.value.filter(
-    (student) =>
-      (currentTab.value === 'current'
-        ? student.status === 'en curso'
-        : student.status === 'completada') &&
-      (student.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        student.controlNumber.includes(searchQuery.value)),
+const students = computed(() => {
+  return studentsData.value.filter((student) =>
+    currentTab.value === 'current' ? student.status === 'A' : student.status === 'completada',
   )
 })
 
-const totalPages = computed(() => Math.ceil(filteredStudents.value.length / itemsPerPage))
+// const filteredStudents = computed(() => {
+//   return students.value
+// })
+
+const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage.value))
 
 // ==================== API CALLS ====================
 const fetchCurrentTutor = async () => {
@@ -631,12 +760,12 @@ const fetchCurrentTutor = async () => {
     if (response.status === 200) {
       tutor.value = response.data
       console.log('Tutor cargado:', tutor.value)
-      await fetchActiveTutoringSessions()
+      await fetchAssignedStudents(currentPage.value)
     }
-  } catch (error) {
-    console.error('Error al obtener datos del tutor:', error)
+  } catch (err) {
+    console.error('Error al obtener datos del tutor:', err)
 
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+    if (err.response && (err.response.status === 401 || err.response.status === 403)) {
       localStorage.removeItem('accessToken')
       localStorage.removeItem('userRole')
       router.push('/login_tutor')
@@ -644,36 +773,68 @@ const fetchCurrentTutor = async () => {
   }
 }
 
-const fetchActiveTutoringSessions = async () => {
+const fetchAssignedStudents = async (page) => {
+  if (!tutor.value || tutor.value.id_tutor === null) {
+    error.value = 'Datos del tutor no disponibles.'
+    return
+  }
+
+  // loading.value = true
+  error.value = null
+
   try {
-    const response = await axios.get(
-      `http://localhost:8000/api/tutorias/tutor/${tutor.value.id_tutor}`,
+    const response = await TutorService.getTutoriasPorTutor(
+      tutor.value.id_tutor,
+      page,
+      itemsPerPage.value,
+      searchQuery.value,
     )
-    const activeTutorings = response.data
-    console.log('TUTORIAS ACTIVAS', activeTutorings)
+    console.log(response.data)
 
-    students.value = await Promise.all(
-      activeTutorings.map(async (tutoring) => {
-        const studentResponse = await axios.get(
-          `http://localhost:8000/api/alumnos/${tutoring.alumno_id}`,
-        )
-        const student = studentResponse.data
+    totalItems.value = response.data.total_tutorias
 
-        return {
-          id: student.id_alumno,
-          name: `${student.nombre} ${student.apellido_p} ${student.apellido_m}`,
-          controlNumber: student.num_control,
-          semester: tutoring.semestre,
-          status: student.estado,
-          tutorialPeriod: tutoring.periodo,
-          tutoringId: tutoring.id_tutoria,
-        }
-      }),
-    )
-  } catch (error) {
-    console.error('Error fetching active tutoring sessions:', error)
+    studentsData.value = response.data.tutorias.map((tutoria) => ({
+      id: tutoria.alumno?.id_alumno || null,
+      name: tutoria.alumno
+        ? `${tutoria.alumno.nombre || ''} ${tutoria.alumno.apellido_p || ''} ${tutoria.alumno.apellido_m || ''}`.trim()
+        : 'Alumno Desconocido',
+      controlNumber: tutoria.alumno?.num_control || 'N/A',
+      semester: tutoria.semestre,
+      status: tutoria.alumno?.estado || 'N/A',
+      tutorialPeriod: tutoria.periodo,
+      tutoringId: tutoria.id_tutoria,
+    }))
+    console.log(studentsData)
+  } catch (err) {
+    console.error('Error al obtener las tutorías asignadas:', err)
+    if (
+      err.response &&
+      err.response.status === 400 &&
+      err.response.data.detail?.includes('string_too_short')
+    ) {
+      error.value = 'Favor de ingresar mínimo 3 caracteres a buscar.'
+    } else if (err.response?.status !== 401 && err.response?.status !== 403) {
+      error.value = 'No se pudo cargar la lista de alumnos asignados.'
+    }
+    studentsData.value = []
+    totalItems.value = 0
+  } finally {
+    loading.value = false
   }
 }
+
+// eslint-disable-next-line
+watch(searchQuery, (newQuery, oldQuery) => {
+  // Limpiamos el temporizador anterior para evitar búsquedas innecesarias
+  clearTimeout(debounceTimer)
+
+  // Creamos un nuevo temporizador. La búsqueda no se ejecutará hasta
+  // que el usuario deje de escribir por 500ms.
+  debounceTimer = setTimeout(() => {
+    currentPage.value = 1 // Cada nueva búsqueda debe reiniciar la paginación a la página 1
+    fetchAssignedStudents()
+  }, 500) // 500ms de espera
+})
 
 // ==================== MODAL HANDLERS ====================
 const openReporteIntegralModal = (student) => {
@@ -699,8 +860,9 @@ const viewDetails = async (student) => {
       tutoring: tutoringResponse.data,
     }
     showModal.value = true
-  } catch (error) {
-    console.error('Error fetching student details:', error)
+  } catch (err) {
+    console.error('Error fetching student details:', err)
+    error.value = 'No se pudieron cargar los detalles del estudiante.'
   }
 }
 
@@ -713,17 +875,20 @@ const closeModal = () => {
 const prevPage = () => {
   if (currentPage.value > 1) {
     currentPage.value--
+    fetchAssignedStudents(currentPage.value)
   }
 }
 
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
     currentPage.value++
+    fetchAssignedStudents(currentPage.value)
   }
 }
 
 const goToPage = (page) => {
   currentPage.value = page
+  fetchAssignedStudents(page)
 }
 
 // ==================== UTILITY FUNCTIONS ====================
@@ -750,6 +915,15 @@ const handleLogout = () => {
   localStorage.removeItem('userRole')
   router.push('/login_tutor')
 }
+
+// ==================== WATCHERS ====================
+// Observa cambios en la búsqueda para recargar datos
+watch(searchQuery, async (newValue) => {
+  if (newValue.length === 0 || newValue.length >= 3) {
+    currentPage.value = 1
+    await fetchAssignedStudents(1)
+  }
+})
 
 // ==================== LIFECYCLE ====================
 onMounted(async () => {

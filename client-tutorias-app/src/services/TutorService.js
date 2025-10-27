@@ -47,6 +47,18 @@ export default {
     return apiClient.get(url)
   },
 
+  getTutoriasPorTutor(idTutor, page = 1, size = 5, search = '') {
+    if (!idTutor) {
+      return Promise.reject(new Error('Se requiere el ID del tutor.'))
+    }
+    let url = `/tutorias/tutor/${idTutor}?page=${page}&size=${size}`
+    if (search && search.length >= 3) {
+      url += `&search=${encodeURIComponent(search)}`
+    }
+    // El interceptor de apiClient añade el token automáticamente
+    return apiClient.get(url)
+  },
+
   // Aquí podrías añadir otras funciones relacionadas con tutores si las necesitas,
   // como createTutor, updateTutor, deleteTutor, etc., que también usarían apiClient.
   // Ejemplo:
