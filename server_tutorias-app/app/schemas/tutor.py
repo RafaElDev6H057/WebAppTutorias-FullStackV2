@@ -1,7 +1,7 @@
 # app/schemas/tutor.py
 
 from pydantic import BaseModel, Field, EmailStr, field_validator
-from typing import Optional
+from typing import Optional, List
 
 # --- Base Schema ---
 class TutorBase(BaseModel):
@@ -69,3 +69,7 @@ class TutorUpdatePassword(BaseModel): # For changing an existing hashed password
 class TutorTokenData(BaseModel):
     id: Optional[str] = None # Corresponds to 'sub' in JWT, storing tutor ID
     role: Optional[str] = None # Should be 'tutor'
+
+class TutoresPage(BaseModel):
+    total_tutores: int
+    tutores: List[TutorRead]

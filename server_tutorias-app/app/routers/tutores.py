@@ -1,9 +1,9 @@
 # app/routers/tutores.py
 
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Query
 from fastapi.security import OAuth2PasswordRequestForm # Removed unused OAuth2PasswordBearer here
-from sqlmodel import Session, select
-from typing import List
+from sqlmodel import Session, select, or_, func
+from typing import List, Optional
 from datetime import timedelta
 
 # Imports
@@ -11,7 +11,7 @@ from app.database import get_session
 from app.models.tutor import Tutor
 from app.schemas.tutor import (
     TutorCreate, TutorUpdate, TutorRead,
-    TutorSetPassword, TutorUpdatePassword, TutorLogin
+    TutorSetPassword, TutorUpdatePassword, TutorLogin, TutoresPage
 )
 from app.schemas.administrador import Token
 from app.services import tutor_service
@@ -112,14 +112,46 @@ def change_tutor_password(
 # === ENDPOINTS DE GESTIÓN (SOLO ADMINS) ===
 # ===========================================
 
-@router.get("/", response_model=List[TutorRead], summary="Obtener todos los Tutores (Admin)")
+# 🔹 Obtener todos los tutores (PAGINADO Y CON BÚSQUEDA)
+@router.get("/", response_model=TutoresPage, summary="Obtener todos los Tutores (Admin)") # 👈 Cambia response_model
 def get_tutores(
     session: Session = Depends(get_session),
-    current_admin: Administrador = Depends(get_current_admin_user) # Protegido por token de Admin
+    current_admin: Administrador = Depends(get_current_admin_user), # Sigue protegido
+    page: int = Query(1, gt=0, description="Número de página a solicitar"),
+    size: int = Query(10, gt=0, le=100, description="Tamaño de la página (máximo 100)"),
+    search: Optional[str] = Query(None, min_length=3, description="Término de búsqueda por nombre, apellido o correo")
 ):
-    """Obtiene una lista de todos los tutores registrados."""
-    print("DEBUG REBUILD ENDPOINT: GET / called.")
-    return session.exec(select(Tutor)).all()
+    """
+    Obtiene una lista paginada de tutores, con opción de búsqueda.
+    Requiere autenticación de Administrador.
+    """
+    # 1. Construimos la consulta base
+    query = select(Tutor)
+
+    # 2. Si hay término de búsqueda, añadimos el filtro
+    if search:
+        search_term = f"%{search}%"
+        query = query.where(
+            or_(
+                Tutor.nombre.ilike(search_term),      # type: ignore
+                Tutor.apellido_p.ilike(search_term), # type: ignore
+                Tutor.apellido_m.ilike(search_term), # type: ignore
+                Tutor.correo.ilike(search_term)      # type: ignore
+            )
+        )
+
+    # 3. Contamos el total de resultados que coinciden con la búsqueda (sin paginar)
+    count_query = select(func.count()).select_from(query.subquery())
+    total_tutores = session.exec(count_query).one()
+
+    # 4. Aplicamos paginación a la consulta principal
+    offset = (page - 1) * size
+    tutores = session.exec(
+        query.offset(offset).limit(size)
+    ).all()
+
+    # 5. Devolvemos el resultado usando el nuevo esquema
+    return TutoresPage(total_tutores=total_tutores, tutores=tutores) #type: ignore
 
 @router.get("/{id_tutor}", response_model=TutorRead, summary="Obtener un Tutor por ID (Admin)")
 def get_tutor(
