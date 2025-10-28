@@ -1,21 +1,24 @@
 <template>
-  <div class="fixed inset-0 bg-gray-100 overflow-hidden flex flex-col z-[9999]">
+  <div class="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-hidden flex flex-col z-[9999]">
     <div class="flex-1 flex flex-col max-h-screen">
-      <!-- Header -->
+      <!-- Header con más color -->
       <div
-        class="bg-gradient-to-r from-coral-600 to-coral-700 shadow-lg p-6 text-white flex-shrink-0"
+        class="bg-gradient-to-r from-[#ff5242] via-orange-400 to-orange-500 shadow-2xl p-6 text-white flex-shrink-0"
       >
         <div class="flex justify-between items-center">
           <div>
-            <h1 class="text-3xl font-bold">Reporte Integral de Tutoría</h1>
-            <p class="text-coral-100 text-sm mt-1">Periodo 22025 - Vista Masiva</p>
+            <h1 class="text-3xl font-bold drop-shadow-md">Reporte Integral de Tutoría</h1>
+            <p class="text-white/90 text-sm mt-1 font-medium">Periodo 22025 - Vista Masiva</p>
           </div>
-          <button @click="closeModal" class="text-white hover:text-gray-200 transition-colors">
+          <button
+            @click="closeModal"
+            class="text-white hover:bg-white/20 rounded-full p-2 transition-all duration-200"
+          >
             <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                stroke-width="2"
+                stroke-width="2.5"
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
@@ -23,53 +26,73 @@
         </div>
       </div>
 
-      <!-- Información del Tutor -->
-      <div class="bg-white p-6 shadow-md flex-shrink-0">
+      <!-- Información del Tutor con color -->
+      <div
+        class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-md flex-shrink-0 border-b-2 border-[#ffccc6]"
+      >
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
+          <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-[#ff5242]">
             <label class="block text-xs font-medium text-gray-600 mb-1">Nombre del Tutor</label>
             <p class="text-sm font-semibold text-gray-900">{{ tutorInfo.nombre }}</p>
           </div>
-          <div>
+          <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-blue-500">
             <label class="block text-xs font-medium text-gray-600 mb-1"
               >Departamento Académico</label
             >
             <p class="text-sm font-semibold text-gray-900">{{ tutorInfo.departamento }}</p>
           </div>
-          <div>
+          <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-green-500">
             <label class="block text-xs font-medium text-gray-600 mb-1">Periodo Semestral</label>
             <p class="text-sm font-semibold text-gray-900">{{ tutorInfo.periodo }}</p>
           </div>
-          <div>
+          <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-purple-500">
             <label class="block text-xs font-medium text-gray-600 mb-1">Carrera</label>
             <p class="text-sm font-semibold text-gray-900">{{ tutorInfo.carrera }}</p>
           </div>
         </div>
       </div>
 
-      <!-- Toolbar -->
+      <!-- Toolbar con color -->
       <div
-        class="bg-white p-4 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 flex-shrink-0"
+        class="bg-gradient-to-r from-gray-50 to-gray-100 p-4 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 flex-shrink-0 border-b border-gray-300"
       >
         <div class="flex-1 max-w-md">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Buscar alumno por nombre o número de control..."
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-coral-500"
-          />
+          <div class="relative">
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Buscar alumno por nombre o número de control..."
+              class="w-full pl-10 pr-4 py-2.5 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] transition-all"
+            />
+            <svg
+              class="absolute left-3 top-3 h-5 w-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
         </div>
         <div class="flex gap-3 items-center">
-          <span class="text-sm text-gray-600">
-            Mostrando {{ alumnosFiltrados.length }} de {{ totalAlumnos }} alumnos
+          <span
+            class="text-sm font-medium text-gray-700 bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-200"
+          >
+            📊 Mostrando <strong class="text-[#ff5242]">{{ alumnosFiltrados.length }}</strong> de
+            <strong class="text-[#ff5242]">{{ totalAlumnos }}</strong> alumnos
           </span>
           <button
             v-if="isLoadingMore"
             disabled
-            class="px-6 py-2 bg-gray-400 text-white rounded-lg font-medium cursor-not-allowed inline-flex items-center"
+            class="px-6 py-2.5 bg-gray-400 text-white rounded-lg font-medium cursor-not-allowed inline-flex items-center shadow-md"
           >
             <svg
-              class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+              class="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -94,11 +117,11 @@
             v-else
             @click="guardarTodo"
             :disabled="isSaving || alumnosFiltrados.length === 0"
-            class="px-6 py-2 bg-coral-600 text-white rounded-lg font-medium hover:bg-coral-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-coral-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center"
+            class="px-6 py-2.5 bg-gradient-to-r from-[#ff5242] to-[#ff3d2a] text-white rounded-lg font-bold hover:from-[#ff3d2a] hover:to-[#e62a1a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ff6b5b] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl transform hover:scale-105 inline-flex items-center"
           >
             <svg
               v-if="isSaving"
-              class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+              class="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -125,12 +148,12 @@
                 d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
               />
             </svg>
-            {{ isSaving ? 'Guardando...' : 'Guardar Todo' }}
+            {{ isSaving ? 'Guardando...' : '💾 Guardar Todo' }}
           </button>
         </div>
       </div>
 
-      <!-- Mensaje de éxito/error -->
+      <!-- Mensajes de éxito/error -->
       <Transition
         enter-active-class="transition ease-out duration-300"
         enter-from-class="opacity-0 translate-y-2"
@@ -141,10 +164,10 @@
       >
         <div
           v-if="successMessage"
-          class="mx-4 mt-2 p-4 bg-green-50 border-l-4 border-green-500 rounded-md flex items-start flex-shrink-0"
+          class="mx-4 mt-2 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-md flex items-start flex-shrink-0 shadow-md"
         >
           <svg
-            class="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5"
+            class="w-6 h-6 text-green-500 mr-3 flex-shrink-0"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -157,7 +180,7 @@
             />
           </svg>
           <div class="flex-1">
-            <p class="text-sm font-medium text-green-800">{{ successMessage }}</p>
+            <p class="text-sm font-bold text-green-800">{{ successMessage }}</p>
           </div>
           <button @click="successMessage = null" class="text-green-500 hover:text-green-700 ml-4">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,10 +205,10 @@
       >
         <div
           v-if="errorMessage"
-          class="mx-4 mt-2 p-4 bg-red-50 border-l-4 border-red-500 rounded-md flex items-start flex-shrink-0"
+          class="mx-4 mt-2 p-4 bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-red-500 rounded-md flex items-start flex-shrink-0 shadow-md"
         >
           <svg
-            class="w-5 h-5 text-red-500 mr-3 flex-shrink-0 mt-0.5"
+            class="w-6 h-6 text-red-500 mr-3 flex-shrink-0"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -198,7 +221,7 @@
             />
           </svg>
           <div class="flex-1">
-            <p class="text-sm font-medium text-red-800">{{ errorMessage }}</p>
+            <p class="text-sm font-bold text-red-800">{{ errorMessage }}</p>
           </div>
           <button @click="errorMessage = null" class="text-red-500 hover:text-red-700 ml-4">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -215,66 +238,68 @@
 
       <!-- Tabla de Alumnos con Scroll Horizontal -->
       <div
-        class="flex-1 overflow-hidden bg-white shadow-md mx-4 my-2 rounded-lg border border-gray-200"
+        class="flex-1 overflow-hidden bg-white shadow-xl mx-4 my-2 rounded-xl border-2 border-gray-200"
       >
         <div class="h-full overflow-auto">
           <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50 sticky top-0 z-20">
+            <thead
+              class="bg-gradient-to-r from-[#ff5242] to-orange-500 sticky top-0 z-20 shadow-md"
+            >
               <tr>
                 <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50 z-30 border-r border-gray-200 min-w-[200px]"
+                  class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider sticky left-0 bg-gradient-to-r from-[#ff5242] to-orange-500 z-30 border-r border-[#ff8576] min-w-[200px]"
                 >
-                  Alumno
+                  👤 Alumno
                 </th>
                 <th
-                  class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]"
+                  class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider min-w-[100px]"
                 >
                   T. Grupal
                 </th>
                 <th
-                  class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]"
+                  class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider min-w-[120px]"
                 >
                   T. Individual
                 </th>
                 <th
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[180px]"
+                  class="px-4 py-4 text-left text-xs font-bold text-white uppercase tracking-wider min-w-[180px]"
                 >
-                  Seguimiento 1
+                  📝 Seguimiento 1
                 </th>
                 <th
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[180px]"
+                  class="px-4 py-4 text-left text-xs font-bold text-white uppercase tracking-wider min-w-[180px]"
                 >
-                  Seguimiento 2
+                  📝 Seguimiento 2
                 </th>
                 <th
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[180px]"
+                  class="px-4 py-4 text-left text-xs font-bold text-white uppercase tracking-wider min-w-[180px]"
                 >
-                  Seguimiento 3
+                  📝 Seguimiento 3
                 </th>
                 <th
-                  class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[180px]"
+                  class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider min-w-[180px]"
                 >
-                  Área Canalizada
+                  🏢 Área Canalizada
                 </th>
                 <th
-                  class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]"
+                  class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider min-w-[100px]"
                 >
-                  Mat. Aprob.
+                  ✅ Mat. Aprob.
                 </th>
                 <th
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[180px]"
+                  class="px-4 py-4 text-left text-xs font-bold text-white uppercase tracking-wider min-w-[180px]"
                 >
-                  Mat. No Aprob.
+                  ❌ Mat. No Aprob.
                 </th>
                 <th
-                  class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]"
+                  class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider min-w-[120px]"
                 >
-                  Estado
+                  📊 Estado
                 </th>
                 <th
-                  class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 z-30 border-l border-gray-200 min-w-[120px]"
+                  class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-gradient-to-r from-[#ff5242] to-orange-500 z-30 border-l border-[#ff8576] min-w-[120px]"
                 >
-                  Acciones
+                  ⚙️ Acciones
                 </th>
               </tr>
             </thead>
@@ -282,38 +307,84 @@
               <tr
                 v-for="alumno in alumnosFiltrados"
                 :key="alumno.num_control"
-                class="hover:bg-gray-50 transition-colors"
+                class="hover:bg-blue-50 transition-colors"
               >
                 <!-- Columna Alumno (sticky) -->
                 <td
-                  class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white hover:bg-gray-50 z-10 border-r border-gray-200"
+                  class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white hover:bg-blue-50 z-10 border-r border-gray-200"
                 >
                   <div class="flex flex-col">
-                    <span class="text-sm font-medium text-gray-900">{{ alumno.nombre }}</span>
-                    <span class="text-xs text-gray-500">{{ alumno.num_control }}</span>
+                    <span class="text-sm font-bold text-gray-900">{{ alumno.nombre }}</span>
+                    <span class="text-xs text-gray-500 font-medium">{{ alumno.num_control }}</span>
                   </div>
                 </td>
 
-                <!-- Tutoría Grupal -->
+                <!-- Tutoría Grupal con validación -->
                 <td class="px-4 py-4 whitespace-nowrap text-center">
-                  <input
-                    v-model.number="alumno.datos.tutoria_grupal"
-                    type="number"
-                    min="0"
-                    max="16"
-                    class="w-20 px-3 py-2 text-center border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-coral-500"
-                  />
+                  <div class="relative">
+                    <input
+                      v-model.number="alumno.datos.tutoria_grupal"
+                      @input="validarTutoriaGrupal(alumno)"
+                      type="number"
+                      min="0"
+                      max="16"
+                      :class="[
+                        'w-20 px-3 py-2 text-center border-2 rounded-lg focus:outline-none focus:ring-2 transition-all',
+                        alumno.errores?.tutoria_grupal
+                          ? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50'
+                          : 'border-gray-300 focus:ring-[#ff6b5b] focus:border-[#ff6b5b]',
+                      ]"
+                    />
+                    <Transition
+                      enter-active-class="transition ease-out duration-200"
+                      enter-from-class="opacity-0 scale-95"
+                      enter-to-class="opacity-100 scale-100"
+                      leave-active-class="transition ease-in duration-150"
+                      leave-from-class="opacity-100"
+                      leave-to-class="opacity-0"
+                    >
+                      <div
+                        v-if="alumno.errores?.tutoria_grupal"
+                        class="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 px-2 py-1 bg-red-500 text-white text-xs rounded shadow-lg whitespace-nowrap z-50"
+                      >
+                        {{ alumno.errores.tutoria_grupal }}
+                      </div>
+                    </Transition>
+                  </div>
                 </td>
 
-                <!-- Tutoría Individual -->
+                <!-- Tutoría Individual con validación -->
                 <td class="px-4 py-4 whitespace-nowrap text-center">
-                  <input
-                    v-model.number="alumno.datos.tutoria_individual"
-                    type="number"
-                    min="0"
-                    max="5"
-                    class="w-20 px-3 py-2 text-center border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-coral-500"
-                  />
+                  <div class="relative">
+                    <input
+                      v-model.number="alumno.datos.tutoria_individual"
+                      @input="validarTutoriaIndividual(alumno)"
+                      type="number"
+                      min="0"
+                      max="5"
+                      :class="[
+                        'w-20 px-3 py-2 text-center border-2 rounded-lg focus:outline-none focus:ring-2 transition-all',
+                        alumno.errores?.tutoria_individual
+                          ? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50'
+                          : 'border-gray-300 focus:ring-[#ff6b5b] focus:border-[#ff6b5b]',
+                      ]"
+                    />
+                    <Transition
+                      enter-active-class="transition ease-out duration-200"
+                      enter-from-class="opacity-0 scale-95"
+                      enter-to-class="opacity-100 scale-100"
+                      leave-active-class="transition ease-in duration-150"
+                      leave-from-class="opacity-100"
+                      leave-to-class="opacity-0"
+                    >
+                      <div
+                        v-if="alumno.errores?.tutoria_individual"
+                        class="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 px-2 py-1 bg-red-500 text-white text-xs rounded shadow-lg whitespace-nowrap z-50"
+                      >
+                        {{ alumno.errores.tutoria_individual }}
+                      </div>
+                    </Transition>
+                  </div>
                 </td>
 
                 <!-- Seguimiento 1 -->
@@ -321,8 +392,8 @@
                   <input
                     v-model="alumno.datos.seguimiento_1"
                     type="text"
-                    placeholder="Materias..."
-                    class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-coral-500 text-sm"
+                    placeholder="Ej: Cálculo, Álgebra..."
+                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all"
                   />
                 </td>
 
@@ -331,8 +402,8 @@
                   <input
                     v-model="alumno.datos.seguimiento_2"
                     type="text"
-                    placeholder="Materias..."
-                    class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-coral-500 text-sm"
+                    placeholder="Ej: Programación..."
+                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all"
                   />
                 </td>
 
@@ -341,55 +412,84 @@
                   <input
                     v-model="alumno.datos.seguimiento_3"
                     type="text"
-                    placeholder="Materias..."
-                    class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-coral-500 text-sm"
+                    placeholder="Ej: Física..."
+                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all"
                   />
                 </td>
 
-                <!-- Área Canalizada (Checkboxes) -->
+                <!-- Área Canalizada (Checkboxes con color) -->
                 <td class="px-4 py-4">
                   <div class="flex flex-col gap-2 text-xs">
-                    <label class="flex items-center">
+                    <label
+                      class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors"
+                    >
                       <input
                         v-model="alumno.datos.jefatura_academica"
                         type="checkbox"
                         :true-value="1"
                         :false-value="0"
-                        class="rounded border-gray-300 text-coral-600 focus:ring-coral-500 h-4 w-4"
+                        class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
                       />
-                      <span class="ml-2 text-gray-700">Jef. Acad.</span>
+                      <span class="ml-2 text-gray-700 font-medium">Jef. Acad.</span>
                     </label>
-                    <label class="flex items-center">
+                    <label
+                      class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors"
+                    >
                       <input
                         v-model="alumno.datos.ciencias_basicas"
                         type="checkbox"
                         :true-value="1"
                         :false-value="0"
-                        class="rounded border-gray-300 text-coral-600 focus:ring-coral-500 h-4 w-4"
+                        class="rounded border-gray-300 text-green-600 focus:ring-green-500 h-4 w-4"
                       />
-                      <span class="ml-2 text-gray-700">C. Básicas</span>
+                      <span class="ml-2 text-gray-700 font-medium">C. Básicas</span>
                     </label>
-                    <label class="flex items-center">
+                    <label
+                      class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors"
+                    >
                       <input
                         v-model="alumno.datos.psicologia"
                         type="checkbox"
                         :true-value="1"
                         :false-value="0"
-                        class="rounded border-gray-300 text-coral-600 focus:ring-coral-500 h-4 w-4"
+                        class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 h-4 w-4"
                       />
-                      <span class="ml-2 text-gray-700">Psicología</span>
+                      <span class="ml-2 text-gray-700 font-medium">Psicología</span>
                     </label>
                   </div>
                 </td>
 
-                <!-- Materias Aprobadas -->
+                <!-- Materias Aprobadas con validación -->
                 <td class="px-4 py-4 whitespace-nowrap text-center">
-                  <input
-                    v-model.number="alumno.datos.materias_aprobadas"
-                    type="number"
-                    min="0"
-                    class="w-20 px-3 py-2 text-center border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-coral-500"
-                  />
+                  <div class="relative">
+                    <input
+                      v-model.number="alumno.datos.materias_aprobadas"
+                      @input="validarMateriasAprobadas(alumno)"
+                      type="number"
+                      min="0"
+                      :class="[
+                        'w-20 px-3 py-2 text-center border-2 rounded-lg focus:outline-none focus:ring-2 transition-all',
+                        alumno.errores?.materias_aprobadas
+                          ? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50'
+                          : 'border-gray-300 focus:ring-[#ff6b5b] focus:border-[#ff6b5b]',
+                      ]"
+                    />
+                    <Transition
+                      enter-active-class="transition ease-out duration-200"
+                      enter-from-class="opacity-0 scale-95"
+                      enter-to-class="opacity-100 scale-100"
+                      leave-active-class="transition ease-in duration-150"
+                      leave-from-class="opacity-100"
+                      leave-to-class="opacity-0"
+                    >
+                      <div
+                        v-if="alumno.errores?.materias_aprobadas"
+                        class="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 px-2 py-1 bg-red-500 text-white text-xs rounded shadow-lg whitespace-nowrap z-50"
+                      >
+                        {{ alumno.errores.materias_aprobadas }}
+                      </div>
+                    </Transition>
+                  </div>
                 </td>
 
                 <!-- Materias No Aprobadas -->
@@ -397,18 +497,18 @@
                   <input
                     v-model="alumno.datos.materias_no_aprobadas"
                     type="text"
-                    placeholder="Materias..."
-                    class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-coral-500 text-sm"
+                    placeholder="Ej: Bases de Datos..."
+                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all"
                   />
                 </td>
 
-                <!-- Estado -->
+                <!-- Estado con colores mejorados -->
                 <td class="px-4 py-4 whitespace-nowrap text-center">
                   <span
                     v-if="alumno.estado === 'guardado'"
-                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-md"
                   >
-                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fill-rule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -419,10 +519,10 @@
                   </span>
                   <span
                     v-else-if="alumno.estado === 'guardando'"
-                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-blue-400 to-indigo-500 text-white shadow-md"
                   >
                     <svg
-                      class="animate-spin w-3 h-3 mr-1"
+                      class="animate-spin w-4 h-4 mr-1"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -445,9 +545,9 @@
                   </span>
                   <span
                     v-else-if="alumno.estado === 'error'"
-                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800"
+                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-red-400 to-pink-500 text-white shadow-md"
                   >
-                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -459,22 +559,27 @@
                   </span>
                   <span
                     v-else
-                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"
+                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-md"
                   >
-                    Pendiente
+                    ⏳ Pendiente
                   </span>
                 </td>
 
                 <!-- Acciones (sticky) -->
                 <td
-                  class="px-4 py-4 whitespace-nowrap text-center sticky right-0 bg-white hover:bg-gray-50 z-10 border-l border-gray-200"
+                  class="px-4 py-4 whitespace-nowrap text-center bg-white hover:bg-blue-50 z-10 border-l border-gray-200"
                 >
                   <button
                     @click="guardarAlumno(alumno)"
-                    :disabled="alumno.estado === 'guardando'"
-                    class="px-3 py-2 bg-coral-600 text-white rounded hover:bg-coral-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-coral-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-xs font-medium"
+                    :disabled="alumno.estado === 'guardando' || tieneErrores(alumno)"
+                    :class="[
+                      'px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all text-xs font-bold shadow-md transform hover:scale-105',
+                      tieneErrores(alumno)
+                        ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-[#ff5242] to-[#ff3d2a] text-white hover:from-[#ff3d2a] hover:to-[#e62a1a] focus:ring-[#ff6b5b]',
+                    ]"
                   >
-                    Guardar
+                    {{ tieneErrores(alumno) ? '⚠️ Errores' : '💾 Guardar' }}
                   </button>
                 </td>
               </tr>
@@ -484,10 +589,10 @@
           <!-- Estado vacío -->
           <div
             v-if="alumnosFiltrados.length === 0 && !isLoadingMore"
-            class="text-center py-12 px-4 bg-gray-50"
+            class="text-center py-16 px-4 bg-gradient-to-br from-gray-50 to-gray-100"
           >
             <svg
-              class="mx-auto h-16 w-16 text-gray-400"
+              class="mx-auto h-20 w-20 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -499,18 +604,26 @@
                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
               />
             </svg>
-            <h3 class="mt-4 text-lg font-medium text-gray-900">No se encontraron alumnos</h3>
-            <p class="mt-2 text-sm text-gray-500">No hay alumnos que coincidan con tu búsqueda.</p>
+            <h3 class="mt-4 text-xl font-bold text-gray-900">No se encontraron alumnos</h3>
+            <p class="mt-2 text-sm text-gray-600">No hay alumnos que coincidan con tu búsqueda.</p>
           </div>
         </div>
       </div>
 
-      <!-- Footer con información -->
-      <div class="p-4 bg-white shadow text-sm text-gray-600 flex-shrink-0">
-        <p>
-          <strong>Total de alumnos:</strong> {{ totalAlumnos }} | <strong>Guardados:</strong>
-          {{ alumnosGuardados }} | <strong>Pendientes:</strong> {{ alumnosPendientes }}
-        </p>
+      <!-- Footer con información y color -->
+      <div
+        class="p-4 bg-gradient-to-r from-gray-100 to-gray-200 shadow-inner text-sm font-medium text-gray-700 flex-shrink-0 border-t-2 border-gray-300"
+      >
+        <div class="flex justify-between items-center">
+          <p>
+            <strong class="text-[#ff5242]">Total de alumnos:</strong> {{ totalAlumnos }} |
+            <strong class="text-green-600">Guardados:</strong> {{ alumnosGuardados }} |
+            <strong class="text-yellow-600">Pendientes:</strong> {{ alumnosPendientes }}
+          </p>
+          <p class="text-xs text-gray-500">
+            💡 Los campos con borde rojo tienen errores de validación
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -565,18 +678,60 @@ const alumnosPendientes = computed(() => {
   return alumnos.value.filter((a) => a.estado === 'pendiente').length
 })
 
+// ==================== VALIDACIONES ====================
+const validarTutoriaGrupal = (alumno) => {
+  if (!alumno.errores) {
+    alumno.errores = {}
+  }
+
+  if (alumno.datos.tutoria_grupal < 0) {
+    alumno.errores.tutoria_grupal = '❌ El número debe ser mayor o igual a 0'
+  } else if (alumno.datos.tutoria_grupal > 16) {
+    alumno.errores.tutoria_grupal = '❌ El número debe ser menor o igual a 16'
+  } else {
+    delete alumno.errores.tutoria_grupal
+  }
+}
+
+const validarTutoriaIndividual = (alumno) => {
+  if (!alumno.errores) {
+    alumno.errores = {}
+  }
+
+  if (alumno.datos.tutoria_individual < 0) {
+    alumno.errores.tutoria_individual = '❌ El número debe ser mayor o igual a 0'
+  } else if (alumno.datos.tutoria_individual > 5) {
+    alumno.errores.tutoria_individual = '❌ El número debe ser menor o igual a 5'
+  } else {
+    delete alumno.errores.tutoria_individual
+  }
+}
+
+const validarMateriasAprobadas = (alumno) => {
+  if (!alumno.errores) {
+    alumno.errores = {}
+  }
+
+  if (alumno.datos.materias_aprobadas < 0) {
+    alumno.errores.materias_aprobadas = '❌ El número debe ser mayor o igual a 0'
+  } else {
+    delete alumno.errores.materias_aprobadas
+  }
+}
+
+const tieneErrores = (alumno) => {
+  return alumno.errores && Object.keys(alumno.errores).length > 0
+}
+
 // ==================== METHODS ====================
 const cargarTodosLosAlumnos = async () => {
   isLoadingMore.value = true
   errorMessage.value = null
 
   try {
-    // Hacemos una petición inicial para saber cuántos alumnos hay
     const responseInicial = await TutorService.getTutoriasPorTutor(props.tutorId, 1, 1, '')
-
     totalAlumnos.value = responseInicial.data.total_tutorias
 
-    // Ahora hacemos una petición con size = total para traer todos
     const response = await TutorService.getTutoriasPorTutor(
       props.tutorId,
       1,
@@ -590,6 +745,7 @@ const cargarTodosLosAlumnos = async () => {
         : 'Alumno Desconocido',
       num_control: tutoria.alumno?.num_control || 'N/A',
       estado: 'pendiente',
+      errores: {},
       datos: {
         tutoria_grupal: 0,
         tutoria_individual: 0,
@@ -603,6 +759,7 @@ const cargarTodosLosAlumnos = async () => {
         materias_no_aprobadas: '',
       },
     }))
+    console.log('Alumnos cargados:', alumnos.value)
 
     console.log(`Cargados ${alumnos.value.length} alumnos`)
   } catch (error) {
@@ -614,6 +771,16 @@ const cargarTodosLosAlumnos = async () => {
 }
 
 const guardarAlumno = async (alumno) => {
+  // Validar antes de guardar
+  validarTutoriaGrupal(alumno)
+  validarTutoriaIndividual(alumno)
+  validarMateriasAprobadas(alumno)
+
+  if (tieneErrores(alumno)) {
+    errorMessage.value = `❌ Corrige los errores en el formulario de ${alumno.nombre} antes de guardar.`
+    return
+  }
+
   alumno.estado = 'guardando'
   errorMessage.value = null
 
@@ -634,7 +801,7 @@ const guardarAlumno = async (alumno) => {
 
     if (response.status === 201 || response.status === 200) {
       alumno.estado = 'guardado'
-      successMessage.value = `Reporte de ${alumno.nombre} guardado exitosamente.`
+      successMessage.value = `✅ Reporte de ${alumno.nombre} guardado exitosamente.`
       setTimeout(() => {
         successMessage.value = null
       }, 3000)
@@ -642,11 +809,28 @@ const guardarAlumno = async (alumno) => {
   } catch (error) {
     console.error('Error al guardar reporte:', error)
     alumno.estado = 'error'
-    errorMessage.value = `Error al guardar reporte de ${alumno.nombre}. ${error.response?.data?.detail || error.message}`
+    errorMessage.value = `❌ Error al guardar reporte de ${alumno.nombre}. ${error.response?.data?.detail || error.message}`
   }
 }
 
 const guardarTodo = async () => {
+  // Validar todos los alumnos primero
+  let hayErrores = false
+  alumnos.value.forEach((alumno) => {
+    validarTutoriaGrupal(alumno)
+    validarTutoriaIndividual(alumno)
+    validarMateriasAprobadas(alumno)
+    if (tieneErrores(alumno)) {
+      hayErrores = true
+    }
+  })
+
+  if (hayErrores) {
+    errorMessage.value =
+      '❌ Hay errores de validación en algunos formularios. Corrígelos antes de guardar todo.'
+    return
+  }
+
   isSaving.value = true
   errorMessage.value = null
   let errores = 0
@@ -657,7 +841,7 @@ const guardarTodo = async () => {
       try {
         await guardarAlumno(alumno)
         exitosos++
-        //eslint-disable-next-line
+        // eslint-disable-next-line
       } catch (error) {
         errores++
       }
@@ -667,12 +851,12 @@ const guardarTodo = async () => {
   isSaving.value = false
 
   if (errores === 0) {
-    successMessage.value = `¡Todos los reportes guardados exitosamente! (${exitosos} reportes)`
+    successMessage.value = `🎉 ¡Todos los reportes guardados exitosamente! (${exitosos} reportes)`
     setTimeout(() => {
       emit('success')
     }, 2000)
   } else {
-    errorMessage.value = `Se guardaron ${exitosos} reportes, pero ${errores} tuvieron errores.`
+    errorMessage.value = `⚠️ Se guardaron ${exitosos} reportes, pero ${errores} tuvieron errores.`
   }
 }
 
@@ -697,6 +881,9 @@ onMounted(async () => {
 .hover\:bg-coral-700:hover {
   background-color: #ff3d2a;
 }
+.hover\:bg-coral-800:hover {
+  background-color: #e62a1a;
+}
 .text-coral-100 {
   color: #fff1f0;
 }
@@ -712,24 +899,36 @@ onMounted(async () => {
 .text-coral-600 {
   color: #ff5242;
 }
+.border-coral-200 {
+  border-color: #ffccc6;
+}
+.border-coral-400 {
+  border-color: #ff8576;
+}
 
-/* Scrollbar personalizado */
+/* Scrollbar personalizado con colores coral */
 .overflow-auto::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
 }
 
 .overflow-auto::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: linear-gradient(to right, #f3f4f6, #e5e7eb);
   border-radius: 10px;
 }
 
 .overflow-auto::-webkit-scrollbar-thumb {
-  background: #ff6b5b;
+  background: linear-gradient(135deg, #ff6b5b, #ff5242);
   border-radius: 10px;
+  border: 2px solid #f3f4f6;
 }
 
 .overflow-auto::-webkit-scrollbar-thumb:hover {
-  background: #ff5242;
+  background: linear-gradient(135deg, #ff5242, #ff3d2a);
+}
+
+/* Animaciones suaves */
+input:focus {
+  transform: scale(1.02);
 }
 </style>
