@@ -114,6 +114,12 @@
             <h1 class="text-3xl font-bold text-gray-900">Dashboard del Tutor</h1>
           </div>
           <button
+            @click="openReporteIntegralMasivo"
+            class="w-44 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors font-medium"
+          >
+            Reporte Integral
+          </button>
+          <button
             @click="mostrarModalPrimerReporte = true"
             class="w-44 px-4 py-2 bg-coral-600 text-white rounded-md hover:bg-orange-600 transition-colors font-medium"
           >
@@ -532,7 +538,7 @@
           </div>
         </Transition>
 
-        <!-- Modal para Reporte Integral -->
+        <!-- Modal para Reporte Integral (individual) -->
         <Transition
           enter-active-class="transition ease-out duration-300"
           enter-from-class="opacity-0 scale-95"
@@ -1060,6 +1066,30 @@
         </Transition>
       </main>
     </div>
+
+    <!-- Modal Reporte Integral Masivo (FUERA de main, al nivel del root div) -->
+    <Transition
+      enter-active-class="transition ease-out duration-300"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition ease-in duration-200"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div v-if="showReporteIntegralMasivo" class="fixed inset-0 z-[9999]">
+        <ReporteIntegralMasivo
+          :tutor-info="{
+            nombre: tutor?.nombre + ' ' + tutor?.apellido_p + ' ' + tutor?.apellido_m,
+            departamento: 'Sistemas Computacionales',
+            periodo: '22025',
+            carrera: 'Ingeniería en Sistemas',
+          }"
+          :tutor-id="tutor?.id_tutor"
+          @close="closeReporteIntegralMasivo"
+          @success="handleReporteIntegralSuccess"
+        />
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -1068,6 +1098,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import TutorService from '@/services/TutorService.js'
+import ReporteIntegralMasivo from '@/components/ReporteIntegralMasivo.vue'
 import ReporteIntegralTutoria from '@/components/ReporteIntegralTutoria.vue'
 import PrimerReporteTutoria from '@/components/PrimerReporteTutoria.vue'
 import SegundoReporteTutoria from '@/components/SegundoReporteTutoria.vue'
@@ -1097,6 +1128,7 @@ const showReporteIntegralModal = ref(false)
 const mostrarModalPrimerReporte = ref(false)
 const mostrarModalSegundoReporte = ref(false)
 const showChangePasswordModal = ref(false)
+const showReporteIntegralMasivo = ref(false)
 
 // ==================== PASSWORD CHANGE STATE ====================
 const passwordForm = ref({
@@ -1171,7 +1203,6 @@ const fetchCurrentTutor = async () => {
       tutor.value = response.data
       console.log('Tutor cargado:', tutor.value)
 
-      // Pre-llenar el correo en el formulario
       passwordForm.value.correo = tutor.value.correo
 
       await fetchAssignedStudents(currentPage.value)
@@ -1216,6 +1247,11 @@ const fetchAssignedStudents = async (page) => {
       status: tutoria.alumno?.estado || 'N/A',
       tutorialPeriod: tutoria.periodo,
       tutoringId: tutoria.id_tutoria,
+      // Agregar campos necesarios para el ReporteIntegralMasivo
+      nombre: tutoria.alumno
+        ? `${tutoria.alumno.nombre || ''} ${tutoria.alumno.apellido_p || ''} ${tutoria.alumno.apellido_m || ''}`.trim()
+        : 'Alumno Desconocido',
+      num_control: tutoria.alumno?.num_control || 'N/A',
     }))
     console.log(studentsData)
   } catch (err) {
@@ -1270,7 +1306,6 @@ const handleChangePassword = async () => {
   passwordChangeError.value = null
   passwordChangeSuccess.value = false
 
-  // Validaciones
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
     passwordChangeError.value = 'Las contraseñas no coinciden.'
     return
@@ -1291,9 +1326,7 @@ const handleChangePassword = async () => {
   try {
     const token = localStorage.getItem('accessToken')
 
-    // Determinar qué endpoint usar
     if (tutor.value.requires_password_change) {
-      // Primera vez - usar POST /api/tutores/set-password
       const response = await axios.post('http://localhost:8000/api/tutores/set-password', {
         correo: passwordForm.value.correo,
         contraseña_actual: passwordForm.value.currentPassword,
@@ -1302,16 +1335,13 @@ const handleChangePassword = async () => {
 
       if (response.status === 200) {
         passwordChangeSuccess.value = true
-        // Actualizar el estado del tutor
         tutor.value.requires_password_change = false
 
-        // Cerrar el modal después de 2 segundos
         setTimeout(() => {
           closeChangePasswordModal()
         }, 2000)
       }
     } else {
-      // Cambios posteriores - usar PUT /api/tutores/change-password
       const response = await axios.put(
         'http://localhost:8000/api/tutores/change-password',
         {
@@ -1328,7 +1358,6 @@ const handleChangePassword = async () => {
       if (response.status === 200) {
         passwordChangeSuccess.value = true
 
-        // Cerrar el modal después de 2 segundos
         setTimeout(() => {
           closeChangePasswordModal()
         }, 2000)
@@ -1395,6 +1424,19 @@ const viewDetails = async (student) => {
 const closeModal = () => {
   showModal.value = false
   selectedStudent.value = null
+}
+
+const openReporteIntegralMasivo = () => {
+  console.log('Abriendo modal masivo...')
+  showReporteIntegralMasivo.value = true
+}
+
+const closeReporteIntegralMasivo = () => {
+  showReporteIntegralMasivo.value = false
+}
+
+const handleReporteIntegralSuccess = () => {
+  closeReporteIntegralMasivo()
 }
 
 // ==================== PAGINATION ====================
