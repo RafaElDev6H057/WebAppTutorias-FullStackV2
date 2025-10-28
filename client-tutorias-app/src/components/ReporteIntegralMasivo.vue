@@ -297,7 +297,7 @@
                   📊 Estado
                 </th>
                 <th
-                  class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-gradient-to-r from-[#ff5242] to-orange-500 z-30 border-l border-[#ff8576] min-w-[120px]"
+                  class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-gradient-to-r from-[#ff5242] to-orange-500 z-30 border-l border-[#ff8576] min-w-[180px]"
                 >
                   ⚙️ Acciones
                 </th>
@@ -328,8 +328,10 @@
                       type="number"
                       min="0"
                       max="16"
+                      :disabled="alumno.modoVer"
                       :class="[
                         'w-20 px-3 py-2 text-center border-2 rounded-lg focus:outline-none focus:ring-2 transition-all',
+                        alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
                         alumno.errores?.tutoria_grupal
                           ? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50'
                           : 'border-gray-300 focus:ring-[#ff6b5b] focus:border-[#ff6b5b]',
@@ -362,8 +364,10 @@
                       type="number"
                       min="0"
                       max="5"
+                      :disabled="alumno.modoVer"
                       :class="[
                         'w-20 px-3 py-2 text-center border-2 rounded-lg focus:outline-none focus:ring-2 transition-all',
+                        alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
                         alumno.errores?.tutoria_individual
                           ? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50'
                           : 'border-gray-300 focus:ring-[#ff6b5b] focus:border-[#ff6b5b]',
@@ -393,7 +397,11 @@
                     v-model="alumno.datos.seguimiento_1"
                     type="text"
                     placeholder="Ej: Cálculo, Álgebra..."
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all"
+                    :disabled="alumno.modoVer"
+                    :class="[
+                      'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all',
+                      alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
+                    ]"
                   />
                 </td>
 
@@ -403,7 +411,11 @@
                     v-model="alumno.datos.seguimiento_2"
                     type="text"
                     placeholder="Ej: Programación..."
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all"
+                    :disabled="alumno.modoVer"
+                    :class="[
+                      'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all',
+                      alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
+                    ]"
                   />
                 </td>
 
@@ -413,7 +425,11 @@
                     v-model="alumno.datos.seguimiento_3"
                     type="text"
                     placeholder="Ej: Física..."
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all"
+                    :disabled="alumno.modoVer"
+                    :class="[
+                      'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all',
+                      alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
+                    ]"
                   />
                 </td>
 
@@ -428,7 +444,8 @@
                         type="checkbox"
                         :true-value="1"
                         :false-value="0"
-                        class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
+                        :disabled="alumno.modoVer"
+                        class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4 disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                       <span class="ml-2 text-gray-700 font-medium">Jef. Acad.</span>
                     </label>
@@ -440,7 +457,8 @@
                         type="checkbox"
                         :true-value="1"
                         :false-value="0"
-                        class="rounded border-gray-300 text-green-600 focus:ring-green-500 h-4 w-4"
+                        :disabled="alumno.modoVer"
+                        class="rounded border-gray-300 text-green-600 focus:ring-green-500 h-4 w-4 disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                       <span class="ml-2 text-gray-700 font-medium">C. Básicas</span>
                     </label>
@@ -452,7 +470,8 @@
                         type="checkbox"
                         :true-value="1"
                         :false-value="0"
-                        class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 h-4 w-4"
+                        :disabled="alumno.modoVer"
+                        class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 h-4 w-4 disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                       <span class="ml-2 text-gray-700 font-medium">Psicología</span>
                     </label>
@@ -467,8 +486,10 @@
                       @input="validarMateriasAprobadas(alumno)"
                       type="number"
                       min="0"
+                      :disabled="alumno.modoVer"
                       :class="[
                         'w-20 px-3 py-2 text-center border-2 rounded-lg focus:outline-none focus:ring-2 transition-all',
+                        alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
                         alumno.errores?.materias_aprobadas
                           ? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50'
                           : 'border-gray-300 focus:ring-[#ff6b5b] focus:border-[#ff6b5b]',
@@ -498,7 +519,11 @@
                     v-model="alumno.datos.materias_no_aprobadas"
                     type="text"
                     placeholder="Ej: Bases de Datos..."
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all"
+                    :disabled="alumno.modoVer"
+                    :class="[
+                      'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all',
+                      alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
+                    ]"
                   />
                 </td>
 
@@ -565,11 +590,23 @@
                   </span>
                 </td>
 
-                <!-- Acciones (sticky) -->
+                <!-- Acciones DINÁMICAS -->
                 <td
                   class="px-4 py-4 whitespace-nowrap text-center bg-white hover:bg-blue-50 z-10 border-l border-gray-200"
                 >
+                  <!-- Si está en modo VER -->
+                  <div v-if="alumno.modoVer" class="flex gap-2 justify-center">
+                    <button
+                      @click="cerrarVistaReporte(alumno)"
+                      class="px-3 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all text-xs font-bold shadow-md"
+                    >
+                      ✖️ Cerrar
+                    </button>
+                  </div>
+
+                  <!-- Si NO está guardado (pendiente) -->
                   <button
+                    v-else-if="alumno.estado === 'pendiente'"
                     @click="guardarAlumno(alumno)"
                     :disabled="alumno.estado === 'guardando' || tieneErrores(alumno)"
                     :class="[
@@ -581,6 +618,66 @@
                   >
                     {{ tieneErrores(alumno) ? '⚠️ Errores' : '💾 Guardar' }}
                   </button>
+
+                  <!-- Si está GUARDADO - Botones Ver/Editar/Eliminar -->
+                  <div v-else-if="alumno.estado === 'guardado'" class="flex gap-2 justify-center">
+                    <button
+                      @click="verReporte(alumno)"
+                      class="px-3 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all text-xs font-bold shadow-md"
+                      title="Ver reporte"
+                    >
+                      👁️
+                    </button>
+                    <button
+                      @click="editarReporte(alumno)"
+                      :disabled="alumno.estado === 'guardando' || tieneErrores(alumno)"
+                      :class="[
+                        'px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all text-xs font-bold shadow-md',
+                        tieneErrores(alumno)
+                          ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                          : 'bg-gradient-to-r from-[#ff5242] to-[#ff3d2a] text-white hover:from-[#ff3d2a] hover:to-[#e62a1a] focus:ring-[#ff6b5b]',
+                      ]"
+                      title="Editar y actualizar"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      @click="eliminarReporte(alumno)"
+                      class="px-3 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all text-xs font-bold shadow-md"
+                      title="Eliminar reporte"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+
+                  <!-- Si está GUARDANDO -->
+                  <div v-else-if="alumno.estado === 'guardando'" class="flex justify-center">
+                    <div
+                      class="px-4 py-2 rounded-lg bg-blue-400 text-white text-xs font-bold inline-flex items-center"
+                    >
+                      <svg
+                        class="animate-spin w-4 h-4 mr-1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          class="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          stroke-width="4"
+                        ></circle>
+                        <path
+                          class="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      ...
+                    </div>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -723,7 +820,7 @@ const tieneErrores = (alumno) => {
   return alumno.errores && Object.keys(alumno.errores).length > 0
 }
 
-// ==================== METHODS ====================
+// ==================== CARGAR DATOS ====================
 const cargarTodosLosAlumnos = async () => {
   isLoadingMore.value = true
   errorMessage.value = null
@@ -739,14 +836,164 @@ const cargarTodosLosAlumnos = async () => {
       '',
     )
 
-    alumnos.value = response.data.tutorias.map((tutoria) => ({
-      nombre: tutoria.alumno
-        ? `${tutoria.alumno.nombre || ''} ${tutoria.alumno.apellido_p || ''} ${tutoria.alumno.apellido_m || ''}`.trim()
-        : 'Alumno Desconocido',
-      num_control: tutoria.alumno?.num_control || 'N/A',
-      estado: 'pendiente',
-      errores: {},
-      datos: {
+    console.log('Response completa:', response.data)
+
+    // Mapear alumnos y cargar datos si existen
+    alumnos.value = await Promise.all(
+      response.data.tutorias.map(async (tutoria) => {
+        const alumno = {
+          nombre: tutoria.alumno
+            ? `${tutoria.alumno.nombre || ''} ${tutoria.alumno.apellido_p || ''} ${tutoria.alumno.apellido_m || ''}`.trim()
+            : 'Alumno Desconocido',
+          num_control: tutoria.alumno?.num_control || 'N/A',
+          id_tutoria: tutoria.id_tutoria,
+          estado: tutoria.reporte_integral_guardado ? 'guardado' : 'pendiente',
+          modoVer: false,
+          errores: {},
+          datos: {
+            tutoria_grupal: 0,
+            tutoria_individual: 0,
+            seguimiento_1: '',
+            seguimiento_2: '',
+            seguimiento_3: '',
+            jefatura_academica: 0,
+            ciencias_basicas: 0,
+            psicologia: 0,
+            materias_aprobadas: 0,
+            materias_no_aprobadas: '',
+          },
+        }
+
+        // Si ya tiene reporte guardado, cargar los datos
+        if (tutoria.reporte_integral_guardado) {
+          try {
+            const reporteResponse = await axios.get(
+              `http://localhost:8000/api/reportes/integral/tutoria/${tutoria.id_tutoria}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                },
+              },
+            )
+            if (reporteResponse.status === 200) {
+              alumno.datos = {
+                tutoria_grupal: reporteResponse.data.tutoria_grupal || 0,
+                tutoria_individual: reporteResponse.data.tutoria_individual || 0,
+                seguimiento_1: reporteResponse.data.seguimiento_1 || '',
+                seguimiento_2: reporteResponse.data.seguimiento_2 || '',
+                seguimiento_3: reporteResponse.data.seguimiento_3 || '',
+                jefatura_academica: reporteResponse.data.jefatura_academica || 0,
+                ciencias_basicas: reporteResponse.data.ciencias_basicas || 0,
+                psicologia: reporteResponse.data.psicologia || 0,
+                materias_aprobadas: reporteResponse.data.materias_aprobadas || 0,
+                materias_no_aprobadas: reporteResponse.data.materias_no_aprobadas || '',
+              }
+              alumno.reporte_id = reporteResponse.data.id
+            }
+          } catch (err) {
+            console.error(`Error al cargar reporte de ${alumno.nombre}:`, err)
+          }
+        }
+
+        return alumno
+      }),
+    )
+
+    console.log(`✅ Cargados ${alumnos.value.length} alumnos`)
+  } catch (error) {
+    console.error('Error al cargar alumnos:', error)
+    errorMessage.value = 'No se pudieron cargar todos los alumnos. Intenta de nuevo.'
+  } finally {
+    isLoadingMore.value = false
+  }
+}
+
+// ==================== CRUD OPERATIONS ====================
+
+// VER REPORTE (modo lectura)
+const verReporte = (alumno) => {
+  alumno.modoVer = true
+  successMessage.value = `👁️ Mostrando reporte de ${alumno.nombre} (solo lectura)`
+  setTimeout(() => {
+    successMessage.value = null
+  }, 2000)
+}
+
+// CERRAR VISTA
+const cerrarVistaReporte = (alumno) => {
+  alumno.modoVer = false
+}
+
+// EDITAR REPORTE
+const editarReporte = async (alumno) => {
+  // Validar antes de guardar
+  validarTutoriaGrupal(alumno)
+  validarTutoriaIndividual(alumno)
+  validarMateriasAprobadas(alumno)
+
+  if (tieneErrores(alumno)) {
+    errorMessage.value = `❌ Corrige los errores en el formulario de ${alumno.nombre} antes de actualizar.`
+    return
+  }
+
+  alumno.estado = 'guardando'
+  errorMessage.value = null
+
+  try {
+    const token = localStorage.getItem('accessToken')
+    const response = await axios.post(
+      'http://localhost:8000/api/reportes/integral',
+      {
+        id_tutoria: alumno.id_tutoria,
+        ...alumno.datos,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+
+    if (response.status === 201 || response.status === 200) {
+      alumno.estado = 'guardado'
+      successMessage.value = `✅ Reporte de ${alumno.nombre} actualizado exitosamente.`
+      setTimeout(() => {
+        successMessage.value = null
+      }, 3000)
+    }
+  } catch (error) {
+    console.error('Error al actualizar reporte:', error)
+    alumno.estado = 'error'
+    errorMessage.value = `❌ Error al actualizar reporte de ${alumno.nombre}. ${error.response?.data?.detail || error.message}`
+  }
+}
+
+// ELIMINAR REPORTE
+const eliminarReporte = async (alumno) => {
+  if (
+    !confirm(
+      `⚠️ ¿Estás seguro de eliminar el reporte de ${alumno.nombre}?\n\nEsta acción no se puede deshacer.`,
+    )
+  ) {
+    return
+  }
+
+  try {
+    const token = localStorage.getItem('accessToken')
+    const response = await axios.delete(
+      `http://localhost:8000/api/reportes/integral/${alumno.reporte_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+
+    if (response.status === 200 || response.status === 204) {
+      // Reset alumno a estado pendiente
+      alumno.estado = 'pendiente'
+      alumno.reporte_id = null
+      alumno.datos = {
         tutoria_grupal: 0,
         tutoria_individual: 0,
         seguimiento_1: '',
@@ -757,19 +1004,19 @@ const cargarTodosLosAlumnos = async () => {
         psicologia: 0,
         materias_aprobadas: 0,
         materias_no_aprobadas: '',
-      },
-    }))
-    console.log('Alumnos cargados:', alumnos.value)
-
-    console.log(`Cargados ${alumnos.value.length} alumnos`)
+      }
+      successMessage.value = `🗑️ Reporte de ${alumno.nombre} eliminado exitosamente.`
+      setTimeout(() => {
+        successMessage.value = null
+      }, 3000)
+    }
   } catch (error) {
-    console.error('Error al cargar alumnos:', error)
-    errorMessage.value = 'No se pudieron cargar todos los alumnos. Intenta de nuevo.'
-  } finally {
-    isLoadingMore.value = false
+    console.error('Error al eliminar reporte:', error)
+    errorMessage.value = `❌ Error al eliminar reporte de ${alumno.nombre}. ${error.response?.data?.detail || error.message}`
   }
 }
 
+// GUARDAR ALUMNO (crear reporte)
 const guardarAlumno = async (alumno) => {
   // Validar antes de guardar
   validarTutoriaGrupal(alumno)
@@ -789,7 +1036,7 @@ const guardarAlumno = async (alumno) => {
     const response = await axios.post(
       'http://localhost:8000/api/reportes/integral',
       {
-        num_control: alumno.num_control,
+        id_tutoria: alumno.id_tutoria,
         ...alumno.datos,
       },
       {
@@ -801,6 +1048,7 @@ const guardarAlumno = async (alumno) => {
 
     if (response.status === 201 || response.status === 200) {
       alumno.estado = 'guardado'
+      alumno.reporte_id = response.data.id || alumno.id_tutoria
       successMessage.value = `✅ Reporte de ${alumno.nombre} guardado exitosamente.`
       setTimeout(() => {
         successMessage.value = null
@@ -813,15 +1061,18 @@ const guardarAlumno = async (alumno) => {
   }
 }
 
+// GUARDAR TODO
 const guardarTodo = async () => {
   // Validar todos los alumnos primero
   let hayErrores = false
   alumnos.value.forEach((alumno) => {
-    validarTutoriaGrupal(alumno)
-    validarTutoriaIndividual(alumno)
-    validarMateriasAprobadas(alumno)
-    if (tieneErrores(alumno)) {
-      hayErrores = true
+    if (alumno.estado !== 'guardado') {
+      validarTutoriaGrupal(alumno)
+      validarTutoriaIndividual(alumno)
+      validarMateriasAprobadas(alumno)
+      if (tieneErrores(alumno)) {
+        hayErrores = true
+      }
     }
   })
 
@@ -871,41 +1122,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* Colores personalizados coral */
-.bg-coral-600 {
-  background-color: #ff5242;
-}
-.bg-coral-700 {
-  background-color: #ff3d2a;
-}
-.hover\:bg-coral-700:hover {
-  background-color: #ff3d2a;
-}
-.hover\:bg-coral-800:hover {
-  background-color: #e62a1a;
-}
-.text-coral-100 {
-  color: #fff1f0;
-}
-.ring-coral-500 {
-  --tw-ring-color: #ff6b5b;
-}
-.focus\:ring-coral-500:focus {
-  --tw-ring-color: #ff6b5b;
-}
-.focus\:border-coral-500:focus {
-  border-color: #ff6b5b;
-}
-.text-coral-600 {
-  color: #ff5242;
-}
-.border-coral-200 {
-  border-color: #ffccc6;
-}
-.border-coral-400 {
-  border-color: #ff8576;
-}
-
 /* Scrollbar personalizado con colores coral */
 .overflow-auto::-webkit-scrollbar {
   width: 14px;
