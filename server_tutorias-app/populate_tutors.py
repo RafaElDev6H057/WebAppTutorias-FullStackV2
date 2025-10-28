@@ -76,7 +76,7 @@ tutor_data = [
         "correo": "lluvia.mt@fresnillo.tecnm.mx"
     },
     {
-        "nombre": "MA. DE LA LUZ",
+        "nombre": "MA DE LA LUZ",
         "apellido_p": "RAMOS",
         "apellido_m": "RAMIREZ",
         "correo": "maluz.rr@fresnillo.tecnm.mx"

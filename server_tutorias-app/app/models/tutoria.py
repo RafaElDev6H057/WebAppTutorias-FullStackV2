@@ -2,7 +2,7 @@
 
 from typing import Optional, TYPE_CHECKING
 from sqlmodel import SQLModel, Field, Relationship
-from datetime import datetime, timezone # Quitamos 'time'
+from datetime import datetime, timezone
 from enum import Enum
 from sqlalchemy import Column, DateTime, Text, ForeignKey
 
@@ -16,8 +16,6 @@ class EstadoTutoria(str, Enum):
     EN_CURSO = "en curso"
     COMPLETADA = "completada"
 
-# ❗ DiaSemana Enum eliminado
-
 # --- Modelo Principal ---
 class Tutoria(SQLModel, table=True):
 
@@ -26,19 +24,20 @@ class Tutoria(SQLModel, table=True):
     alumno_id: int = Field(
         sa_column=Column("alumno_id", ForeignKey("alumno.id_alumno", ondelete="CASCADE"), index=True)
     )
-    
-    # ✅ Corregido: ondelete="SET NULL"
+
     tutor_id: Optional[int] = Field(
         default=None,
         sa_column=Column("tutor_id", ForeignKey("tutor.id_tutor", ondelete="SET NULL"), index=True)
     )
 
-    periodo: Optional[str] = Field(default=None, max_length=100, index=True) # Añadido index a periodo
+    periodo: Optional[str] = Field(default=None, max_length=100, index=True)
     observaciones: Optional[str] = Field(default=None, sa_column=Column(Text))
     estado: EstadoTutoria = Field(default=EstadoTutoria.PENDIENTE)
     semestre: int = Field(ge=1, le=14) # Semestre del alumno en este periodo
 
-    # ❗ Campos eliminados: es_activa, dia, hora
+    # ✅ --- NUEVO CAMPO AÑADIDO ---
+    reporte_integral_guardado: bool = Field(default=False, nullable=False)
+    # -----------------------------
 
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)
