@@ -8,7 +8,7 @@
         <div class="flex justify-between items-center">
           <div>
             <h1 class="text-3xl font-bold drop-shadow-md">Reporte Integral de Tutoría</h1>
-            <p class="text-white/90 text-sm mt-1 font-medium">Periodo 22025 - Vista Masiva</p>
+            <p class="text-white/90 text-sm mt-1 font-medium">Periodo 22025</p>
           </div>
           <button
             @click="closeModal"
@@ -148,7 +148,7 @@
                 d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
               />
             </svg>
-            {{ isSaving ? 'Guardando...' : '💾 Guardar Todo' }}
+            {{ isSaving ? 'Guardando...' : 'Guardar Todo' }}
           </button>
         </div>
       </div>
@@ -237,9 +237,7 @@
       </Transition>
 
       <!-- Tabla de Alumnos con Scroll Horizontal -->
-      <div
-        class="flex-1 overflow-hidden bg-white shadow-xl mx-4 my-2 rounded-xl border-2 border-gray-200"
-      >
+      <div class="flex-1 overflow-hidden bg-white shadow-xl rounded-xl border-2 border-gray-200">
         <div class="h-full overflow-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead
@@ -249,57 +247,57 @@
                 <th
                   class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider sticky left-0 bg-gradient-to-r from-[#ff5242] to-orange-500 z-30 border-r border-[#ff8576] min-w-[200px]"
                 >
-                  👤 Alumno
+                  Alumno
                 </th>
                 <th
                   class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider min-w-[100px]"
                 >
-                  T. Grupal
+                  Tutoría Grupal
                 </th>
                 <th
                   class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider min-w-[120px]"
                 >
-                  T. Individual
+                  Tutoría Individual
                 </th>
                 <th
                   class="px-4 py-4 text-left text-xs font-bold text-white uppercase tracking-wider min-w-[180px]"
                 >
-                  📝 Seguimiento 1
+                  Seguimiento 1
                 </th>
                 <th
                   class="px-4 py-4 text-left text-xs font-bold text-white uppercase tracking-wider min-w-[180px]"
                 >
-                  📝 Seguimiento 2
+                  Seguimiento 2
                 </th>
                 <th
                   class="px-4 py-4 text-left text-xs font-bold text-white uppercase tracking-wider min-w-[180px]"
                 >
-                  📝 Seguimiento 3
+                  Seguimiento 3
                 </th>
                 <th
                   class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider min-w-[180px]"
                 >
-                  🏢 Área Canalizada
+                  Área Canalizada
                 </th>
                 <th
                   class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider min-w-[100px]"
                 >
-                  ✅ Mat. Aprob.
+                  Mat. Aprob.
                 </th>
                 <th
                   class="px-4 py-4 text-left text-xs font-bold text-white uppercase tracking-wider min-w-[180px]"
                 >
-                  ❌ Mat. No Aprob.
+                  Mat. No Aprob.
                 </th>
                 <th
                   class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider min-w-[120px]"
                 >
-                  📊 Estado
+                  Estado
                 </th>
                 <th
                   class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-gradient-to-r from-[#ff5242] to-orange-500 z-30 border-l border-[#ff8576] min-w-[180px]"
                 >
-                  ⚙️ Acciones
+                  Acciones
                 </th>
               </tr>
             </thead>
@@ -586,7 +584,7 @@
                     v-else
                     class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-md"
                   >
-                    ⏳ Pendiente
+                    Pendiente
                   </span>
                 </td>
 
@@ -616,7 +614,7 @@
                         : 'bg-gradient-to-r from-[#ff5242] to-[#ff3d2a] text-white hover:from-[#ff3d2a] hover:to-[#e62a1a] focus:ring-[#ff6b5b]',
                     ]"
                   >
-                    {{ tieneErrores(alumno) ? '⚠️ Errores' : '💾 Guardar' }}
+                    {{ tieneErrores(alumno) ? 'Errores' : 'Guardar' }}
                   </button>
 
                   <!-- Si está GUARDADO - Botones Ver/Editar/Eliminar -->
@@ -716,9 +714,6 @@
             <strong class="text-[#ff5242]">Total de alumnos:</strong> {{ totalAlumnos }} |
             <strong class="text-green-600">Guardados:</strong> {{ alumnosGuardados }} |
             <strong class="text-yellow-600">Pendientes:</strong> {{ alumnosPendientes }}
-          </p>
-          <p class="text-xs text-gray-500">
-            💡 Los campos con borde rojo tienen errores de validación
           </p>
         </div>
       </div>
