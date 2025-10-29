@@ -1,24 +1,29 @@
 # app/routers/reportes.py
-
-from fastapi import APIRouter, Depends, Response, status, HTTPException # Añadido HTTPException
+from fastapi import APIRouter, Depends, status, HTTPException, Response
 from sqlmodel import Session
-from typing import List, Union # Añadido List y Union
+from typing import List, Union
+import io # Para el BytesIO
+
+# Nueva importación para devolver archivos
+from fastapi.responses import StreamingResponse
 
 # Imports de la app
 from app.database import get_session
-from app.models.reporte_integral import ReporteIntegral # Importar el modelo
-from app.schemas.reporte_integral import ReporteIntegralCreate, ReporteIntegralRead, ReporteIntegralUpdate # Importar esquemas
+from app.models.reporte_integral import ReporteIntegral
+from app.schemas.reporte_integral import ReporteIntegralCreate, ReporteIntegralRead, ReporteIntegralUpdate
 from app.services import reporte_integral_service
-# Imports para otros reportes (sin cambios)
+# Importamos el nuevo servicio de PDF
+from app.services import pdf_generator_service # <-- NUEVO IMPORT
+# Otros reportes
 from app.schemas.reporte1 import Reporte1Create, Reporte1Read
 from app.services import reporte1_service
 from app.schemas.reporte2 import Reporte2Create, Reporte2Read
 from app.services import reporte2_service
-# Imports para seguridad
-from app.core.dependencies import get_current_user # Usamos la dependencia combinada
+# Seguridad y modelos
+from app.core.dependencies import get_current_user
 from app.models.administrador import Administrador
 from app.models.tutor import Tutor
-from app.models.tutoria import Tutoria # Necesario para verificar permisos
+from app.models.tutoria import Tutoria
 
 router = APIRouter(prefix="/reportes", tags=["Reportes"])
 
@@ -184,6 +189,67 @@ def handle_delete_reporte(
 
     reporte_integral_service.delete_reporte(db=session, reporte_id=reporte_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+# ==================================
+# === GENERACIÓN DE PDF INTEGRAL ===
+# ==================================
+
+@router.get(
+    "/integral/pdf/tutor/{id_tutor}/periodo/{periodo}",
+    summary="Generar PDF del Reporte Integral por Tutor y Periodo",
+    # Indicamos que la respuesta es un PDF
+    response_class=StreamingResponse
+)
+async def handle_generate_integral_pdf(
+    id_tutor: int,
+    periodo: str,
+    session: Session = Depends(get_session),
+    # Protección: Solo Admins o el Tutor correspondiente
+    current_user: Union[Administrador, Tutor] = Depends(get_current_user)
+):
+    """
+    Genera y devuelve el archivo PDF del Reporte Integral consolidado
+    para todos los alumnos de un Tutor en un Periodo específico.
+    Requiere autenticación (Admin o el Tutor solicitado).
+    """
+    # --- Validación de Permisos ---
+    if isinstance(current_user, Tutor) and current_user.id_tutor != id_tutor:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permiso para generar este reporte."
+        )
+    # --- Fin Validación ---
+
+    try:
+        # Llamamos al servicio que genera el PDF en memoria (BytesIO)
+        pdf_stream: io.BytesIO = pdf_generator_service.generate_integral_report_pdf(
+            db=session, id_tutor=id_tutor, periodo=periodo
+        )
+
+        # Nombre de archivo sugerido para la descarga
+        filename = f"Reporte_Integral_Tutor_{id_tutor}_{periodo}.pdf"
+
+        # Devolvemos el stream como una respuesta PDF
+        return StreamingResponse(
+            content=pdf_stream,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}" # Fuerza la descarga
+            }
+        )
+    except HTTPException as http_exc:
+        # Re-lanzamos errores controlados (ej. 404 si no hay tutorías)
+        raise http_exc
+    except Exception as e:
+        # Loggear el error para depuración
+        print(f"ERROR INESPERADO al generar PDF para tutor {id_tutor}, periodo {periodo}: {e}")
+        import traceback
+        traceback.print_exc()
+        # Devolvemos un error genérico al cliente
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Ocurrió un error inesperado al generar el PDF."
+        )
 
 
 # ==================================
