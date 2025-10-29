@@ -50,6 +50,42 @@
                 Cambiar Contraseña
               </button>
               <button
+                @click="descargarPDFReporteIntegral"
+                :disabled="loading || !studentsData.length"
+                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+              >
+                <svg
+                  v-if="loading"
+                  class="animate-spin h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                {{ loading ? 'Generando...' : 'Descargar PDF' }}
+              </button>
+              <button
                 @click="handleLogout"
                 class="bg-coral-500 hover:bg-coral-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
               >
@@ -1482,6 +1518,53 @@ const handleLogout = () => {
   localStorage.removeItem('accessToken')
   localStorage.removeItem('userRole')
   router.push('/login_tutor')
+}
+
+// ==================== DESCARGA PDF ====================
+const descargarPDFReporteIntegral = async () => {
+  try {
+    loading.value = true
+    const token = localStorage.getItem('accessToken')
+
+    // Obtener el periodo desde la primera tutoría (todas deberían tener el mismo periodo)
+    const periodo = studentsData.value[0]?.tutorialPeriod || '22025'
+
+    const response = await axios.get(
+      `http://localhost:8000/api/reportes/integral/pdf/tutor/${tutor.value.id_tutor}/periodo/${periodo}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: 'blob', // IMPORTANTE: para recibir el PDF como blob
+      },
+    )
+
+    // Crear un URL temporal para el blob
+    const blob = new Blob([response.data], { type: 'application/pdf' })
+    const url = window.URL.createObjectURL(blob)
+
+    // Crear un link temporal y hacer click para descargar
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `Reporte_Integral_${tutor.value.nombre}_${periodo}.pdf`
+    document.body.appendChild(link)
+    link.click()
+
+    // Limpiar
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+
+    console.log('✅ PDF descargado exitosamente')
+  } catch (err) {
+    console.error('Error al descargar PDF:', err)
+    if (err.response?.status === 404) {
+      error.value = 'No se encontraron reportes integrales para descargar.'
+    } else {
+      error.value = 'Error al generar el PDF. Intenta de nuevo.'
+    }
+  } finally {
+    loading.value = false
+  }
 }
 
 // ==================== LIFECYCLE ====================
