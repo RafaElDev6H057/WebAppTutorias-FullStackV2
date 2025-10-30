@@ -16,16 +16,18 @@ from fastapi import HTTPException, status
 
 # Models
 from app.models.tutor import Tutor
-from app.models.tutoria import Tutoria
+from app.models.tutoria import Tutoria, EstadoTutoria
 from app.models.alumno import Alumno
 from app.models.reporte_integral import ReporteIntegral
 
 # Coordinate Files
 from app.core.pdf_coords.coords_pagina1 import coords as coords_p1, REF_W as P1_REF_W, REF_H as P1_REF_H
 from app.core.pdf_coords.coords_pagina2 import coords as coords_p2, REF_W as P2_REF_W, REF_H as P2_REF_H
+from app.core.pdf_coords.coords_constancia import coords_constancia, REF_W as CONST_REF_W, REF_H as CONST_REF_H
 
 # Path to template PDF
 TEMPLATE_PDF_PATH = "app/pdf_templates/formato.pdf"
+TEMPLATE_CONSTANCIA_PATH = "app/pdf_templates/formato_constancia.pdf"
 
 # --- Helper Function _draw_page_overlay (SIN CAMBIOS) ---
 def _draw_page_overlay(
@@ -173,3 +175,95 @@ def generate_integral_report_pdf(db: Session, id_tutor: int, periodo: str) -> io
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error al generar PDF: {e}")
+    
+def generate_constancia_pdf(db: Session, id_alumno: int) -> io.BytesIO:
+    """
+    Genera el PDF de la Constancia de Tutorías para un alumno específico.
+    """
+    # 1. Obtener datos del Alumno
+    alumno = db.get(Alumno, id_alumno)
+    if not alumno:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alumno no encontrado.")
+
+    # 2. Verificar Elegibilidad (Regla de Negocio)
+    query = select(func.count(Tutoria.id_tutoria)).where( # type: ignore
+        Tutoria.alumno_id == id_alumno,
+        Tutoria.estado == EstadoTutoria.COMPLETADA
+    )
+    tutorias_completadas = db.exec(query).one()
+
+    if tutorias_completadas < 4: # O la regla que definas (ej. 4)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"El alumno solo ha completado {tutorias_completadas} de 4 tutorías requeridas."
+        )
+
+    # 3. Preparar los datos a dibujar
+    # Usamos .upper() para un look más formal de certificado
+    nombre_completo = f"{alumno.nombre} {alumno.apellido_p} {alumno.apellido_m or ''}".strip().upper()
+    data_to_draw = {
+        "nombre_alumno": nombre_completo,
+        # "fecha_expedicion": "Fresnillo, Zac. a [FECHA DE HOY]" # Lo dejamos pendiente
+    }
+
+    # 4. Generar el PDF
+    try:
+        # Cargar la plantilla de constancia
+        reader = PdfReader(TEMPLATE_CONSTANCIA_PATH)
+        writer = PdfWriter()
+        
+        base_page = reader.pages[0]
+        base_w = float(base_page.mediabox.width)
+        base_h = float(base_page.mediabox.height)
+
+        # Crear el overlay (contenido a superponer)
+        packet = io.BytesIO()
+        can = canvas.Canvas(packet, pagesize=(base_w, base_h))
+        
+        # --- Configuración de Fuente (¡IMPORTANTE!) ---
+        # Estos valores son de prueba y necesitarán ajuste
+        can.setFont("Helvetica-Bold", 12) # Fuente más grande y negrita para el nombre
+        # ----------------------------------------------
+
+        # Calcular factores de escala (las referencias vienen del archivo de coords)
+        scale_x = base_w / CONST_REF_W
+        scale_y = base_h / CONST_REF_H
+
+        # Dibujar el nombre del alumno
+        coord = coords_constancia["nombre_alumno"]
+        x = coord[0] * scale_x
+        y = coord[1] * scale_y
+        
+        # Usamos drawCentredString para que el nombre quede centrado en la coordenada X
+        can.drawCentredString(x, y, data_to_draw["nombre_alumno"])
+
+        # (Aquí iría el código para dibujar la fecha si la añadiéramos)
+
+        can.save()
+        packet.seek(0)
+        
+        # Fusionar el overlay con la página de la plantilla
+        overlay_reader = PdfReader(packet)
+        base_page.merge_page(overlay_reader.pages[0])
+        writer.add_page(base_page)
+
+        # 5. Guardar el PDF final en memoria
+        output_pdf_stream = io.BytesIO()
+        writer.write(output_pdf_stream)
+        
+        # Cerrar streams
+        writer.close()
+        overlay_reader.stream.close()
+        if hasattr(reader, 'stream') and not reader.stream.closed:
+            reader.stream.close()
+        
+        output_pdf_stream.seek(0) # Rebobinar para que el router pueda leerlo
+        return output_pdf_stream
+
+    except FileNotFoundError:
+        raise HTTPException(status_code=500, detail=f"No se encontró la plantilla de constancia: {TEMPLATE_CONSTANCIA_PATH}")
+    except Exception as e:
+        print(f"ERROR generando constancia PDF: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Ocurrió un error al generar la constancia: {e}")

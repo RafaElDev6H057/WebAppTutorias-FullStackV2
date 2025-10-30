@@ -1,6 +1,8 @@
 # app/routers/alumnos.py
 
 from fastapi import APIRouter, Depends, HTTPException, status, Response, UploadFile, File, Query
+from fastapi.responses import StreamingResponse
+import io
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select, or_, func
 import shutil
@@ -18,6 +20,7 @@ from app.schemas.alumno import (
 )
 from app.schemas.administrador import Token
 from app.services import alumno_service
+from app.services import pdf_generator_service
 from app.core import security
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.core.dependencies import get_current_admin_user, get_current_alumno_user
@@ -67,6 +70,48 @@ def change_password(
 ):
     """Permite al alumno (ya logueado) cambiar su propia contraseña."""
     return alumno_service.change_password(db=session, alumno=current_alumno, data=data)
+
+@router.get(
+    "/me/constancia-pdf",
+    summary="Descargar Constancia de Tutorías",
+    response_class=StreamingResponse # Indicamos que la respuesta es un stream
+)
+async def handle_generate_constancia_pdf(
+    current_alumno: Alumno = Depends(get_current_alumno_user),
+    session: Session = Depends(get_session)
+):
+    """
+    Genera y devuelve el PDF de la constancia de tutorías
+    para el alumno autenticado.
+    Falla si el alumno no ha completado las 4 tutorías.
+    """
+    try:
+        # 1. Llamar al servicio de generación de PDF
+        pdf_stream: io.BytesIO = pdf_generator_service.generate_constancia_pdf(
+            db=session, id_alumno=current_alumno.id_alumno #type: ignore
+        )
+        
+        # 2. Definir el nombre del archivo
+        filename = f"Constancia_Tutorias_{current_alumno.num_control}.pdf"
+
+        # 3. Devolver el stream como una respuesta PDF que fuerza la descarga
+        return StreamingResponse(
+            content=pdf_stream,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}"
+            }
+        )
+    except HTTPException as http_exc:
+        # Re-lanzar errores conocidos (ej. 400 si no es elegible)
+        raise http_exc
+    except Exception as e:
+        # Capturar errores inesperados del generador de PDF
+        print(f"ERROR INESPERADO al generar constancia PDF para alumno {current_alumno.id_alumno}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Ocurrió un error al generar la constancia."
+        )
 
 # ===================================================
 # === ENDPOINTS PROPIOS DEL ALUMNO (PANEL ALUMNO) ===
