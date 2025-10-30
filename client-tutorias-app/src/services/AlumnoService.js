@@ -9,6 +9,22 @@ const apiClient = axios.create({
   },
 })
 
+// --- Interceptor de Petición (Añade el token) ---
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('accessToken') // O la key que uses
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    // Manejar errores de configuración de la petición
+    console.error('Error en configuración de petición Axios:', error)
+    return Promise.reject(error)
+  },
+)
+
 export default {
   // MODIFICAMOS ESTE MÉTODO
   getAlumnos(page = 1, size = 10, search = '') {

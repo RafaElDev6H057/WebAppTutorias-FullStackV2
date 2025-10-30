@@ -135,31 +135,66 @@ const router = useRouter()
 // Lógica del inicio de sesión
 const handleSubmit = async () => {
   try {
-    // Llama al endpoint de login en el backend
+    // 1. Preparamos los datos en el formato 'form-data'
+    const formData = new URLSearchParams()
+    formData.append('username', usuario.value)
+    formData.append('password', password.value)
 
-    const response = await axios.post('http://localhost:8000/api/alumnos/login', {
-      num_control: usuario.value,
-      contraseña: password.value,
+    // 2. Hacemos la petición POST
+    const response = await axios.post('http://localhost:8000/api/alumnos/login', formData, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
     })
 
-    // Verifica si la respuesta fue exitosa
-    if (response.status === 200) {
-      // console.log('Inicio de sesión exitoso:', response.data)
+    // 3. Si el login es exitoso, la respuesta contendrá el token
+    if (response.status === 200 && response.data.access_token) {
+      console.log('Inicio de sesión exitoso:', response.data)
 
-      // Opcional: guarda el token o datos del usuario en el almacenamiento local
-      localStorage.setItem('alumno', JSON.stringify(response.data))
+      // 4. Guardamos el TOKEN en localStorage, no los datos del usuario
+      localStorage.setItem('accessToken', response.data.access_token)
 
-      // Redirige al dashboard
+      // (Opcional) Puedes guardar otros datos si los necesitas, pero el token es lo crucial
+      localStorage.setItem('userRole', 'alumno')
+
       router.push('/login_alumno/dashboard')
-    } else {
-      // Maneja errores como credenciales inválidas
-      errorMessage.value = response.data.message || 'Credenciales incorrectas'
     }
   } catch (error) {
-    // console.error('Error en la solicitud:', error.response.data.message)
-    errorMessage.value = error.response.data.message || 'Credenciales incorrectas'
+    console.error('Error en la solicitud:', error)
+    if (error.response && error.response.data && error.response.data.detail) {
+      errorMessage.value = error.response.data.detail
+    } else {
+      errorMessage.value = 'Error de conexión o credenciales incorrectas.'
+    }
   }
 }
+// const handleSubmit = async () => {
+//   try {
+//     // Llama al endpoint de login en el backend
+
+//     const response = await axios.post('http://localhost:8000/api/alumnos/login', {
+//       num_control: usuario.value,
+//       contraseña: password.value,
+//     })
+
+//     // Verifica si la respuesta fue exitosa
+//     if (response.status === 200) {
+//       // console.log('Inicio de sesión exitoso:', response.data)
+
+//       // Opcional: guarda el token o datos del usuario en el almacenamiento local
+//       localStorage.setItem('alumno', JSON.stringify(response.data))
+
+//       // Redirige al dashboard
+//       router.push('/login_alumno/dashboard')
+//     } else {
+//       // Maneja errores como credenciales inválidas
+//       errorMessage.value = response.data.message || 'Credenciales incorrectas'
+//     }
+//   } catch (error) {
+//     // console.error('Error en la solicitud:', error.response.data.message)
+//     errorMessage.value = error.response.data.message || 'Credenciales incorrectas'
+//   }
+// }
 
 const circles = [
   { color: 'bg-purple-600', size: 96, top: 10, left: 5 },
