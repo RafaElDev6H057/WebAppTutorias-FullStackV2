@@ -83,7 +83,7 @@ def generate_integral_report_pdf(db: Session, id_tutor: int, periodo: str) -> io
         .outerjoin(ReporteIntegral, Tutoria.id_tutoria == ReporteIntegral.id_tutoria) # type: ignore
         .where(Tutoria.tutor_id == id_tutor)
         .where(Tutoria.periodo == periodo)
-        .order_by(Alumno.apellido_p, Alumno.apellido_m, Alumno.nombre) # type: ignore
+        .order_by(Alumno.nombre, Alumno.apellido_p, Alumno.apellido_m) # type: ignore
     )
     results = db.exec(query).all()
     if not results: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No se encontraron tutorías para {id_tutor} en {periodo}.")
@@ -94,7 +94,7 @@ def generate_integral_report_pdf(db: Session, id_tutor: int, periodo: str) -> io
         report_data = reporte if reporte else {}
         alumnos_data_list.append({
             "tutor": tutor_full_name, "departamento": "N/A", "periodo": periodo, "carrera": alumno.carrera,
-            "nombre": f"{alumno.apellido_p} {alumno.apellido_m or ''} {alumno.nombre}".strip(),
+            "nombre": f"{alumno.nombre} {alumno.apellido_p} {alumno.apellido_m or ''}".strip(),
             "grupal": getattr(report_data, 'tutoria_grupal', 0),
             "individual": getattr(report_data, 'tutoria_individual', 0),
             "seguimiento1": getattr(report_data, 'seguimiento_1', ''), "seguimiento2": getattr(report_data, 'seguimiento_2', ''), "seguimiento3": getattr(report_data, 'seguimiento_3', ''),
@@ -180,84 +180,71 @@ def generate_constancia_pdf(db: Session, id_alumno: int) -> io.BytesIO:
     """
     Genera el PDF de la Constancia de Tutorías para un alumno específico.
     """
-    # 1. Obtener datos del Alumno
+    # ... (código para obtener alumno y verificar elegibilidad) ...
     alumno = db.get(Alumno, id_alumno)
     if not alumno:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alumno no encontrado.")
-
-    # 2. Verificar Elegibilidad (Regla de Negocio)
     query = select(func.count(Tutoria.id_tutoria)).where( # type: ignore
         Tutoria.alumno_id == id_alumno,
         Tutoria.estado == EstadoTutoria.COMPLETADA
     )
     tutorias_completadas = db.exec(query).one()
-
-    if tutorias_completadas < 4: # O la regla que definas (ej. 4)
+    if tutorias_completadas < 1: # Mantenemos 1 para pruebas
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"El alumno solo ha completado {tutorias_completadas} de 4 tutorías requeridas."
+            detail=f"El alumno solo ha completado {tutorias_completadas} de 1 tutoría requerida."
         )
 
     # 3. Preparar los datos a dibujar
-    # Usamos .upper() para un look más formal de certificado
     nombre_completo = f"{alumno.nombre} {alumno.apellido_p} {alumno.apellido_m or ''}".strip().upper()
     data_to_draw = {
         "nombre_alumno": nombre_completo,
-        # "fecha_expedicion": "Fresnillo, Zac. a [FECHA DE HOY]" # Lo dejamos pendiente
     }
 
     # 4. Generar el PDF
     try:
-        # Cargar la plantilla de constancia
         reader = PdfReader(TEMPLATE_CONSTANCIA_PATH)
         writer = PdfWriter()
-        
         base_page = reader.pages[0]
         base_w = float(base_page.mediabox.width)
         base_h = float(base_page.mediabox.height)
-
-        # Crear el overlay (contenido a superponer)
         packet = io.BytesIO()
         can = canvas.Canvas(packet, pagesize=(base_w, base_h))
-        
-        # --- Configuración de Fuente (¡IMPORTANTE!) ---
-        # Estos valores son de prueba y necesitarán ajuste
-        can.setFont("Helvetica-Bold", 12) # Fuente más grande y negrita para el nombre
-        # ----------------------------------------------
-
-        # Calcular factores de escala (las referencias vienen del archivo de coords)
+        can.setFont("Helvetica-Bold", 12)
         scale_x = base_w / CONST_REF_W
         scale_y = base_h / CONST_REF_H
 
-        # Dibujar el nombre del alumno
+        # --- CAMBIO IMPORTANTE ---
+        # Ahora usamos drawString (alineado a la izquierda) en lugar de drawCentredString
+        
+        # 1. Obtenemos las coordenadas
         coord = coords_constancia["nombre_alumno"]
         x = coord[0] * scale_x
         y = coord[1] * scale_y
         
-        # Usamos drawCentredString para que el nombre quede centrado en la coordenada X
-        can.drawCentredString(x, y, data_to_draw["nombre_alumno"])
-
-        # (Aquí iría el código para dibujar la fecha si la añadiéramos)
+        # 2. Ajustamos la coordenada X (la movemos más a la izquierda)
+        # ya que ahora es el *inicio* del texto, no el *centro*.
+        # Tienes que encontrar el 'x' correcto a prueba y error.
+        # Probemos moviéndolo 60mm a la izquierda de tu coordenada centrada (136mm - 60mm = 76mm)
+        
+        # 👇 NUEVO CÁLCULO DE COORDENADA (Ajusta este 76mm)
+        # x_alineado_izquierda = (76 * mm) * scale_x # ¡Este valor (76) necesitará ajuste!
+        
+        can.drawString(x, y, data_to_draw["nombre_alumno"])
+        # --- FIN DEL CAMBIO ---
 
         can.save()
         packet.seek(0)
-        
-        # Fusionar el overlay con la página de la plantilla
         overlay_reader = PdfReader(packet)
         base_page.merge_page(overlay_reader.pages[0])
         writer.add_page(base_page)
-
-        # 5. Guardar el PDF final en memoria
         output_pdf_stream = io.BytesIO()
         writer.write(output_pdf_stream)
-        
-        # Cerrar streams
         writer.close()
         overlay_reader.stream.close()
         if hasattr(reader, 'stream') and not reader.stream.closed:
             reader.stream.close()
-        
-        output_pdf_stream.seek(0) # Rebobinar para que el router pueda leerlo
+        output_pdf_stream.seek(0)
         return output_pdf_stream
 
     except FileNotFoundError:

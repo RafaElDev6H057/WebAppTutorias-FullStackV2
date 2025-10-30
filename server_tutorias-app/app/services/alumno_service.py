@@ -154,7 +154,7 @@ def get_alumno_tutoria_status(db: Session, id_alumno: int) -> AlumnoTutoriaStatu
     count = db.exec(query).one()
 
     # 2. Definir la regla de negocio (4 o más)
-    es_elegible = count >= 4
+    es_elegible = count >= 1
 
     # 3. Devolver el objeto de respuesta
     return AlumnoTutoriaStatus(tutorias_completadas=count, es_elegible=es_elegible)

@@ -116,6 +116,26 @@ async def handle_generate_constancia_pdf(
 # ===================================================
 # === ENDPOINTS PROPIOS DEL ALUMNO (PANEL ALUMNO) ===
 # ===================================================
+# 🔹 Obtener todos los alumnos (PAGINADO Y PROTEGIDO POR ADMIN)
+@router.get("/", response_model=AlumnosPage, summary="Obtener todos los Alumnos (Admin)")
+def get_alumnos(
+    # ... (código sin cambios) ...
+    session: Session = Depends(get_session),
+    current_admin: Administrador = Depends(get_current_admin_user),
+    page: int = Query(1, gt=0),
+    size: int = Query(10, gt=0, le=100),
+    search: Optional[str] = Query(None, min_length=3)
+):
+    # ... (código sin cambios) ...
+    query = select(Alumno)
+    if search:
+        search_term = f"%{search}%"
+        query = query.where(or_(Alumno.nombre.ilike(search_term), Alumno.apellido_p.ilike(search_term), Alumno.apellido_m.ilike(search_term), Alumno.num_control.ilike(search_term))) # type: ignore
+    count_query = select(func.count()).select_from(query.subquery()) # type: ignore
+    total_alumnos = session.exec(count_query).one()
+    offset = (page - 1) * size
+    alumnos = session.exec(query.offset(offset).limit(size)).all()
+    return AlumnosPage(total_alumnos=total_alumnos, alumnos=alumnos) # type: ignore
 
 @router.get("/me", response_model=AlumnoRead, summary="Obtener datos del Alumno autenticado")
 def read_current_alumno(
@@ -144,26 +164,7 @@ def get_tutoria_status(
 # === ENDPOINTS DE GESTIÓN (SOLO PARA ADMINS) ===
 # ===================================================
 
-# 🔹 Obtener todos los alumnos (PAGINADO Y PROTEGIDO POR ADMIN)
-@router.get("/", response_model=AlumnosPage, summary="Obtener todos los Alumnos (Admin)")
-def get_alumnos(
-    # ... (código sin cambios) ...
-    session: Session = Depends(get_session),
-    current_admin: Administrador = Depends(get_current_admin_user),
-    page: int = Query(1, gt=0),
-    size: int = Query(10, gt=0, le=100),
-    search: Optional[str] = Query(None, min_length=3)
-):
-    # ... (código sin cambios) ...
-    query = select(Alumno)
-    if search:
-        search_term = f"%{search}%"
-        query = query.where(or_(Alumno.nombre.ilike(search_term), Alumno.apellido_p.ilike(search_term), Alumno.apellido_m.ilike(search_term), Alumno.num_control.ilike(search_term))) # type: ignore
-    count_query = select(func.count()).select_from(query.subquery()) # type: ignore
-    total_alumnos = session.exec(count_query).one()
-    offset = (page - 1) * size
-    alumnos = session.exec(query.offset(offset).limit(size)).all()
-    return AlumnosPage(total_alumnos=total_alumnos, alumnos=alumnos) # type: ignore
+
 
 # 🔹 Cargar Excel de Alumnos (PROTEGIDO POR ADMIN)
 @router.post("/upload-excel", summary="Cargar alumnos desde Excel (Admin)")

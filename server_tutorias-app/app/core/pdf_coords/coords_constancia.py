@@ -18,7 +18,7 @@ coords_constancia = {
     # "Se le reconoce al alumno:" está aprox. a 60mm de la izquierda y 115mm de abajo.
     # El nombre debería ir justo debajo o al lado de eso.
     # Probemos con 70mm desde la izquierda y 105mm desde abajo.
-    "nombre_alumno": (136 * mm, 146.3 * mm),
+    "nombre_alumno": (80 * mm, 146.3 * mm),
     
     # Dejamos un placeholder para la fecha, como pediste
     # "fecha_expedicion": (70 * mm, 80 * mm),
