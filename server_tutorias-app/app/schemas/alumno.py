@@ -101,3 +101,10 @@ class AlumnosPage(BaseModel):
 class AlumnoTokenData(BaseModel):
     id: Optional[str] = None # Corresponde al 'sub' (id_alumno)
     role: Optional[str] = None
+
+class AlumnoTutoriaStatus(BaseModel):
+    """
+    Define la respuesta para el estado de tutorías del alumno.
+    """
+    tutorias_completadas: int
+    es_elegible: bool # True si tutorias_completadas >= 4

@@ -1,12 +1,12 @@
 # app/services/alumno_service.py
 
 from fastapi import HTTPException, status, UploadFile
-from sqlmodel import Session, select, delete
+from sqlmodel import Session, select, delete, func
 import pandas as pd
 
 from app.models.alumno import Alumno
-from app.schemas.alumno import AlumnoCreate, AlumnoUpdate, AlumnoSetPassword, AlumnoUpdatePassword
-from app.models.tutoria import Tutoria # Sigue siendo necesario para imports si se usan relaciones
+from app.schemas.alumno import AlumnoCreate, AlumnoUpdate, AlumnoSetPassword, AlumnoUpdatePassword, AlumnoTutoriaStatus
+from app.models.tutoria import Tutoria, EstadoTutoria # Sigue siendo necesario para imports si se usan relaciones
 from app.database import engine
 from app.core.security import get_password_hash, verify_password
 
@@ -140,3 +140,21 @@ def change_password(db: Session, alumno: Alumno, data: AlumnoUpdatePassword):
     db.add(alumno)
     db.commit()
     return {"message": "Su contraseña ha sido actualizada exitosamente."}
+
+def get_alumno_tutoria_status(db: Session, id_alumno: int) -> AlumnoTutoriaStatus:
+    """
+    Calcula el estado de las tutorías de un alumno para
+    determinar si es elegible para su constancia.
+    """
+    # 1. Contar cuántas tutorías tiene este alumno con estado "COMPLETADA"
+    query = select(func.count(Tutoria.id_tutoria)).where( # type: ignore
+        Tutoria.alumno_id == id_alumno,
+        Tutoria.estado == EstadoTutoria.COMPLETADA
+    )
+    count = db.exec(query).one()
+
+    # 2. Definir la regla de negocio (4 o más)
+    es_elegible = count >= 4
+
+    # 3. Devolver el objeto de respuesta
+    return AlumnoTutoriaStatus(tutorias_completadas=count, es_elegible=es_elegible)
