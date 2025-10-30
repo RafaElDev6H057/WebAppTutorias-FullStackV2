@@ -97,3 +97,7 @@ class AlumnoUpdatePassword(BaseModel):
 class AlumnosPage(BaseModel):
     total_alumnos: int
     alumnos: List[AlumnoRead]
+
+class AlumnoTokenData(BaseModel):
+    id: Optional[str] = None # Corresponde al 'sub' (id_alumno)
+    role: Optional[str] = None

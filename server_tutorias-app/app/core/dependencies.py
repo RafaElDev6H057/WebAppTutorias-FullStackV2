@@ -13,6 +13,10 @@ from app.services import admin_service
 
 from app.models.tutor import Tutor
 from app.schemas.tutor import TutorTokenData
+
+from app.models.alumno import Alumno
+from app.schemas.alumno import AlumnoTokenData
+from app.services import alumno_service
 # ❗ Import de tutor_service eliminado (no se usaba)
 
 from app.core.config import SECRET_KEY, ALGORITHM
@@ -25,6 +29,11 @@ oauth2_scheme_admin = OAuth2PasswordBearer(
 oauth2_scheme_tutor = OAuth2PasswordBearer(
     tokenUrl="/api/tutores/login",
     scheme_name="Tutor_OAuth2"
+)
+
+oauth2_scheme_alumno = OAuth2PasswordBearer(
+    tokenUrl="/api/alumnos/login",
+    scheme_name="Alumno_OAuth2"
 )
 
 # --- Dependencia para Administradores ---
@@ -144,3 +153,44 @@ async def get_current_user(
             raise tutor_exc
     # Fallback por si acaso
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciales inválidas")
+
+def get_current_alumno_user(
+    token: str = Depends(oauth2_scheme_alumno),
+    db: Session = Depends(get_session)
+) -> Alumno:
+    """
+    Dependencia para obtener el ALUMNO actual a partir de un token JWT.
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="No se pudieron validar las credenciales",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        
+        role: Optional[str] = payload.get("role")
+        if role != "alumno":
+            raise credentials_exception
+            
+        alumno_id_str: Optional[str] = payload.get("sub")
+        if alumno_id_str is None:
+            raise credentials_exception
+        
+        token_data = AlumnoTokenData(id=alumno_id_str, role=role)
+    
+    except JWTError:
+        raise credentials_exception
+    
+    try:
+        if token_data.id is None:
+            raise credentials_exception
+        alumno_pk = int(token_data.id)
+    except (ValueError, TypeError):
+        raise credentials_exception
+    
+    user = db.get(Alumno, alumno_pk)
+    
+    if user is None:
+        raise credentials_exception
+    return user
