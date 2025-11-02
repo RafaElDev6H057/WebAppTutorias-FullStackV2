@@ -196,12 +196,12 @@
                       >
                         <DeleteIcon />
                       </button>
-                      <button
+                      <!-- <button
                         @click="openTutoringModal(student)"
                         class="text-white hover:bg-orange-500 bg-orange-400 px-2 py-1 rounded-2xl transition-colors duration-200 whitespace-nowrap"
                       >
                         Administrar Tutorías
-                      </button>
+                      </button> -->
                     </div>
                   </td>
                 </tr>
@@ -1166,11 +1166,11 @@
                     placeholder="Buscar por nombre o correo"
                   />
                   <div
-                    v-if="searchTutors.length > 0"
+                    v-if="tutors.length > 0"
                     class="mt-1 absolute z-10 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto sm:text-sm"
                   >
                     <div
-                      v-for="tutor in searchTutors"
+                      v-for="tutor in tutors"
                       :key="tutor.id_tutor"
                       @click="selectTutor(tutor)"
                       class="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 hover:text-white"
@@ -1552,7 +1552,11 @@ const submitForm = async () => {
     if (modalMode.value === 'add') {
       // Crear nuevo registro
       if (modalType.value === 'student') {
-        response = await axios.post('http://localhost:8000/api/alumnos', formData)
+        response = await axios.post('http://localhost:8000/api/alumnos', formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         if (response.status === 201) {
           students.value.push(response.data)
           console.log('Alumno agregado exitosamente:', response.data)
@@ -1576,6 +1580,11 @@ const submitForm = async () => {
         response = await axios.put(
           `http://localhost:8000/api/alumnos/${formData.id_alumno}`,
           formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
         )
         if (response.status === 200) {
           const index = students.value.findIndex(
@@ -1800,12 +1809,12 @@ const closeModal = () => {
 /**
  * Abre el modal de asignación de tutorías para un estudiante
  */
-const openTutoringModal = async (student) => {
-  selectedStudent.value = student
-  showTutoringModal.value = true
-  await fetchTutors() // Asegurar que tenemos la lista de tutores actualizada
-  await fetchStudentTutorings(student.id_alumno)
-}
+// const openTutoringModal = async (student) => {
+//   selectedStudent.value = student
+//   showTutoringModal.value = true
+//   await fetchTutors() // Asegurar que tenemos la lista de tutores actualizada
+//   await fetchStudentTutorings(student.id_alumno)
+// }
 
 /**
  * Cierra el modal de tutorías y resetea el estado
