@@ -7,13 +7,14 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select, or_, func
 import shutil
 import os
-from typing import List, Optional
+from typing import List, Optional, Union
 from datetime import timedelta
 
 # --- Imports de la App ---
 from app.database import get_session
 from app.models.alumno import Alumno
 from app.models.administrador import Administrador
+from app.models.tutor import Tutor
 from app.schemas.alumno import (
     AlumnoCreate, AlumnoRead, AlumnoUpdate, AlumnosPage,
     AlumnoSetPassword, AlumnoUpdatePassword, AlumnoTutoriaStatus # 👈 Importamos el nuevo schema
@@ -23,7 +24,7 @@ from app.services import alumno_service
 from app.services import pdf_generator_service
 from app.core import security
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
-from app.core.dependencies import get_current_admin_user, get_current_alumno_user
+from app.core.dependencies import get_current_admin_user, get_current_alumno_user, get_current_user, oauth2_scheme_admin, oauth2_scheme_tutor
 
 router = APIRouter(prefix="/alumnos", tags=["Alumnos"])
 
@@ -117,24 +118,38 @@ async def handle_generate_constancia_pdf(
 # === ENDPOINTS PROPIOS DEL ALUMNO (PANEL ALUMNO) ===
 # ===================================================
 # 🔹 Obtener todos los alumnos (PAGINADO Y PROTEGIDO POR ADMIN)
-@router.get("/", response_model=AlumnosPage, summary="Obtener todos los Alumnos (Admin)")
+@router.get(
+    "/",
+    response_model=AlumnosPage,
+    summary="Obtener todos los Alumnos (Admin o Tutor)",
+    # 👇 Indica a Swagger que ambos roles son válidos
+    dependencies=[Depends(oauth2_scheme_admin), Depends(oauth2_scheme_tutor)]
+)
 def get_alumnos(
-    # ... (código sin cambios) ...
     session: Session = Depends(get_session),
-    current_admin: Administrador = Depends(get_current_admin_user),
+    # 👇 Usa la dependencia combinada get_current_user
+    current_user: Union[Administrador, Tutor] = Depends(get_current_user),
     page: int = Query(1, gt=0),
     size: int = Query(10, gt=0, le=100),
     search: Optional[str] = Query(None, min_length=3)
 ):
-    # ... (código sin cambios) ...
+    """
+    Obtiene una lista paginada de todos los alumnos.
+    Accesible por Administradores y Tutores.
+    """
+    # La lógica de consulta no necesita cambiar, ya que solo estamos
+    # permitiendo el acceso a la búsqueda.
     query = select(Alumno)
     if search:
         search_term = f"%{search}%"
         query = query.where(or_(Alumno.nombre.ilike(search_term), Alumno.apellido_p.ilike(search_term), Alumno.apellido_m.ilike(search_term), Alumno.num_control.ilike(search_term))) # type: ignore
+    
     count_query = select(func.count()).select_from(query.subquery()) # type: ignore
     total_alumnos = session.exec(count_query).one()
+    
     offset = (page - 1) * size
     alumnos = session.exec(query.offset(offset).limit(size)).all()
+    
     return AlumnosPage(total_alumnos=total_alumnos, alumnos=alumnos) # type: ignore
 
 @router.get("/me", response_model=AlumnoRead, summary="Obtener datos del Alumno autenticado")
