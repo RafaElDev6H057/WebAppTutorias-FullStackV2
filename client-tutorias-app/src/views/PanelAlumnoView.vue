@@ -102,6 +102,11 @@
     <main class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 relative z-10">
       <h1 class="text-3xl font-bold text-white mb-8">Mis Tutorías</h1>
 
+      <!-- ==================== AVISOS IMPORTANTES ==================== -->
+      <div class="mb-8">
+        <AvisosAlumno />
+      </div>
+
       <!-- Mensaje de Constancia no disponible -->
       <Transition
         enter-active-class="transition ease-out duration-300"
@@ -343,6 +348,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import AvisosAlumno from '@/components/student/AvisosAlumno.vue'
 
 // ==================== STATE ====================
 const mostrarModal = ref(false)

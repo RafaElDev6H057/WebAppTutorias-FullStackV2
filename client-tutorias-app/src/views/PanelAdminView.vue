@@ -305,6 +305,9 @@
           </div>
         </div>
 
+        <!-- ==================== GESTIÓN DE AVISOS ==================== -->
+        <GestionAvisos class="mb-8" />
+
         <!-- ==================== PESTAÑAS (ESTUDIANTES/TUTORES) ==================== -->
         <div class="mb-8">
           <nav class="flex space-x-4" aria-label="Tabs">
@@ -1243,6 +1246,7 @@ import EditIcon from '@/components/icons/EditIcon.vue'
 import ShowEye from '@/components/icons/ShowEye.vue'
 import HideEye from '@/components/icons/HideEye.vue'
 import BaseSearchInput from '@/components/ui/BaseSearchInput.vue'
+import GestionAvisos from '@/components/admin/GestionAvisos.vue'
 import AlumnoService from '@/services/AlumnoService.js'
 import TutorService from '@/services/TutorService.js'
 import CargarAlumnosModal from '@/components/student/CargarAlumnosModal.vue'
