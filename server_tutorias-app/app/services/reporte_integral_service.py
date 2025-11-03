@@ -11,39 +11,74 @@ from app.models.tutoria import Tutoria
 # Schemas
 # 👇 Importa el nuevo ReporteIntegralUpdate
 from app.schemas.reporte_integral import ReporteIntegralCreate, ReporteIntegralUpdate
+from app.services import configuracion_service
 
 # --- Función Create/Update (Upsert) - SIN CAMBIOS ---
 def create_or_update_reporte(db: Session, data: ReporteIntegralCreate) -> ReporteIntegral:
     """
-    Crea o actualiza un reporte integral asociado a una tutoría.
-    Asegura que la bandera 'reporte_integral_guardado' en Tutoria sea True.
+    Crea o actualiza un reporte integral, VALIDANDO y FILTRANDO por la etapa actual.
     """
+    # 1. Obtener la etapa actual del sistema
+    config = configuracion_service.get_configuracion(db)
+    etapa_actual = config.reporte_integral_etapa
+
+    # 2. Convertir los datos de entrada a un diccionario
+    # Usamos exclude_unset=False para obtener todos los campos, incluidos los defaults
+    update_data = data.model_dump() 
+
+    # 3. --- LÓGICA DE FILTRADO (EL CAMBIO) ---
+    # En lugar de lanzar un error, eliminamos los campos no permitidos
+    # del diccionario 'update_data' ANTES de guardar.
+    
+    campos_etapa_3 = {
+        "seguimiento_3", "tutoria_grupal", "tutoria_individual",
+        "jefatura_academica", "ciencias_basicas", "psicologia",
+        "materias_aprobadas", "materias_no_aprobadas"
+    }
+    campos_etapa_2 = {"seguimiento_2"}
+
+    if etapa_actual == 1:
+        # Si estamos en etapa 1, eliminamos todos los campos de etapa 2 y 3
+        for key in list(update_data.keys()): # Usamos list() para poder modificar el dict mientras iteramos
+            if key in campos_etapa_2 or key in campos_etapa_3:
+                update_data.pop(key, None) # Elimina el campo
+                
+    elif etapa_actual == 2:
+        # Si estamos en etapa 2, eliminamos todos los campos de etapa 3
+        for key in list(update_data.keys()):
+            if key in campos_etapa_3:
+                update_data.pop(key, None) # Elimina el campo
+    
+    # Si la etapa es 3, 'update_data' se queda como está, con todos los campos.
+
+    # 4. Lógica "Upsert"
     tutoria_asociada = db.get(Tutoria, data.id_tutoria)
     if not tutoria_asociada:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Tutoría {data.id_tutoria} no encontrada.")
+        raise HTTPException(status_code=404, detail=f"Tutoría {data.id_tutoria} no encontrada.")
 
     existing_report = db.exec(
         select(ReporteIntegral).where(ReporteIntegral.id_tutoria == data.id_tutoria)
     ).first()
 
     reporte_resultante: ReporteIntegral
-
     if existing_report:
         # ACTUALIZAR REPORTE EXISTENTE
-        update_data = data.model_dump(exclude_unset=True)
+        # Usamos el diccionario 'update_data' ya filtrado
         for key, value in update_data.items():
-            if key != 'id_tutoria': # No actualizar la clave foránea
+            if key != 'id_tutoria': 
                 setattr(existing_report, key, value)
         db.add(existing_report)
         reporte_resultante = existing_report
     else:
         # CREAR NUEVO REPORTE
-        new_report = ReporteIntegral.model_validate(data)
+        # Usamos el diccionario 'update_data' filtrado para crear el modelo
+        new_report = ReporteIntegral.model_validate(update_data)
         db.add(new_report)
         reporte_resultante = new_report
 
-    # Asegurar que la bandera en Tutoria sea True
-    if not tutoria_asociada.reporte_integral_guardado:
+    # 5. Actualizar bandera de "Guardado"
+    # La bandera solo se activa cuando se guardan datos en la etapa final
+    if etapa_actual == 3 and not tutoria_asociada.reporte_integral_guardado:
         tutoria_asociada.reporte_integral_guardado = True
         db.add(tutoria_asociada)
 
@@ -57,7 +92,7 @@ def get_reporte(db: Session, reporte_id: int) -> Optional[ReporteIntegral]:
     """Obtiene un reporte integral por su ID."""
     reporte = db.get(ReporteIntegral, reporte_id)
     if not reporte:
-         raise HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Reporte Integral con id {reporte_id} no encontrado."
         )
