@@ -153,6 +153,74 @@
         </div>
       </div>
 
+      <!-- Banner de Etapa -->
+      <Transition
+        enter-active-class="transition ease-out duration-300"
+        enter-from-class="opacity-0 translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition ease-in duration-200"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="!isLoadingConfig"
+          :class="[
+            'mx-4 mt-2 p-4 rounded-md border-l-4 shadow-md',
+            {
+              'bg-red-50 border-red-500': reporteIntegralEtapa === 0,
+              'bg-yellow-50 border-yellow-500': reporteIntegralEtapa === 1,
+              'bg-blue-50 border-blue-500': reporteIntegralEtapa === 2,
+              'bg-green-50 border-green-500': reporteIntegralEtapa === 3,
+            },
+          ]"
+        >
+          <div class="flex items-start">
+            <svg
+              :class="[
+                'w-6 h-6 mr-3 flex-shrink-0',
+                {
+                  'text-red-500': reporteIntegralEtapa === 0,
+                  'text-yellow-500': reporteIntegralEtapa === 1,
+                  'text-blue-500': reporteIntegralEtapa === 2,
+                  'text-green-500': reporteIntegralEtapa === 3,
+                },
+              ]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                v-if="reporteIntegralEtapa === 0"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+              <path
+                v-else
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <p
+              :class="[
+                'text-sm font-medium flex-1',
+                {
+                  'text-red-800': reporteIntegralEtapa === 0,
+                  'text-yellow-800': reporteIntegralEtapa === 1,
+                  'text-blue-800': reporteIntegralEtapa === 2,
+                  'text-green-800': reporteIntegralEtapa === 3,
+                },
+              ]"
+            >
+              {{ mensajeEtapa }}
+            </p>
+          </div>
+        </div>
+      </Transition>
+
       <!-- Mensajes de éxito/error -->
       <Transition
         enter-active-class="transition ease-out duration-300"
@@ -326,7 +394,7 @@
                       type="number"
                       min="0"
                       max="16"
-                      :disabled="alumno.modoVer"
+                      :disabled="alumno.modoVer || !camposHabilitados.tutoria_grupal"
                       :class="[
                         'w-20 px-3 py-2 text-center border-2 rounded-lg focus:outline-none focus:ring-2 transition-all',
                         alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
@@ -362,7 +430,7 @@
                       type="number"
                       min="0"
                       max="5"
-                      :disabled="alumno.modoVer"
+                      :disabled="alumno.modoVer || !camposHabilitados.tutoria_individual"
                       :class="[
                         'w-20 px-3 py-2 text-center border-2 rounded-lg focus:outline-none focus:ring-2 transition-all',
                         alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
@@ -395,10 +463,12 @@
                     v-model="alumno.datos.seguimiento_1"
                     type="text"
                     placeholder="Ej: Cálculo, Álgebra..."
-                    :disabled="alumno.modoVer"
+                    :disabled="alumno.modoVer || !camposHabilitados.seguimiento_1"
                     :class="[
                       'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all',
-                      alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
+                      alumno.modoVer || !camposHabilitados.seguimiento_1
+                        ? 'bg-gray-100 cursor-not-allowed opacity-60'
+                        : '',
                     ]"
                   />
                 </td>
@@ -409,10 +479,12 @@
                     v-model="alumno.datos.seguimiento_2"
                     type="text"
                     placeholder="Ej: Programación..."
-                    :disabled="alumno.modoVer"
+                    :disabled="alumno.modoVer || !camposHabilitados.seguimiento_2"
                     :class="[
                       'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all',
-                      alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
+                      alumno.modoVer || !camposHabilitados.seguimiento_2
+                        ? 'bg-gray-100 cursor-not-allowed opacity-60'
+                        : '',
                     ]"
                   />
                 </td>
@@ -423,10 +495,12 @@
                     v-model="alumno.datos.seguimiento_3"
                     type="text"
                     placeholder="Ej: Física..."
-                    :disabled="alumno.modoVer"
+                    :disabled="alumno.modoVer || !camposHabilitados.seguimiento_3"
                     :class="[
                       'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all',
-                      alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
+                      alumno.modoVer || !camposHabilitados.seguimiento_3
+                        ? 'bg-gray-100 cursor-not-allowed opacity-60'
+                        : '',
                     ]"
                   />
                 </td>
@@ -442,7 +516,7 @@
                         type="checkbox"
                         :true-value="1"
                         :false-value="0"
-                        :disabled="alumno.modoVer"
+                        :disabled="alumno.modoVer || !camposHabilitados.jefatura_academica"
                         class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4 disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                       <span class="ml-2 text-gray-700 font-medium">Jef. Acad.</span>
@@ -455,7 +529,7 @@
                         type="checkbox"
                         :true-value="1"
                         :false-value="0"
-                        :disabled="alumno.modoVer"
+                        :disabled="alumno.modoVer || !camposHabilitados.ciencias_basicas"
                         class="rounded border-gray-300 text-green-600 focus:ring-green-500 h-4 w-4 disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                       <span class="ml-2 text-gray-700 font-medium">C. Básicas</span>
@@ -468,7 +542,7 @@
                         type="checkbox"
                         :true-value="1"
                         :false-value="0"
-                        :disabled="alumno.modoVer"
+                        :disabled="alumno.modoVer || !camposHabilitados.psicologia"
                         class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 h-4 w-4 disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                       <span class="ml-2 text-gray-700 font-medium">Psicología</span>
@@ -484,7 +558,7 @@
                       @input="validarMateriasAprobadas(alumno)"
                       type="number"
                       min="0"
-                      :disabled="alumno.modoVer"
+                      :disabled="alumno.modoVer || !camposHabilitados.materias_aprobadas"
                       :class="[
                         'w-20 px-3 py-2 text-center border-2 rounded-lg focus:outline-none focus:ring-2 transition-all',
                         alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
@@ -517,7 +591,7 @@
                     v-model="alumno.datos.materias_no_aprobadas"
                     type="text"
                     placeholder="Ej: Bases de Datos..."
-                    :disabled="alumno.modoVer"
+                    :disabled="alumno.modoVer || !camposHabilitados.materias_no_aprobadas"
                     :class="[
                       'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all',
                       alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
@@ -750,6 +824,10 @@ const errorMessage = ref(null)
 const alumnos = ref([])
 const totalAlumnos = ref(0)
 
+// ==================== CONFIGURACIÓN ETAPAS ====================
+const reporteIntegralEtapa = ref(0)
+const isLoadingConfig = ref(false)
+
 // ==================== COMPUTED ====================
 const alumnosFiltrados = computed(() => {
   if (!searchQuery.value) return alumnos.value
@@ -768,6 +846,51 @@ const alumnosGuardados = computed(() => {
 
 const alumnosPendientes = computed(() => {
   return alumnos.value.filter((a) => a.estado === 'pendiente').length
+})
+
+// ==================== COMPUTED ETAPAS ====================
+const camposHabilitados = computed(() => ({
+  seguimiento_1: reporteIntegralEtapa.value >= 1,
+  seguimiento_2: reporteIntegralEtapa.value >= 2,
+  seguimiento_3: reporteIntegralEtapa.value >= 3,
+  tutoria_grupal: reporteIntegralEtapa.value >= 3,
+  tutoria_individual: reporteIntegralEtapa.value >= 3,
+  jefatura_academica: reporteIntegralEtapa.value >= 3,
+  ciencias_basicas: reporteIntegralEtapa.value >= 3,
+  psicologia: reporteIntegralEtapa.value >= 3,
+  materias_aprobadas: reporteIntegralEtapa.value >= 3,
+  materias_no_aprobadas: reporteIntegralEtapa.value >= 3,
+}))
+
+const mensajeEtapa = computed(() => {
+  switch (reporteIntegralEtapa.value) {
+    case 0:
+      return '🔒 El reporte integral no está disponible aún. Espera a que el administrador habilite el primer seguimiento.'
+    case 1:
+      return '📝 Etapa 1: Solo puedes llenar el Seguimiento 1.'
+    case 2:
+      return '📝 Etapa 2: Puedes llenar los Seguimientos 1 y 2.'
+    case 3:
+      return '✅ Etapa 3: Todos los campos están disponibles para completar el reporte integral.'
+    default:
+      return '⏳ Cargando configuración...'
+  }
+})
+
+// eslint-disable-next-line no-unused-vars
+const colorBannerEtapa = computed(() => {
+  switch (reporteIntegralEtapa.value) {
+    case 0:
+      return 'red'
+    case 1:
+      return 'yellow'
+    case 2:
+      return 'blue'
+    case 3:
+      return 'green'
+    default:
+      return 'gray'
+  }
 })
 
 // ==================== VALIDACIONES ====================
@@ -815,6 +938,32 @@ const tieneErrores = (alumno) => {
   return alumno.errores && Object.keys(alumno.errores).length > 0
 }
 
+// ==================== CONFIGURACIÓN ====================
+const fetchConfiguracion = async () => {
+  try {
+    isLoadingConfig.value = true
+    const token = localStorage.getItem('accessToken')
+
+    const response = await axios.get('http://localhost:8000/api/configuracion/', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    if (response.status === 200) {
+      reporteIntegralEtapa.value = response.data.reporte_integral_etapa
+      console.log('✅ Etapa de reporte integral:', reporteIntegralEtapa.value)
+    }
+  } catch (error) {
+    console.error('❌ Error al obtener configuración:', error)
+    reporteIntegralEtapa.value = 0 // Por defecto bloqueado
+    errorMessage.value =
+      'No se pudo cargar la configuración del reporte. Los campos estarán bloqueados.'
+  } finally {
+    isLoadingConfig.value = false
+  }
+}
+
 // ==================== CARGAR DATOS ====================
 const cargarTodosLosAlumnos = async () => {
   isLoadingMore.value = true
@@ -833,7 +982,7 @@ const cargarTodosLosAlumnos = async () => {
 
     console.log('Response completa:', response.data)
 
-    // Mapear alumnos y cargar datos si existen
+    // Mapear alumnos y SIEMPRE intentar cargar datos existentes
     alumnos.value = await Promise.all(
       response.data.tutorias.map(async (tutoria) => {
         const alumno = {
@@ -859,34 +1008,50 @@ const cargarTodosLosAlumnos = async () => {
           },
         }
 
-        // Si ya tiene reporte guardado, cargar los datos
-        if (tutoria.reporte_integral_guardado) {
-          try {
-            const reporteResponse = await axios.get(
-              `http://localhost:8000/api/reportes/integral/tutoria/${tutoria.id_tutoria}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-                },
+        // SIEMPRE intentar cargar datos existentes (no solo si reporte_integral_guardado es true)
+        try {
+          const token = localStorage.getItem('accessToken')
+          const reporteResponse = await axios.get(
+            `http://localhost:8000/api/reportes/integral/tutoria/${tutoria.id_tutoria}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
               },
-            )
-            if (reporteResponse.status === 200) {
-              alumno.datos = {
-                tutoria_grupal: reporteResponse.data.tutoria_grupal || 0,
-                tutoria_individual: reporteResponse.data.tutoria_individual || 0,
-                seguimiento_1: reporteResponse.data.seguimiento_1 || '',
-                seguimiento_2: reporteResponse.data.seguimiento_2 || '',
-                seguimiento_3: reporteResponse.data.seguimiento_3 || '',
-                jefatura_academica: reporteResponse.data.jefatura_academica || 0,
-                ciencias_basicas: reporteResponse.data.ciencias_basicas || 0,
-                psicologia: reporteResponse.data.psicologia || 0,
-                materias_aprobadas: reporteResponse.data.materias_aprobadas || 0,
-                materias_no_aprobadas: reporteResponse.data.materias_no_aprobadas || '',
-              }
-              alumno.reporte_id = reporteResponse.data.id
+            },
+          )
+
+          if (reporteResponse.status === 200) {
+            // Cargar TODOS los datos que existan, incluso si solo tienen seguimiento_1
+            alumno.datos = {
+              tutoria_grupal: reporteResponse.data.tutoria_grupal || 0,
+              tutoria_individual: reporteResponse.data.tutoria_individual || 0,
+              seguimiento_1: reporteResponse.data.seguimiento_1 || '',
+              seguimiento_2: reporteResponse.data.seguimiento_2 || '',
+              seguimiento_3: reporteResponse.data.seguimiento_3 || '',
+              jefatura_academica: reporteResponse.data.jefatura_academica || 0,
+              ciencias_basicas: reporteResponse.data.ciencias_basicas || 0,
+              psicologia: reporteResponse.data.psicologia || 0,
+              materias_aprobadas: reporteResponse.data.materias_aprobadas || 0,
+              materias_no_aprobadas: reporteResponse.data.materias_no_aprobadas || '',
             }
-          } catch (err) {
-            console.error(`Error al cargar reporte de ${alumno.nombre}:`, err)
+            alumno.reporte_id = reporteResponse.data.id
+
+            // Si tiene algún dato guardado, marcar el estado apropiado
+            if (tutoria.reporte_integral_guardado) {
+              alumno.estado = 'guardado'
+            } else if (reporteResponse.data.seguimiento_1 || reporteResponse.data.seguimiento_2) {
+              // Si tiene seguimientos parciales, mantener como "pendiente" pero con datos cargados
+              alumno.estado = 'pendiente'
+            }
+
+            console.log(`✅ Datos cargados para ${alumno.nombre}:`, alumno.datos)
+          }
+        } catch (err) {
+          // Si el endpoint devuelve 404, significa que no hay reporte guardado aún
+          if (err.response?.status === 404) {
+            console.log(`ℹ️ No hay reporte guardado para ${alumno.nombre}`)
+          } else {
+            console.error(`❌ Error al cargar reporte de ${alumno.nombre}:`, err)
           }
         }
 
@@ -894,7 +1059,7 @@ const cargarTodosLosAlumnos = async () => {
       }),
     )
 
-    console.log(`✅ Cargados ${alumnos.value.length} alumnos`)
+    console.log(`✅ Cargados ${alumnos.value.length} alumnos con sus datos`)
   } catch (error) {
     console.error('Error al cargar alumnos:', error)
     errorMessage.value = 'No se pudieron cargar todos los alumnos. Intenta de nuevo.'
@@ -1013,6 +1178,12 @@ const eliminarReporte = async (alumno) => {
 
 // GUARDAR ALUMNO (crear reporte)
 const guardarAlumno = async (alumno) => {
+  // Validar etapa
+  if (reporteIntegralEtapa.value === 0) {
+    errorMessage.value = `❌ No puedes guardar reportes. La etapa 1 no ha sido habilitada por el administrador.`
+    return
+  }
+
   // Validar antes de guardar
   validarTutoriaGrupal(alumno)
   validarTutoriaIndividual(alumno)
@@ -1112,6 +1283,7 @@ const closeModal = () => {
 
 // ==================== LIFECYCLE ====================
 onMounted(async () => {
+  await fetchConfiguracion() // Cargar configuración primero
   await cargarTodosLosAlumnos()
 })
 </script>
