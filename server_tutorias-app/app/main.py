@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import create_db_and_tables
-from app.routers import administradores, alumnos, tutores, tutorias, reportes, configuracion  # Importamos el router
+from app.routers import administradores, alumnos, avisos, tutores, tutorias, reportes, configuracion  # Importamos el router
 
 
 app = FastAPI(title="API CRUD Tutorías")
@@ -40,4 +40,5 @@ app.include_router(alumnos.router, prefix="/api")
 app.include_router(tutores.router, prefix="/api")
 app.include_router(tutorias.router, prefix="/api")
 app.include_router(reportes.router, prefix="/api")
+app.include_router(avisos.router, prefix="/api")
 app.include_router(configuracion.router, prefix="/api")
