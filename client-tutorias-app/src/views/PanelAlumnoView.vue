@@ -87,6 +87,22 @@
               <span>{{ isDownloading ? 'Descargando...' : 'Descargar Constancia' }}</span>
             </button>
 
+            <!-- Botón Cambiar Contraseña -->
+            <button
+              @click="openChangePasswordModal"
+              class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200"
+            >
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                />
+              </svg>
+              <span>Cambiar Contraseña</span>
+            </button>
+
             <button
               @click="handleLogout"
               class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200"
@@ -101,6 +117,50 @@
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 relative z-10">
       <h1 class="text-3xl font-bold text-white mb-8">Mis Tutorías</h1>
+
+      <!-- Banner de Advertencia de Contraseña Insegura -->
+      <Transition
+        enter-active-class="transition ease-out duration-300"
+        enter-from-class="opacity-0 translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition ease-in duration-200"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="alumno?.requires_password_change"
+          class="mb-6 p-4 bg-purple-900/30 border-l-4 border-purple-500 rounded-md backdrop-blur-sm"
+        >
+          <div class="flex items-start">
+            <svg
+              class="w-6 h-6 text-purple-400 mr-3 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <div class="flex-1">
+              <h3 class="text-sm font-medium text-purple-300">Contraseña Insegura</h3>
+              <p class="mt-1 text-sm text-purple-200">
+                Tu contraseña actual no está protegida adecuadamente. Por seguridad, te recomendamos
+                cambiarla lo antes posible.
+              </p>
+              <button
+                @click="openChangePasswordModal"
+                class="mt-3 text-sm font-medium text-purple-400 hover:text-purple-300 underline"
+              >
+                Cambiar contraseña ahora →
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
 
       <!-- ==================== AVISOS IMPORTANTES ==================== -->
       <div class="mb-8">
@@ -322,7 +382,352 @@
       </div>
     </main>
 
-    <!-- Modal de confirmación -->
+    <!-- ==================== MODAL CAMBIAR CONTRASEÑA ==================== -->
+    <Transition
+      enter-active-class="transition ease-out duration-300"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition ease-in duration-200"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-95"
+    >
+      <div
+        v-if="showChangePasswordModal"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+      >
+        <div
+          class="relative top-20 mx-auto p-5 border border-gray-700 w-11/12 max-w-md shadow-2xl rounded-lg bg-gray-800"
+        >
+          <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-3">
+            <h2 class="text-xl font-semibold text-white flex items-center gap-2">
+              <svg
+                class="w-6 h-6 text-purple-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                />
+              </svg>
+              Cambiar Contraseña
+            </h2>
+            <button
+              @click="closeChangePasswordModal"
+              :disabled="isChangingPassword"
+              class="text-gray-400 hover:text-white disabled:opacity-50 transition-colors"
+            >
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Mensaje de advertencia para primera vez -->
+          <div
+            v-if="alumno?.requires_password_change"
+            class="mb-4 p-3 bg-purple-900/20 border border-purple-500/30 rounded-md"
+          >
+            <p class="text-sm text-purple-300">
+              <strong>Importante:</strong> Esta es tu primera vez cambiando la contraseña. Por
+              favor, elige una contraseña segura.
+            </p>
+          </div>
+
+          <!-- Mensaje de éxito -->
+          <Transition
+            enter-active-class="transition ease-out duration-300"
+            enter-from-class="opacity-0 translate-y-2"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition ease-in duration-200"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0"
+          >
+            <div
+              v-if="passwordChangeSuccess"
+              class="mb-4 p-3 bg-green-900/30 border-l-4 border-green-500 rounded-md"
+            >
+              <div class="flex items-center">
+                <svg
+                  class="w-5 h-5 text-green-400 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <p class="text-sm text-green-300 font-medium">¡Contraseña cambiada exitosamente!</p>
+              </div>
+            </div>
+          </Transition>
+
+          <!-- Mensaje de error -->
+          <Transition
+            enter-active-class="transition ease-out duration-300"
+            enter-from-class="opacity-0 translate-y-2"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition ease-in duration-200"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0"
+          >
+            <div
+              v-if="passwordChangeError"
+              class="mb-4 p-3 bg-red-900/30 border-l-4 border-red-500 rounded-md"
+            >
+              <div class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-red-400 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <p class="text-sm text-red-300">{{ passwordChangeError }}</p>
+              </div>
+            </div>
+          </Transition>
+
+          <!-- Formulario -->
+          <form @submit.prevent="handleChangePassword" class="space-y-4">
+            <!-- Campo de Número de Control (solo para primera vez) -->
+            <div v-if="alumno?.requires_password_change">
+              <label for="num_control" class="block text-sm font-medium text-gray-300 mb-1">
+                Número de Control
+              </label>
+              <input
+                id="num_control"
+                v-model="passwordForm.num_control"
+                type="text"
+                required
+                :disabled="isChangingPassword"
+                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-900 disabled:cursor-not-allowed"
+                placeholder="Tu número de control"
+              />
+            </div>
+
+            <!-- Contraseña Actual -->
+            <div>
+              <label for="current-password" class="block text-sm font-medium text-gray-300 mb-1">
+                Contraseña Actual
+              </label>
+              <div class="relative">
+                <input
+                  id="current-password"
+                  v-model="passwordForm.currentPassword"
+                  :type="showCurrentPassword ? 'text' : 'password'"
+                  required
+                  :disabled="isChangingPassword"
+                  class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-900 disabled:cursor-not-allowed"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  @click="showCurrentPassword = !showCurrentPassword"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg
+                    v-if="!showCurrentPassword"
+                    class="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                  <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Nueva Contraseña -->
+            <div>
+              <label for="new-password" class="block text-sm font-medium text-gray-300 mb-1">
+                Nueva Contraseña
+              </label>
+              <div class="relative">
+                <input
+                  id="new-password"
+                  v-model="passwordForm.newPassword"
+                  :type="showNewPassword ? 'text' : 'password'"
+                  required
+                  minlength="8"
+                  :disabled="isChangingPassword"
+                  class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-900 disabled:cursor-not-allowed"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  @click="showNewPassword = !showNewPassword"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg
+                    v-if="!showNewPassword"
+                    class="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                  <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <p class="mt-1 text-xs text-gray-400">Mínimo 8 caracteres</p>
+            </div>
+
+            <!-- Confirmar Nueva Contraseña -->
+            <div>
+              <label for="confirm-password" class="block text-sm font-medium text-gray-300 mb-1">
+                Confirmar Nueva Contraseña
+              </label>
+              <div class="relative">
+                <input
+                  id="confirm-password"
+                  v-model="passwordForm.confirmPassword"
+                  :type="showConfirmPassword ? 'text' : 'password'"
+                  required
+                  minlength="8"
+                  :disabled="isChangingPassword"
+                  class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-900 disabled:cursor-not-allowed"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  @click="showConfirmPassword = !showConfirmPassword"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg
+                    v-if="!showConfirmPassword"
+                    class="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                  <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="flex gap-3 pt-4">
+              <button
+                type="button"
+                @click="closeChangePasswordModal"
+                :disabled="isChangingPassword"
+                class="flex-1 px-4 py-2 border border-gray-600 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                :disabled="isChangingPassword"
+                class="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 border border-transparent rounded-md text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex justify-center items-center"
+              >
+                <svg
+                  v-if="isChangingPassword"
+                  class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                {{ isChangingPassword ? 'Cambiando...' : 'Cambiar Contraseña' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Modal de confirmación de tutoría -->
     <div
       v-if="mostrarModal"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -350,7 +755,7 @@ import { useRouter } from 'vue-router'
 import axios from 'axios'
 import AvisosAlumno from '@/components/student/AvisosAlumno.vue'
 
-// ==================== STATE ====================
+// ==================== STATE - GENERAL ====================
 const mostrarModal = ref(false)
 const semestreSolicitado = ref(null)
 const alumno = ref(null)
@@ -361,9 +766,23 @@ const successMessage = ref(null)
 const errorMessage = ref(null)
 const router = useRouter()
 
-// ==================== API CALLS ====================
+// ==================== STATE - CAMBIO DE CONTRASEÑA ====================
+const showChangePasswordModal = ref(false)
+const isChangingPassword = ref(false)
+const passwordChangeError = ref(null)
+const passwordChangeSuccess = ref(false)
+const showCurrentPassword = ref(false)
+const showNewPassword = ref(false)
+const showConfirmPassword = ref(false)
 
-// Obtener datos del alumno con JWT
+const passwordForm = ref({
+  num_control: '',
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+})
+
+// ==================== API CALLS - ALUMNO ====================
 const fetchAlumnoData = async () => {
   try {
     const token = localStorage.getItem('accessToken')
@@ -389,7 +808,7 @@ const fetchAlumnoData = async () => {
 
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
       localStorage.removeItem('accessToken')
-      localStorage.removeItem('alumno') // Limpiar también el viejo storage
+      localStorage.removeItem('alumno')
       router.push('/login_alumno')
     } else {
       errorMessage.value = 'Error al cargar tus datos. Por favor, intenta de nuevo.'
@@ -397,7 +816,6 @@ const fetchAlumnoData = async () => {
   }
 }
 
-// Obtener estado de tutorías completadas
 const fetchEstadoTutorias = async () => {
   try {
     const token = localStorage.getItem('accessToken')
@@ -417,7 +835,6 @@ const fetchEstadoTutorias = async () => {
   }
 }
 
-// Obtener tutorías del alumno
 const fetchTutorias = async () => {
   try {
     if (!alumno.value?.id_alumno) {
@@ -437,7 +854,6 @@ const fetchTutorias = async () => {
   }
 }
 
-// Descargar constancia PDF
 const descargarConstancia = async () => {
   try {
     isDownloading.value = true
@@ -449,21 +865,18 @@ const descargarConstancia = async () => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      responseType: 'blob', // IMPORTANTE: para recibir el PDF como blob
+      responseType: 'blob',
     })
 
-    // Crear un URL temporal para el blob
     const blob = new Blob([response.data], { type: 'application/pdf' })
     const url = window.URL.createObjectURL(blob)
 
-    // Crear un link temporal y hacer click para descargar
     const link = document.createElement('a')
     link.href = url
     link.download = `Constancia_${alumno.value.nombre}_${alumno.value.num_control}.pdf`
     document.body.appendChild(link)
     link.click()
 
-    // Limpiar
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
 
@@ -486,6 +899,116 @@ const descargarConstancia = async () => {
     }
   } finally {
     isDownloading.value = false
+  }
+}
+
+// ==================== PASSWORD CHANGE HANDLERS ====================
+const openChangePasswordModal = () => {
+  showChangePasswordModal.value = true
+  passwordChangeError.value = null
+  passwordChangeSuccess.value = false
+  passwordForm.value = {
+    num_control: alumno.value?.num_control || '',
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  }
+}
+
+const closeChangePasswordModal = () => {
+  if (!isChangingPassword.value) {
+    showChangePasswordModal.value = false
+    passwordForm.value = {
+      num_control: alumno.value?.num_control || '',
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    }
+    showCurrentPassword.value = false
+    showNewPassword.value = false
+    showConfirmPassword.value = false
+    passwordChangeError.value = null
+    passwordChangeSuccess.value = false
+  }
+}
+
+const handleChangePassword = async () => {
+  passwordChangeError.value = null
+  passwordChangeSuccess.value = false
+
+  if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
+    passwordChangeError.value = 'Las contraseñas no coinciden.'
+    return
+  }
+
+  if (passwordForm.value.newPassword.length < 8) {
+    passwordChangeError.value = 'La nueva contraseña debe tener al menos 8 caracteres.'
+    return
+  }
+
+  if (alumno.value.requires_password_change && !passwordForm.value.num_control) {
+    passwordChangeError.value = 'El número de control es requerido.'
+    return
+  }
+
+  isChangingPassword.value = true
+
+  try {
+    const token = localStorage.getItem('accessToken')
+
+    if (alumno.value.requires_password_change) {
+      // Primera vez - usar POST /api/alumnos/set-password
+      const response = await axios.post('http://localhost:8000/api/alumnos/set-password', {
+        num_control: passwordForm.value.num_control,
+        contraseña_actual: passwordForm.value.currentPassword,
+        nueva_contraseña: passwordForm.value.newPassword,
+      })
+
+      if (response.status === 200) {
+        passwordChangeSuccess.value = true
+        alumno.value.requires_password_change = false
+
+        setTimeout(() => {
+          closeChangePasswordModal()
+        }, 2000)
+      }
+    } else {
+      // Cambios posteriores - usar PUT /api/alumnos/change-password
+      const response = await axios.put(
+        'http://localhost:8000/api/alumnos/change-password',
+        {
+          contraseña_actual: passwordForm.value.currentPassword,
+          nueva_contraseña: passwordForm.value.newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+
+      if (response.status === 200) {
+        passwordChangeSuccess.value = true
+
+        setTimeout(() => {
+          closeChangePasswordModal()
+        }, 2000)
+      }
+    }
+  } catch (err) {
+    console.error('Error al cambiar la contraseña:', err)
+
+    if (err.response && err.response.data && err.response.data.detail) {
+      passwordChangeError.value = err.response.data.detail
+    } else if (err.response && err.response.status === 400) {
+      passwordChangeError.value = 'Contraseña actual incorrecta.'
+    } else if (err.response && err.response.status === 401) {
+      passwordChangeError.value = 'No tienes autorización para realizar esta acción.'
+    } else {
+      passwordChangeError.value = 'Error al cambiar la contraseña. Intenta de nuevo.'
+    }
+  } finally {
+    isChangingPassword.value = false
   }
 }
 
@@ -529,7 +1052,7 @@ const showSolicitarButton = (tutoria) => {
 
 const handleLogout = () => {
   localStorage.removeItem('accessToken')
-  localStorage.removeItem('alumno') // Limpiar también por compatibilidad
+  localStorage.removeItem('alumno')
   router.push('/login_alumno')
 }
 
