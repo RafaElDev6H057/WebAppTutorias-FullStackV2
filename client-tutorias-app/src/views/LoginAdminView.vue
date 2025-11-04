@@ -28,7 +28,7 @@
         <!-- Back Link -->
         <RouterLink
           to="/"
-          class="text-white mb-8 text-lg bg-blue-600 inline-block px-2 py-1 rounded-lg font-bold hover:bg-blue-700 transition-colors"
+          class="text-white mb-8 text-lg bg-purple-600 inline-block px-2 py-1 rounded-lg font-bold hover:bg-purple-700 transition-colors"
         >
           <HomeLogo></HomeLogo>
         </RouterLink>
@@ -88,7 +88,7 @@
 
           <button
             type="submit"
-            class="w-full bg-blue-600 text-white rounded-lg px-6 py-3 text-lg font-medium hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
+            class="w-full bg-purple-600 text-white rounded-lg px-6 py-3 text-lg font-medium hover:bg-purple-700 transition-colors shadow-md hover:shadow-lg"
           >
             ENTRAR
           </button>
@@ -99,14 +99,9 @@
     <!-- Right Side - Illustration -->
     <div class="w-1/2 flex items-center justify-center relative z-10 rounded-3xl">
       <div class="relative w-4/5 h-4/5">
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-blue-500 to-slate-700 rounded-full opacity-55 blur-2xl"
-        ></div>
-        <div
-          class="absolute inset-4 bg-gradient-to-tr from-blue-600 to-slate-800 rounded-full opacity-55 blur-xl"
-        ></div>
+        
         <img
-          src="/admin_image_login.png"
+          src="/admin2.png"
           alt="Ilustración de espacio de trabajo"
           class="absolute inset-0 w-full h-full object-contain rounded-3xl z-10 animate-float-3"
         />
@@ -166,19 +161,20 @@ const handleSubmit = async () => {
 }
 
 const circles = [
-  { color: 'bg-blue-500', size: 96, top: 10, left: 5 },
-  { color: 'bg-slate-200', size: 64, top: 20, left: 80 },
-  { color: 'bg-blue-600', size: 128, top: 70, left: 20 },
-  { color: 'bg-slate-300', size: 80, top: 40, left: 95 },
-  { color: 'bg-blue-500', size: 112, top: 85, left: 70 },
-  { color: 'bg-slate-200', size: 48, top: 25, left: 30 },
-  { color: 'bg-blue-600', size: 72, top: 60, left: 50 },
-  { color: 'bg-slate-300', size: 56, top: 5, left: 90 },
-  { color: 'bg-blue-500', size: 88, top: 80, left: 40 },
-  { color: 'bg-slate-200', size: 40, top: 90, left: 10 },
-  { color: 'bg-blue-600', size: 104, top: 15, left: 60 },
-  { color: 'bg-slate-300', size: 68, top: 50, left: 85 },
-]
+  { color: 'bg-purple-300', size: 96, top: 10, left: 5 },
+  { color: 'bg-rose-200', size: 64, top: 20, left: 80 },
+  { color: 'bg-purple-400', size: 128, top: 70, left: 20 },
+  { color: 'bg-gray-100', size: 80, top: 40, left: 95 },
+  { color: 'bg-rose-300', size: 112, top: 85, left: 70 },
+  { color: 'bg-gray-200', size: 48, top: 25, left: 30 },
+  { color: 'bg-purple-500', size: 72, top: 60, left: 50 },
+  { color: 'bg-rose-100', size: 56, top: 5, left: 90 },
+  { color: 'bg-gray-300', size: 88, top: 80, left: 40 },
+  { color: 'bg-rose-200', size: 40, top: 90, left: 10 },
+  { color: 'bg-purple-400', size: 104, top: 15, left: 60 },
+  { color: 'bg-gray-100', size: 68, top: 50, left: 85 },
+];
+
 </script>
 
 <style scoped>

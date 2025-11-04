@@ -22,7 +22,7 @@
     </div>
 
     <!-- ==================== BARRA DE NAVEGACIÓN ==================== -->
-    <nav class="bg-indigo-600 shadow-lg relative z-10">
+    <nav class="bg-purple-600 shadow-lg relative z-10">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
           <div class="flex items-center">
@@ -315,7 +315,7 @@
               @click="activeTab = 'students'"
               :class="[
                 activeTab === 'students'
-                  ? 'bg-indigo-100 text-indigo-700'
+                  ? 'bg-indigo-100 text-purple-700'
                   : 'text-gray-500 hover:text-gray-700',
                 'px-3 py-2 font-medium text-sm rounded-md',
               ]"
@@ -326,7 +326,7 @@
               @click="activeTab = 'tutors'"
               :class="[
                 activeTab === 'tutors'
-                  ? 'bg-indigo-100 text-indigo-700'
+                  ? 'bg-indigo-100 text-purple-700'
                   : 'text-gray-500 hover:text-gray-700',
                 'px-3 py-2 font-medium text-sm rounded-md',
               ]"
@@ -348,7 +348,7 @@
 
               <button
                 @click="showModalExcel = true"
-                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out"
+                class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out"
               >
                 Cargar Excel
               </button>
@@ -942,14 +942,14 @@
                   <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                     <button
                       type="submit"
-                      class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                      class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm"
                     >
                       {{ modalMode === 'add' ? 'Agregar' : 'Actualizar' }}
                     </button>
                     <button
                       type="button"
                       @click="closeModal"
-                      class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                      class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                     >
                       Cancelar
                     </button>
@@ -1334,18 +1334,18 @@ const generatePeriodOptions = (yearsAhead = 3) => {
 const periodOptions = ref(generatePeriodOptions())
 
 const circles = [
-  { color: 'bg-blue-500', size: 96, top: 10, left: 5 },
-  { color: 'bg-blue-600', size: 64, top: 20, left: 80 },
-  { color: 'bg-blue-400', size: 128, top: 70, left: 20 },
-  { color: 'bg-blue-300', size: 80, top: 40, left: 95 },
-  { color: 'bg-blue-300', size: 112, top: 85, left: 70 },
-  { color: 'bg-blue-400', size: 48, top: 55, left: 10 },
-  { color: 'bg-blue-600', size: 72, top: 60, left: 50 },
-  { color: 'bg-blue-500', size: 56, top: 5, left: 90 },
-  { color: 'bg-blue-500', size: 88, top: 80, left: 40 },
-  { color: 'bg-blue-300', size: 40, top: 90, left: 10 },
-  { color: 'bg-blue-400', size: 104, top: 15, left: 60 },
-  { color: 'bg-blue-400', size: 68, top: 50, left: 85 },
+  { color: 'bg-purple-300', size: 96, top: 10, left: 5 },
+  { color: 'bg-rose-200', size: 64, top: 20, left: 80 },
+  { color: 'bg-purple-400', size: 128, top: 70, left: 20 },
+  { color: 'bg-gray-100', size: 80, top: 40, left: 95 },
+  { color: 'bg-rose-300', size: 112, top: 85, left: 70 },
+  { color: 'bg-gray-200', size: 48, top: 55, left: 10 },
+  { color: 'bg-purple-500', size: 72, top: 60, left: 50 },
+  { color: 'bg-rose-100', size: 56, top: 5, left: 90 },
+  { color: 'bg-gray-300', size: 88, top: 80, left: 40 },
+  { color: 'bg-rose-200', size: 40, top: 90, left: 10 },
+  { color: 'bg-purple-400', size: 104, top: 15, left: 60 },
+  { color: 'bg-gray-100', size: 68, top: 50, left: 85 },
 ]
 
 // ==================== API CALLS - ESTUDIANTES ====================

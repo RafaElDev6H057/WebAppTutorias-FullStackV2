@@ -165,7 +165,7 @@ const processFiles = async () => {
         >
           <!-- Header -->
           <div
-            class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-5 flex items-center justify-between"
+            class="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-5 flex items-center justify-between"
           >
             <div>
               <h2 id="modal-title" class="text-2xl font-semibold text-white">
@@ -209,7 +209,7 @@ const processFiles = async () => {
                   multiple
                   accept=".csv"
                   @change="handleFileChange"
-                  class="block w-full text-sm text-gray-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:transition-colors file:cursor-pointer cursor-pointer border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  class="block w-full text-sm text-gray-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-purple-700 hover:file:bg-blue-100 file:transition-colors file:cursor-pointer cursor-pointer border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   :disabled="isProcessing"
                 />
               </div>
@@ -249,7 +249,7 @@ const processFiles = async () => {
                     class="flex items-center text-sm text-gray-700"
                   >
                     <svg
-                      class="w-5 h-5 mr-2 text-blue-500 flex-shrink-0"
+                      class="w-5 h-5 mr-2 text-purple-500 flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -278,7 +278,7 @@ const processFiles = async () => {
                 :disabled="!canProcess"
                 class="flex-1 inline-flex justify-center items-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
                 :class="{
-                  'bg-blue-600 hover:bg-blue-700 hover:shadow-md': canProcess,
+                  'bg-purple-600 hover:bg-purple-700 hover:shadow-md': canProcess,
                   'bg-gray-300 cursor-not-allowed': !canProcess,
                 }"
               >
@@ -355,7 +355,7 @@ const processFiles = async () => {
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                   <div
-                    class="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-300 ease-out shadow-sm"
+                    class="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-300 ease-out shadow-sm"
                     :style="{ width: progressPercentage + '%' }"
                   ></div>
                 </div>
