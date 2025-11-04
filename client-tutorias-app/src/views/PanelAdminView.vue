@@ -735,339 +735,415 @@
 
     <!-- ==================== MODALES ==================== -->
 
-    <!-- Modal Agregar/Editar Estudiante/Tutor -->
-    <div
-      v-if="showModal"
-      class="fixed z-10 inset-0 overflow-y-auto"
-      aria-labelledby="modal-title"
-      role="dialog"
-      aria-modal="true"
+    <!-- Modal para añadir/editar estudiante o tutor -->
+    <Transition
+      enter-active-class="transition ease-out duration-300"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition ease-in duration-200"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
     >
       <div
-        class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+        v-if="showModal"
+        class="fixed z-10 inset-0 overflow-y-auto"
+        aria-labelledby="modal-title"
+        role="dialog"
+        aria-modal="true"
       >
         <div
-          class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-          aria-hidden="true"
-        ></div>
-
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"
-          >&#8203;</span
+          class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
         >
-
-        <div
-          class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-        >
-          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div class="sm:flex sm:items-start">
-              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
-                  {{
-                    modalMode === 'add'
-                      ? modalType === 'student'
-                        ? 'Añadir Nuevo Estudiante'
-                        : 'Añadir Nuevo Tutor'
-                      : modalType === 'student'
-                        ? 'Editar Estudiante'
-                        : 'Editar Tutor'
-                  }}
-                </h3>
-
-                <!-- Formulario Estudiante -->
-                <form v-if="modalType === 'student'" @submit.prevent="submitForm" class="space-y-4">
-                  <div>
-                    <label for="nombre" class="block text-sm font-medium text-gray-700"
-                      >Nombre</label
-                    >
-                    <input
-                      type="text"
-                      v-model="formData.nombre"
-                      id="nombre"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      required
-                    />
-                    <span v-if="errors.nombre" class="text-red-500 text-xs">{{
-                      errors.nombre[0]
-                    }}</span>
-                  </div>
-                  <div>
-                    <label for="apellido_p" class="block text-sm font-medium text-gray-700"
-                      >Apellido Paterno</label
-                    >
-                    <input
-                      type="text"
-                      v-model="formData.apellido_p"
-                      id="apellido_p"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      required
-                    />
-                    <span v-if="errors.apellido_p" class="text-red-500 text-xs">{{
-                      errors.apellido_p[0]
-                    }}</span>
-                  </div>
-                  <div>
-                    <label for="apellido_m" class="block text-sm font-medium text-gray-700"
-                      >Apellido Materno</label
-                    >
-                    <input
-                      type="text"
-                      v-model="formData.apellido_m"
-                      id="apellido_m"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
-                    <span v-if="errors.apellido_m" class="text-red-500 text-xs">{{
-                      errors.apellido_m[0]
-                    }}</span>
-                  </div>
-                  <div>
-                    <label for="num_control" class="block text-sm font-medium text-gray-700"
-                      >Número de Control</label
-                    >
-                    <input
-                      type="text"
-                      v-model="formData.num_control"
-                      id="num_control"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      required
-                    />
-                    <span v-if="errors.num_control" class="text-red-500 text-xs">{{
-                      errors.num_control[0]
-                    }}</span>
-                  </div>
-                  <div>
-                    <label for="carrera" class="block text-sm font-medium text-gray-700"
-                      >Carrera</label
-                    >
-                    <input
-                      type="text"
-                      v-model="formData.carrera"
-                      id="carrera"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      required
-                    />
-                    <span v-if="errors.carrera" class="text-red-500 text-xs">{{
-                      errors.carrera[0]
-                    }}</span>
-                  </div>
-                  <div>
-                    <label for="semestre_actual" class="block text-sm font-medium text-gray-700"
-                      >Semestre Actual</label
-                    >
-                    <input
-                      type="number"
-                      v-model.number="formData.semestre_actual"
-                      id="semestre_actual"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      required
-                    />
-                    <span v-if="errors.semestre_actual" class="text-red-500 text-xs">{{
-                      errors.semestre_actual[0]
-                    }}</span>
-                  </div>
-                  <div>
-                    <label for="estado" class="block text-sm font-medium text-gray-700"
-                      >Estado</label
-                    >
-                    <select
-                      v-model="formData.estado"
-                      id="estado"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      required
-                    >
-                      <option value="A">Activo</option>
-                      <option value="I">Inactivo</option>
-                    </select>
-                    <span v-if="errors.estado" class="text-red-500 text-xs">{{
-                      errors.estado[0]
-                    }}</span>
-                  </div>
-                  <div>
-                    <label for="telefono" class="block text-sm font-medium text-gray-700"
-                      >Teléfono</label
-                    >
-                    <input
-                      type="tel"
-                      v-model="formData.telefono"
-                      id="telefono"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
-                    <span v-if="errors.telefono" class="text-red-500 text-xs">{{
-                      errors.telefono[0]
-                    }}</span>
-                  </div>
-                  <div>
-                    <label for="correo" class="block text-sm font-medium text-gray-700"
-                      >Correo</label
-                    >
-                    <input
-                      type="email"
-                      v-model="formData.correo"
-                      id="correo"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      required
-                    />
-                    <span v-if="errors.correo" class="text-red-500 text-xs">{{
-                      errors.correo[0]
-                    }}</span>
-                  </div>
-                  <div>
-                    <label for="contraseña" class="block text-sm font-medium text-gray-700">
-                      Contraseña
-                      <span v-if="modalMode === 'edit'" class="text-gray-500"
-                        >(dejar en blanco para no cambiar)</span
-                      >
-                    </label>
-                    <div class="relative">
-                      <input
-                        :type="showPassword ? 'text' : 'password'"
-                        v-model="formData.contraseña"
-                        id="contraseña"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 pr-10 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        :required="modalMode === 'add'"
-                      />
-                      <button
-                        type="button"
-                        @click="showPassword = !showPassword"
-                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-                      >
-                        <ShowEye v-if="!showPassword" />
-                        <HideEye v-else />
-                      </button>
+          <div
+            class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+            aria-hidden="true"
+          ></div>
+          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"
+            >&#8203;</span
+          >
+          <div
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
+          >
+            <div class="bg-gradient-to-r from-purple-600 to-purple-700 px-4 py-3 sm:px-6">
+              <h3 class="text-lg leading-6 font-medium text-white" id="modal-title">
+                {{ modalMode === 'add' ? 'Añadir' : 'Editar' }}
+                {{ modalType === 'student' ? 'Estudiante' : 'Tutor' }}
+              </h3>
+            </div>
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div class="mt-2">
+                <form @submit.prevent="submitForm" class="space-y-6">
+                  <div v-if="modalType === 'student'">
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                      <div>
+                        <label for="nombre" class="block text-sm font-medium text-gray-700"
+                          >Nombre</label
+                        >
+                        <input
+                          type="text"
+                          name="nombre"
+                          id="nombre"
+                          v-model="formData.nombre"
+                          :class="[
+                            'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                            { 'border-red-500': errors.nombre },
+                          ]"
+                        />
+                        <p v-if="errors.nombre" class="mt-2 text-sm text-red-600">
+                          {{ errors.nombre[0] }}
+                        </p>
+                      </div>
+                      <div>
+                        <label for="apellidoPaterno" class="block text-sm font-medium text-gray-700"
+                          >Apellido Paterno</label
+                        >
+                        <input
+                          type="text"
+                          name="apellidoPaterno"
+                          id="apellidoPaterno"
+                          v-model="formData.apellido_p"
+                          :class="[
+                            'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                            { 'border-red-500': errors.apellido_p },
+                          ]"
+                        />
+                        <p v-if="errors.apellido_p" class="mt-2 text-sm text-red-600">
+                          {{ errors.apellido_p[0] }}
+                        </p>
+                      </div>
+                      <div>
+                        <label for="apellidoMaterno" class="block text-sm font-medium text-gray-700"
+                          >Apellido Materno</label
+                        >
+                        <input
+                          type="text"
+                          name="apellidoMaterno"
+                          id="apellidoMaterno"
+                          v-model="formData.apellido_m"
+                          :class="[
+                            'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                            { 'border-red-500': errors.apellido_m },
+                          ]"
+                        />
+                        <p v-if="errors.apellido_m" class="mt-2 text-sm text-red-600">
+                          {{ errors.apellido_m[0] }}
+                        </p>
+                      </div>
                     </div>
-                    <span v-if="errors.contraseña" class="text-red-500 text-xs">{{
-                      errors.contraseña[0]
-                    }}</span>
-                  </div>
-
-                  <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button
-                      type="submit"
-                      class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm"
-                    >
-                      {{ modalMode === 'add' ? 'Agregar' : 'Actualizar' }}
-                    </button>
-                    <button
-                      type="button"
-                      @click="closeModal"
-                      class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </form>
-
-                <!-- Formulario Tutor -->
-                <form v-if="modalType === 'tutor'" @submit.prevent="submitForm" class="space-y-4">
-                  <div>
-                    <label for="tutor-nombre" class="block text-sm font-medium text-gray-700"
-                      >Nombre</label
-                    >
-                    <input
-                      type="text"
-                      v-model="formData.nombre"
-                      id="tutor-nombre"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      required
-                    />
-                    <span v-if="errors.nombre" class="text-red-500 text-xs">{{
-                      errors.nombre[0]
-                    }}</span>
-                  </div>
-                  <div>
-                    <label for="tutor-apellido_p" class="block text-sm font-medium text-gray-700"
-                      >Apellido Paterno</label
-                    >
-                    <input
-                      type="text"
-                      v-model="formData.apellido_p"
-                      id="tutor-apellido_p"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      required
-                    />
-                    <span v-if="errors.apellido_p" class="text-red-500 text-xs">{{
-                      errors.apellido_p[0]
-                    }}</span>
-                  </div>
-                  <div>
-                    <label for="tutor-apellido_m" class="block text-sm font-medium text-gray-700"
-                      >Apellido Materno</label
-                    >
-                    <input
-                      type="text"
-                      v-model="formData.apellido_m"
-                      id="tutor-apellido_m"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
-                    <span v-if="errors.apellido_m" class="text-red-500 text-xs">{{
-                      errors.apellido_m[0]
-                    }}</span>
-                  </div>
-                  <div>
-                    <label for="tutor-correo" class="block text-sm font-medium text-gray-700"
-                      >Correo</label
-                    >
-                    <input
-                      type="email"
-                      v-model="formData.correo"
-                      id="tutor-correo"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      required
-                    />
-                    <span v-if="errors.correo" class="text-red-500 text-xs">{{
-                      errors.correo[0]
-                    }}</span>
-                  </div>
-                  <div>
-                    <label for="tutor-contraseña" class="block text-sm font-medium text-gray-700">
-                      Contraseña
-                      <span v-if="modalMode === 'edit'" class="text-gray-500"
-                        >(dejar en blanco para no cambiar)</span
-                      >
-                    </label>
-                    <div class="relative">
-                      <input
-                        :type="showPassword ? 'text' : 'password'"
-                        v-model="formData.contraseña"
-                        id="tutor-contraseña"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 pr-10 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        :required="modalMode === 'add'"
-                      />
-                      <button
-                        type="button"
-                        @click="showPassword = !showPassword"
-                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-                      >
-                        <ShowEye v-if="!showPassword" />
-                        <HideEye v-else />
-                      </button>
+                    <div class="mt-6">
+                      <div class="grid grid-cols-2 gap-6">
+                        <div>
+                          <label for="numeroControl" class="block text-sm font-medium text-gray-700"
+                            >Número de Control</label
+                          >
+                          <input
+                            type="text"
+                            name="numeroControl"
+                            id="numeroControl"
+                            v-model="formData.num_control"
+                            :class="[
+                              'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                              { 'border-red-500': errors.num_control },
+                            ]"
+                          />
+                          <p v-if="errors.num_control" class="mt-2 text-sm text-red-600">
+                            {{ errors.num_control[0] }}
+                          </p>
+                        </div>
+                        <div>
+                          <label for="contraseña" class="block text-sm font-medium text-gray-700"
+                            >Contraseña</label
+                          >
+                          <div class="relative">
+                            <input
+                              name="contraseña"
+                              id="contraseña"
+                              v-model="formData.contraseña"
+                              :type="showPassword ? 'text' : 'password'"
+                              :class="[
+                                'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                                { 'border-red-500': errors.contraseña },
+                              ]"
+                            />
+                            <button
+                              type="button"
+                              @click="showPassword = !showPassword"
+                              class="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500 text-xl"
+                            >
+                              <span v-if="showPassword">
+                                <ShowEye />
+                              </span>
+                              <span v-else>
+                                <HideEye />
+                              </span>
+                            </button>
+                          </div>
+                          <p v-if="errors.contraseña" class="mt-2 text-sm text-red-600">
+                            {{ errors.contraseña[0] }}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <span v-if="errors.contraseña" class="text-red-500 text-xs">{{
-                      errors.contraseña[0]
-                    }}</span>
+                    <!-- Correo y contraseña -->
+                    <div class="mt-6">
+                      <div class="grid grid-cols-2 gap-6">
+                        <div>
+                          <label for="correo" class="block text-sm font-medium text-gray-700"
+                            >Correo</label
+                          >
+                          <input
+                            type="text"
+                            name="correo"
+                            id="correo"
+                            v-model="formData.correo"
+                            :class="[
+                              'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                              { 'border-red-500': errors.correo },
+                            ]"
+                          />
+                          <p v-if="errors.num_control" class="mt-2 text-sm text-red-600">
+                            {{ errors.correo[0] }}
+                          </p>
+                        </div>
+                        <div>
+                          <label for="telefono" class="block text-sm font-medium text-gray-700"
+                            >Telefono</label
+                          >
+                          <input
+                            type="text"
+                            name="telefono"
+                            id="telefono"
+                            v-model="formData.telefono"
+                            :class="[
+                              'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                              { 'border-red-500': errors.telefono },
+                            ]"
+                          />
+                          <p v-if="errors.telefono" class="mt-2 text-sm text-red-600">
+                            {{ errors.telefono[0] }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mt-6">
+                      <label for="carrera" class="block text-sm font-medium text-gray-700"
+                        >Carrera</label
+                      >
+                      <select
+                        name="carrera"
+                        id="carrera"
+                        v-model="formData.carrera"
+                        :class="[
+                          'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                          { 'border-red-500': errors.carrera },
+                        ]"
+                      >
+                        <option value="">Selecciona una carrera</option>
+                        <option value="Ingeniería en Semiconductores">
+                          Ingeniería en Semiconductores
+                        </option>
+                        <option value="Ingeniería en Logística">Ingeniería en Logística</option>
+                        <option value="Ingeniería en Informática">Ingeniería en Informática</option>
+                        <option value="Ingeniería en Electrónica">Ingeniería en Electrónica</option>
+                        <option value="Ingeniería en Sistemas Computacionales">
+                          Ingeniería en Sistemas Computacionales
+                        </option>
+                        <option value="Ingeniería Ambiental">Ingeniería Ambiental</option>
+                        <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+                        <option value="Ingeniería en Gestión Empresarial">
+                          Ingeniería en Gestión Empresarial
+                        </option>
+                        <option value="Ingeniería en Minería">Ingeniería en Minería</option>
+                        <option value="Arquitectura">Arquitectura</option>
+                      </select>
+                      <p v-if="errors.carrera" class="mt-2 text-sm text-red-600">
+                        {{ errors.carrera[0] }}
+                      </p>
+                    </div>
+                    <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+                      <div>
+                        <label for="semestre" class="block text-sm font-medium text-gray-700"
+                          >Semestre</label
+                        >
+                        <select
+                          name="semestre"
+                          id="semestre"
+                          v-model="formData.semestre_actual"
+                          :class="[
+                            'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                            { 'border-red-500': errors.semestre_actual },
+                          ]"
+                        >
+                          <option value="">Selecciona un semestre</option>
+                          <option value="1">1° Semestre</option>
+                          <option value="2">2° Semestre</option>
+                          <option value="3">3° Semestre</option>
+                          <option value="4">4° Semestre</option>
+                          <option value="5">5° Semestre</option>
+                          <option value="6">6° Semestre</option>
+                          <option value="7">7° Semestre</option>
+                          <option value="8">8° Semestre</option>
+                          <option value="9">9° Semestre</option>
+                        </select>
+                        <p v-if="errors.semestre_actual" class="mt-2 text-sm text-red-600">
+                          {{ errors.semestre_actual[0] }}
+                        </p>
+                      </div>
+                      <div>
+                        <label for="estado" class="block text-sm font-medium text-gray-700"
+                          >Estado</label
+                        >
+                        <select
+                          name="estado"
+                          id="estado"
+                          v-model="formData.estado"
+                          :class="[
+                            'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                            { 'border-red-500': errors.estado },
+                          ]"
+                        >
+                          <option value="A">Activo</option>
+                          <option value="I">Inactivo</option>
+                        </select>
+                        <p v-if="errors.estado" class="mt-2 text-sm text-red-600">
+                          {{ errors.estado[0] }}
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
-                  <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button
-                      type="submit"
-                      class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-                    >
-                      {{ modalMode === 'add' ? 'Agregar' : 'Actualizar' }}
-                    </button>
-                    <button
-                      type="button"
-                      @click="closeModal"
-                      class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    >
-                      Cancelar
-                    </button>
+                  <!-- Modal para añadir/editar tutor -->
+                  <div v-if="modalType === 'tutor'">
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                      <div class="col-span-2">
+                        <label for="nombre" class="block text-sm font-medium text-gray-700"
+                          >Nombre</label
+                        >
+                        <input
+                          type="text"
+                          name="nombre"
+                          id="nombre"
+                          v-model="formData.nombre"
+                          :class="[
+                            'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                            { 'border-red-500': errors.nombre },
+                          ]"
+                        />
+                        <p v-if="errors.nombre" class="mt-2 text-sm text-red-600">
+                          {{ errors.nombre[0] }}
+                        </p>
+                      </div>
+                      <div>
+                        <label for="apellidoPaterno" class="block text-sm font-medium text-gray-700"
+                          >Apellido Paterno</label
+                        >
+                        <input
+                          type="text"
+                          name="apellidoPaterno"
+                          id="apellidoPaterno"
+                          v-model="formData.apellido_p"
+                          :class="[
+                            'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                            { 'border-red-500': errors.apellido_p },
+                          ]"
+                        />
+                        <p v-if="errors.apellido_p" class="mt-2 text-sm text-red-600">
+                          {{ errors.apellido_p[0] }}
+                        </p>
+                      </div>
+                      <div>
+                        <label for="apellidoMaterno" class="block text-sm font-medium text-gray-700"
+                          >Apellido Materno</label
+                        >
+                        <input
+                          type="text"
+                          name="apellidoMaterno"
+                          id="apellidoMaterno"
+                          v-model="formData.apellido_m"
+                          :class="[
+                            'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                            { 'border-red-500': errors.apellido_m },
+                          ]"
+                        />
+                        <p v-if="errors.apellido_m" class="mt-2 text-sm text-red-600">
+                          {{ errors.apellido_m[0] }}
+                        </p>
+                      </div>
+                      <div>
+                        <label for="correo" class="block text-sm font-medium text-gray-700"
+                          >Correo</label
+                        >
+                        <input
+                          type="email"
+                          name="correo"
+                          id="correo"
+                          v-model="formData.correo"
+                          :class="[
+                            'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                            { 'border-red-500': errors.correo },
+                          ]"
+                        />
+                        <p v-if="errors.correo" class="mt-2 text-sm text-red-600">
+                          {{ errors.correo[0] }}
+                        </p>
+                      </div>
+                      <div>
+                        <label for="contraseña" class="block text-sm font-medium text-gray-700"
+                          >Contraseña</label
+                        >
+                        <div class="relative">
+                          <input
+                            name="contraseña"
+                            id="contraseña"
+                            v-model="formData.contraseña"
+                            :type="showPassword ? 'text' : 'password'"
+                            :class="[
+                              'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                              { 'border-red-500': errors.contraseña },
+                            ]"
+                          />
+                          <button
+                            type="button"
+                            @click="showPassword = !showPassword"
+                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500 text-xl"
+                          >
+                            <span v-if="showPassword">
+                              <ShowEye />
+                            </span>
+                            <span v-else>
+                              <HideEye />
+                            </span>
+                          </button>
+                        </div>
+                        <p v-if="errors.contraseña" class="mt-2 text-sm text-red-600">
+                          {{ errors.contraseña[0] }}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </form>
               </div>
             </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <button
+                @click="submitForm"
+                type="button"
+                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm"
+              >
+                {{ modalMode === 'add' ? 'Añadir' : 'Guardar cambios' }}
+              </button>
+              <button
+                @click="closeModal"
+                type="button"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Transition>
 
     <!-- Modal Confirmar Eliminación Estudiante -->
     <div
@@ -1519,6 +1595,7 @@ const submitForm = async () => {
         if (response.status === 201) {
           students.value.push(response.data)
           console.log('Alumno agregado exitosamente:', response.data)
+          fetchStudents()
           closeModal()
         }
       } else if (modalType.value === 'tutor') {
@@ -1530,6 +1607,7 @@ const submitForm = async () => {
         if (response.status === 201) {
           tutors.value.push(response.data)
           console.log('Tutor agregado exitosamente:', response.data)
+          fetchTutors()
           closeModal()
         }
       }
@@ -1630,6 +1708,11 @@ const confirmDelete = async () => {
     try {
       const response = await axios.delete(
         `http://localhost:8000/api/alumnos/${studentToDelete.value.id_alumno}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          },
+        },
       )
       if (response.status === 204) {
         students.value = students.value.filter(

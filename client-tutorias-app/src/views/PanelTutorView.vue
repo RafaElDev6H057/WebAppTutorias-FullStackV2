@@ -642,7 +642,7 @@
             class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
           >
             <div
-              class="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white"
+              class="relative top-20 mx-auto p-5 border w-11/12 max-w-5xl shadow-lg rounded-md bg-white"
             >
               <div class="p-4 border-b flex justify-end items-center">
                 <button
@@ -666,7 +666,7 @@
                 </button>
               </div>
               <div class="p-4">
-                <PrimerReporteTutoria @cerrar="mostrarModalPrimerReporte = false" />
+                <ReporteIndividual1 @cerrar="mostrarModalPrimerReporte = false" />
               </div>
             </div>
           </div>
@@ -1643,9 +1643,10 @@ import axios from 'axios'
 import TutorService from '@/services/TutorService.js'
 import ReporteIntegralMasivo from '@/components/ReporteIntegralMasivo.vue'
 import ReporteIntegralTutoria from '@/components/ReporteIntegralTutoria.vue'
-import PrimerReporteTutoria from '@/components/PrimerReporteTutoria.vue'
+// import PrimerReporteTutoria from '@/components/PrimerReporteTutoria.vue'
 import SegundoReporteTutoria from '@/components/SegundoReporteTutoria.vue'
 import BaseSearchInput from '@/components/ui/BaseSearchInput.vue'
+import ReporteIndividual1 from '@/components/tutor/ReporteIndividual1.vue'
 
 // ==================== ROUTER ====================
 const router = useRouter()

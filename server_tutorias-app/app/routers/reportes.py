@@ -1,8 +1,9 @@
 # app/routers/reportes.py
+
 from fastapi import APIRouter, Depends, status, HTTPException, Response
 from sqlmodel import Session
 from typing import List, Union
-import io # Para el BytesIO
+import io
 
 # Nueva importación para devolver archivos
 from fastapi.responses import StreamingResponse
@@ -12,15 +13,21 @@ from app.database import get_session
 from app.models.reporte_integral import ReporteIntegral
 from app.schemas.reporte_integral import ReporteIntegralCreate, ReporteIntegralRead, ReporteIntegralUpdate
 from app.services import reporte_integral_service
-# Importamos el nuevo servicio de PDF
-from app.services import pdf_generator_service # <-- NUEVO IMPORT
-# Otros reportes
-from app.schemas.reporte1 import Reporte1Create, Reporte1Read
+from app.services import pdf_generator_service
+
+# --- Imports para Reporte 1 ---
+from app.models.reporte1 import Reporte1 # 👈 Modelo Reporte1
+from app.schemas.reporte1 import Reporte1Create, Reporte1Read, Reporte1Update # 👈 Schemas Reporte1
 from app.services import reporte1_service
+# -------------------------------
+
+# --- Imports para Reporte 2 ---
 from app.schemas.reporte2 import Reporte2Create, Reporte2Read
 from app.services import reporte2_service
-# Seguridad y modelos
-from app.core.dependencies import get_current_user
+# -------------------------------
+
+# --- Seguridad y modelos ---
+from app.core.dependencies import get_current_user, get_current_tutor_user, get_current_admin_user, oauth2_scheme_admin, oauth2_scheme_tutor # 👈 Dependencias
 from app.models.administrador import Administrador
 from app.models.tutor import Tutor
 from app.models.tutoria import Tutoria
@@ -258,14 +265,88 @@ async def handle_generate_integral_pdf(
 # Estos endpoints probablemente solo deberían ser accesibles por Admins o Tutores específicos
 # Añadir protección similar si es necesario.
 
-@router.post( "/general-1", response_model=Reporte1Read, status_code=status.HTTP_201_CREATED)
+# ==================================
+# === Reporte General 1 (CRUD) ===
+# ==================================
+
+@router.post(
+    "/general-1",
+    response_model=Reporte1Read,
+    status_code=status.HTTP_201_CREATED,
+    summary="Crear un nuevo Reporte General 1",
+    dependencies=[Depends(oauth2_scheme_tutor)] # 👈 Solo Tutor
+)
 def handle_create_reporte1(
     data: Reporte1Create,
     session: Session = Depends(get_session),
-    # Ejemplo: current_user: Union[Administrador, Tutor] = Depends(get_current_user)
+    current_tutor: Tutor = Depends(get_current_tutor_user) # Protegido
 ):
-    reporte1 = reporte1_service.create_reporte1(db=session, data=data)
+    reporte1 = reporte1_service.create_reporte1(db=session, data=data, tutor_id=current_tutor.id_tutor) # type: ignore
     return reporte1
+
+@router.get(
+    "/general-1/tutor",
+    response_model=List[Reporte1Read],
+    summary="Obtener todos los Reportes 1 de un Tutor",
+    dependencies=[Depends(oauth2_scheme_tutor)] # 👈 Solo Tutor
+)
+def handle_get_reportes1_por_tutor(
+    session: Session = Depends(get_session),
+    current_tutor: Tutor = Depends(get_current_tutor_user) # Protegido
+):
+    reportes = reporte1_service.get_reportes_por_tutor(db=session, tutor_id=current_tutor.id_tutor) # type: ignore
+    return reportes
+
+@router.get(
+    "/general-1/{reporte_id}",
+    response_model=Reporte1Read,
+    summary="Obtener un Reporte 1 específico por ID",
+    dependencies=[Depends(oauth2_scheme_admin), Depends(oauth2_scheme_tutor)] # 👈 Dual
+)
+def handle_get_reporte1_por_id(
+    reporte_id: int,
+    session: Session = Depends(get_session),
+    current_user: Union[Administrador, Tutor] = Depends(get_current_user) # Protegido
+):
+    reporte = reporte1_service.get_reporte1_por_id(db=session, reporte_id=reporte_id)
+    if isinstance(current_user, Tutor) and reporte.id_tutor != current_user.id_tutor:
+        raise HTTPException(status_code=403, detail="No tienes permiso para ver este reporte.")
+    return reporte
+
+@router.put(
+    "/general-1/{reporte_id}",
+    response_model=Reporte1Read,
+    summary="Actualizar un Reporte 1",
+    dependencies=[Depends(oauth2_scheme_admin), Depends(oauth2_scheme_tutor)] # 👈 Dual
+)
+def handle_update_reporte1(
+    reporte_id: int,
+    data: Reporte1Update,
+    session: Session = Depends(get_session),
+    current_user: Union[Administrador, Tutor] = Depends(get_current_user) # Protegido
+):
+    reporte_existente = reporte1_service.get_reporte1_por_id(db=session, reporte_id=reporte_id)
+    if isinstance(current_user, Tutor) and reporte_existente.id_tutor != current_user.id_tutor:
+        raise HTTPException(status_code=403, detail="No tienes permiso para modificar este reporte.")
+    reporte_actualizado = reporte1_service.update_reporte1(db=session, reporte_existente=reporte_existente, data=data)
+    return reporte_actualizado
+
+@router.delete(
+    "/general-1/{reporte_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Eliminar un Reporte 1",
+    dependencies=[Depends(oauth2_scheme_admin), Depends(oauth2_scheme_tutor)] # 👈 Dual
+)
+def handle_delete_reporte1(
+    reporte_id: int,
+    session: Session = Depends(get_session),
+    current_user: Union[Administrador, Tutor] = Depends(get_current_user) # Protegido
+):
+    reporte_existente = reporte1_service.get_reporte1_por_id(db=session, reporte_id=reporte_id)
+    if isinstance(current_user, Tutor) and reporte_existente.id_tutor != current_user.id_tutor:
+        raise HTTPException(status_code=403, detail="No tienes permiso para eliminar este reporte.")
+    reporte1_service.delete_reporte1(db=session, reporte_existente=reporte_existente)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @router.post("/general-2", response_model=Reporte2Read, status_code=status.HTTP_201_CREATED)
 def handle_create_reporte2(
