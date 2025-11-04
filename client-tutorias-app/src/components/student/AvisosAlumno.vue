@@ -3,7 +3,7 @@
   <div class="space-y-4">
     <!-- Header -->
     <div class="flex items-center gap-3 mb-4">
-      <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -12,7 +12,7 @@
         />
       </svg>
       <div>
-        <h2 class="text-xl font-bold text-white">Avisos Importantes</h2>
+        <h2 class="text-xl font-bold text-gray-700">Avisos Importantes</h2>
         <p class="text-sm text-gray-400">Mantente informado sobre las últimas novedades</p>
       </div>
     </div>
@@ -20,7 +20,7 @@
     <!-- ==================== LOADING ==================== -->
     <div v-if="isLoading" class="flex justify-center items-center py-12">
       <svg
-        class="animate-spin h-8 w-8 text-purple-400"
+        class="animate-spin h-8 w-8 text-gray-400"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -70,7 +70,7 @@
         <div
           v-for="aviso in avisos"
           :key="aviso.id"
-          class="bg-gray-800/50 backdrop-blur-sm border border-purple-500/30 rounded-lg p-4 hover:border-purple-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20"
+          class="bg-gray-800/50 backdrop-blur-sm border border-gray-500/30 rounded-lg p-4 hover:border-gray-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-gray-500/20"
         >
           <!-- Badge "Nuevo" si fue creado hace menos de 7 días -->
           <div class="flex items-start justify-between mb-3">
@@ -94,7 +94,7 @@
               :href="aviso.link"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 text-sm font-medium transition-colors duration-200 group"
+              class="inline-flex items-center gap-2 text-lime-400 hover:text-lime-300 text-sm font-medium transition-colors duration-200 group"
             >
               <svg
                 class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"
@@ -157,8 +157,8 @@
           d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
         />
       </svg>
-      <p class="text-gray-400 text-sm">No hay avisos disponibles en este momento</p>
-      <p class="text-gray-500 text-xs mt-2">Vuelve más tarde para ver nuevas publicaciones</p>
+      <p class="text-white text-sm">No hay avisos disponibles en este momento</p>
+      <p class="text-white text-xs mt-2">Vuelve más tarde para ver nuevas publicaciones</p>
     </div>
   </div>
 </template>

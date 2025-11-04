@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-900 flex relative overflow-hidden">
+  <div class="min-h-screen bg-slate-50 flex relative overflow-hidden">
     <!-- Animated Circles -->
     <div class="absolute inset-0 pointer-events-none">
       <div
@@ -22,18 +22,18 @@
 
     <!-- Left Side - Login Form -->
     <div class="w-1/2 flex items-center justify-center p-12 relative z-10">
-      <div class="w-full max-w-2xl bg-gray-800/50 rounded-3xl p-12 shadow-lg backdrop-blur-sm">
+      <div class="w-full max-w-2xl bg-gray-300/80 rounded-3xl p-12 shadow-lg backdrop-blur-sm">
         <!-- Back Link -->
         <RouterLink
           to="/"
-          class="text-white mb-8 text-lg bg-purple-600 inline-block px-2 py-1 rounded-lg font-bold"
+          class="text-white mb-8 text-lg bg-lime-600 inline-block px-2 py-1 rounded-lg font-bold"
         >
           <HomeLogo></HomeLogo>
         </RouterLink>
 
         <!-- Form -->
         <form @submit.prevent="handleSubmit" class="space-y-8">
-          <h1 class="text-4xl font-bold text-white mb-10">INICIAR SESIÓN</h1>
+          <h1 class="text-4xl font-bold text-gray-800 mb-10">INICIAR SESIÓN</h1>
 
           <!-- Mostrar mensaje de error -->
           <p v-if="errorMessage" class="text-red-500 text-sm font-medium">
@@ -42,7 +42,7 @@
 
           <div class="space-y-6">
             <div class="space-y-2">
-              <label for="usuario" class="block text-lg font-medium text-gray-300">
+              <label for="usuario" class="block text-lg font-medium text-gray-700">
                 Num. de Control
               </label>
               <input
@@ -50,13 +50,13 @@
                 v-model="usuario"
                 type="text"
                 required
-                class="w-full px-6 py-3 text-lg rounded-lg bg-gray-700 border-0 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500"
+                class="w-full px-6 py-3 text-lg rounded-lg bg-white border-0 text-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-purple-500"
                 placeholder="Número de Control"
               />
             </div>
 
             <div class="space-y-2">
-              <label for="password" class="block text-lg font-medium text-gray-300">
+              <label for="password" class="block text-lg font-medium text-gray-700">
                 Contraseña
               </label>
               <div class="relative">
@@ -65,7 +65,7 @@
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'"
                   required
-                  class="w-full px-6 py-3 text-lg rounded-lg bg-gray-700 border-0 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500"
+                  class="w-full px-6 py-3 text-lg rounded-lg bg-white border-0 text-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-purple-500"
                   placeholder="Contraseña"
                 />
                 <button
@@ -86,7 +86,7 @@
 
           <button
             type="submit"
-            class="w-full bg-purple-600 text-white rounded-lg px-6 py-3 text-lg font-medium hover:bg-purple-700 transition-colors"
+            class="w-full bg-lime-600 text-white rounded-lg px-6 py-3 text-lg font-medium hover:bg-lime-700 transition-colors"
           >
             ENTRAR
           </button>
@@ -97,14 +97,9 @@
     <!-- Right Side - Illustration -->
     <div class="w-1/2 flex items-center justify-center relative z-10">
       <div class="relative w-4/5 h-4/5">
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-purple-600 to-purple-900 rounded-full opacity-20 blur-2xl"
-        ></div>
-        <div
-          class="absolute inset-4 bg-gradient-to-tr from-purple-400 to-purple-600 rounded-full opacity-20 blur-xl"
-        ></div>
+        
         <img
-          src="/login_alumno-removebg.png"
+          src="/alumno2.png"
           alt="Ilustración de tutor trabajando"
           class="absolute inset-0 w-full h-full object-contain rounded-3xl z-10 animate-float-1"
         />
@@ -197,19 +192,36 @@ const handleSubmit = async () => {
 // }
 
 const circles = [
-  { color: 'bg-purple-600', size: 96, top: 10, left: 5 },
-  { color: 'bg-purple-300', size: 64, top: 20, left: 80 },
-  { color: 'bg-purple-500', size: 128, top: 70, left: 20 },
-  { color: 'bg-white', size: 80, top: 40, left: 95 },
-  { color: 'bg-purple-400', size: 112, top: 85, left: 70 },
-  { color: 'bg-purple-200', size: 48, top: 25, left: 30 },
-  { color: 'bg-purple-700', size: 72, top: 60, left: 50 },
-  { color: 'bg-purple-100', size: 56, top: 5, left: 90 },
-  { color: 'bg-purple-800', size: 88, top: 80, left: 40 },
-  { color: 'bg-white', size: 40, top: 90, left: 10 },
-  { color: 'bg-purple-500', size: 104, top: 15, left: 60 },
-  { color: 'bg-purple-300', size: 68, top: 50, left: 85 },
-]
+  { color: 'bg-lime-300', size: 96, top: 10, left: 5 },
+  { color: 'bg-lime-200', size: 64, top: 20, left: 80 },
+  { color: 'bg-lime-400', size: 128, top: 70, left: 20 },
+  { color: 'bg-lime-100', size: 80, top: 40, left: 95 },
+  { color: 'bg-lime-500', size: 112, top: 85, left: 70 },
+  { color: 'bg-lime-200', size: 48, top: 25, left: 30 },
+  { color: 'bg-lime-300', size: 72, top: 60, left: 50 },
+  { color: 'bg-lime-100', size: 56, top: 5, left: 90 },
+  { color: 'bg-lime-400', size: 88, top: 80, left: 40 },
+  { color: 'bg-lime-300', size: 40, top: 90, left: 10 },
+  { color: 'bg-lime-500', size: 104, top: 15, left: 60 },
+  { color: 'bg-lime-200', size: 68, top: 50, left: 85 },
+
+  // 🔹 Nuevos círculos agregados
+  { color: 'bg-lime-300', size: 52, top: 5, left: 15 },
+  { color: 'bg-lime-400', size: 60, top: 10, left: 50 },
+  { color: 'bg-lime-500', size: 100, top: 55, left: 10 },
+  { color: 'bg-lime-300', size: 90, top: 65, left: 85 },
+  { color: 'bg-lime-400', size: 76, top: 80, left: 15 },
+  { color: 'bg-lime-100', size: 44, top: 35, left: 60 },
+  { color: 'bg-lime-200', size: 84, top: 25, left: 10 },
+  { color: 'bg-lime-400', size: 50, top: 45, left: 75 },
+];
+
+
+
+
+
+
+
 </script>
 
 <style scoped>

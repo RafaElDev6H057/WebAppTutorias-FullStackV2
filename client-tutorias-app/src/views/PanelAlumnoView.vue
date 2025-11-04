@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-900 relative overflow-hidden">
+  <div class="min-h-screen bg-slate-50 relative overflow-hidden">
     <!-- Animated Circles -->
     <div class="absolute inset-0 pointer-events-none">
       <div
@@ -21,7 +21,7 @@
     </div>
 
     <!-- Navigation Bar -->
-    <nav class="bg-gray-800 border-b border-gray-700">
+    <nav class="bg-lime-500 border-b border-gray-700">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
           <div class="flex items-center space-x-4">
@@ -40,7 +40,7 @@
                     : 'Cargando...'
                 }}
               </div>
-              <div class="text-gray-400 text-sm">
+              <div class="text-white text-sm">
                 No. Control: {{ alumno?.num_control || 'Cargando...' }}
               </div>
             </div>
@@ -90,7 +90,7 @@
             <!-- Botón Cambiar Contraseña -->
             <button
               @click="openChangePasswordModal"
-              class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200"
+              class="bg-white hover:bg-lime-300 text-lime-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200"
             >
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -105,7 +105,7 @@
 
             <button
               @click="handleLogout"
-              class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200"
+              class="bg-white hover:bg-lime-300 text-lime-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200"
             >
               <span>Cerrar Sesión</span>
             </button>
@@ -116,7 +116,7 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 relative z-10">
-      <h1 class="text-3xl font-bold text-white mb-8">Mis Tutorías</h1>
+      <h1 class="text-3xl font-bold text-gray-600 mb-8">Mis Tutorías</h1>
 
       <!-- Banner de Advertencia de Contraseña Insegura -->
       <Transition
@@ -129,11 +129,11 @@
       >
         <div
           v-if="alumno?.requires_password_change"
-          class="mb-6 p-4 bg-purple-900/30 border-l-4 border-purple-500 rounded-md backdrop-blur-sm"
+          class="mb-6 p-4 bg-lime-400/50 border-l-4 border-lime-500 rounded-md backdrop-blur-sm"
         >
           <div class="flex items-start">
             <svg
-              class="w-6 h-6 text-purple-400 mr-3 flex-shrink-0"
+              class="w-6 h-6 text-gray-800 mr-3 flex-shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -146,14 +146,14 @@
               />
             </svg>
             <div class="flex-1">
-              <h3 class="text-sm font-medium text-purple-300">Contraseña Insegura</h3>
-              <p class="mt-1 text-sm text-purple-200">
+              <h3 class="text-sm font-medium text-gray-800">Contraseña Insegura</h3>
+              <p class="mt-1 text-sm text-gray-800">
                 Tu contraseña actual no está protegida adecuadamente. Por seguridad, te recomendamos
                 cambiarla lo antes posible.
               </p>
               <button
                 @click="openChangePasswordModal"
-                class="mt-3 text-sm font-medium text-purple-400 hover:text-purple-300 underline"
+                class="mt-3 text-sm font-medium text-lime-700 hover:text-white underline"
               >
                 Cambiar contraseña ahora →
               </button>
@@ -178,11 +178,11 @@
       >
         <div
           v-if="estadoTutorias && !estadoTutorias.es_elegible"
-          class="mb-6 bg-yellow-900/30 border-l-4 border-yellow-500 p-4 rounded-md backdrop-blur-sm"
+          class="mb-6 bg-gray-200 border-l-4 border-black p-4 rounded-md backdrop-blur-sm"
         >
           <div class="flex items-start">
             <svg
-              class="w-6 h-6 text-yellow-400 mr-3 flex-shrink-0"
+              class="w-6 h-6 text-black mr-3 flex-shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -195,21 +195,21 @@
               />
             </svg>
             <div class="flex-1">
-              <h3 class="text-sm font-bold text-yellow-400 mb-1">📄 Constancia no disponible</h3>
-              <p class="text-sm text-yellow-200">
+              <h3 class="text-sm font-bold text-black mb-1">📄 Constancia no disponible</h3>
+              <p class="text-sm text-black">
                 Debes completar tus <strong>4 tutorías</strong> para poder descargar tu constancia
                 de acreditación.
               </p>
               <div class="mt-2 flex items-center">
                 <div class="flex-1 bg-gray-700 rounded-full h-2 mr-3">
                   <div
-                    class="bg-gradient-to-r from-yellow-500 to-green-500 h-2 rounded-full transition-all duration-500"
+                    class="bg-gradient-to-r from-black to-green-500 h-2 rounded-full transition-all duration-500"
                     :style="{
                       width: `${(estadoTutorias.tutorias_completadas / 4) * 100}%`,
                     }"
                   ></div>
                 </div>
-                <span class="text-xs font-bold text-yellow-400">
+                <span class="text-xs font-bold text-black">
                   {{ estadoTutorias.tutorias_completadas }} / 4 completadas
                 </span>
               </div>
@@ -396,12 +396,12 @@
         class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
       >
         <div
-          class="relative top-20 mx-auto p-5 border border-gray-700 w-11/12 max-w-md shadow-2xl rounded-lg bg-gray-800"
+          class="relative top-20 mx-auto p-5 border border-lime-400 w-11/12 max-w-md shadow-2xl rounded-lg bg-slate-50"
         >
           <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-3">
-            <h2 class="text-xl font-semibold text-white flex items-center gap-2">
+            <h2 class="text-xl font-semibold text-lime-600 flex items-center gap-2">
               <svg
-                class="w-6 h-6 text-purple-400"
+                class="w-6 h-6 text-lime-700"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -418,7 +418,7 @@
             <button
               @click="closeChangePasswordModal"
               :disabled="isChangingPassword"
-              class="text-gray-400 hover:text-white disabled:opacity-50 transition-colors"
+              class="text-lime-600 hover:text-white disabled:opacity-50 transition-colors"
             >
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -434,9 +434,9 @@
           <!-- Mensaje de advertencia para primera vez -->
           <div
             v-if="alumno?.requires_password_change"
-            class="mb-4 p-3 bg-purple-900/20 border border-purple-500/30 rounded-md"
+            class="mb-4 p-3 bg-lime-500/80 border border-lime-600 rounded-md"
           >
-            <p class="text-sm text-purple-300">
+            <p class="text-sm text-black">
               <strong>Importante:</strong> Esta es tu primera vez cambiando la contraseña. Por
               favor, elige una contraseña segura.
             </p>
@@ -510,7 +510,7 @@
           <form @submit.prevent="handleChangePassword" class="space-y-4">
             <!-- Campo de Número de Control (solo para primera vez) -->
             <div v-if="alumno?.requires_password_change">
-              <label for="num_control" class="block text-sm font-medium text-gray-300 mb-1">
+              <label for="num_control" class="block text-sm font-medium text-gray-700 mb-1">
                 Número de Control
               </label>
               <input
@@ -519,14 +519,14 @@
                 type="text"
                 required
                 :disabled="isChangingPassword"
-                class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-900 disabled:cursor-not-allowed"
+                class="w-full px-3 py-2 bg-lime-300/70 border border-lime-600 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-black disabled:bg-gray-900 disabled:cursor-not-allowed"
                 placeholder="Tu número de control"
               />
             </div>
 
             <!-- Contraseña Actual -->
             <div>
-              <label for="current-password" class="block text-sm font-medium text-gray-300 mb-1">
+              <label for="current-password" class="block text-sm font-medium text-gray-700 mb-1">
                 Contraseña Actual
               </label>
               <div class="relative">
@@ -536,7 +536,7 @@
                   :type="showCurrentPassword ? 'text' : 'password'"
                   required
                   :disabled="isChangingPassword"
-                  class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-900 disabled:cursor-not-allowed"
+                  class="w-full px-3 py-2 bg-lime-300/70 border border-lime-600 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-black disabled:bg-gray-900 disabled:cursor-not-allowed"
                   placeholder="••••••••"
                 />
                 <button
@@ -578,7 +578,7 @@
 
             <!-- Nueva Contraseña -->
             <div>
-              <label for="new-password" class="block text-sm font-medium text-gray-300 mb-1">
+              <label for="new-password" class="block text-sm font-medium text-gray-700 mb-1">
                 Nueva Contraseña
               </label>
               <div class="relative">
@@ -589,7 +589,7 @@
                   required
                   minlength="8"
                   :disabled="isChangingPassword"
-                  class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-900 disabled:cursor-not-allowed"
+                  class="w-full px-3 py-2 bg-lime-300/70 border border-lime-600 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-black disabled:bg-gray-900 disabled:cursor-not-allowed"
                   placeholder="••••••••"
                 />
                 <button
@@ -632,7 +632,7 @@
 
             <!-- Confirmar Nueva Contraseña -->
             <div>
-              <label for="confirm-password" class="block text-sm font-medium text-gray-300 mb-1">
+              <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">
                 Confirmar Nueva Contraseña
               </label>
               <div class="relative">
@@ -643,7 +643,7 @@
                   required
                   minlength="8"
                   :disabled="isChangingPassword"
-                  class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-900 disabled:cursor-not-allowed"
+                  class="w-full px-3 py-2 bg-lime-300/70 border border-lime-600 rounded-md text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-black disabled:bg-gray-900 disabled:cursor-not-allowed"
                   placeholder="••••••••"
                 />
                 <button
@@ -689,14 +689,14 @@
                 type="button"
                 @click="closeChangePasswordModal"
                 :disabled="isChangingPassword"
-                class="flex-1 px-4 py-2 border border-gray-600 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                class="flex-1 px-4 py-2 border border-black rounded-md text-sm font-medium text-black hover:bg-lime-400 focus:outline-none focus:ring-2 focus:ring-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 :disabled="isChangingPassword"
-                class="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 border border-transparent rounded-md text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex justify-center items-center"
+                class="flex-1 px-4 py-2 bg-gradient-to-r from-lime-600 to-lime-600 hover:from-lime-600 border border-transparent rounded-md text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-lime-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex justify-center items-center"
               >
                 <svg
                   v-if="isChangingPassword"
@@ -1077,15 +1077,29 @@ onMounted(async () => {
 
 // ==================== CIRCLES ANIMATION ====================
 const circles = [
-  { color: 'bg-purple-600', size: 120, top: 5, left: 5 },
-  { color: 'bg-purple-400', size: 80, top: 20, left: 80 },
-  { color: 'bg-purple-500', size: 150, top: 70, left: 20 },
-  { color: 'bg-purple-300', size: 100, top: 40, left: 95 },
-  { color: 'bg-purple-700', size: 130, top: 85, left: 70 },
-  { color: 'bg-purple-200', size: 60, top: 25, left: 30 },
-  { color: 'bg-purple-800', size: 90, top: 60, left: 50 },
-  { color: 'bg-purple-100', size: 70, top: 5, left: 90 },
-]
+  { color: 'bg-lime-300', size: 96, top: 10, left: 5 },
+  { color: 'bg-lime-200', size: 64, top: 20, left: 80 },
+  { color: 'bg-lime-400', size: 128, top: 70, left: 20 },
+  { color: 'bg-lime-100', size: 80, top: 40, left: 95 },
+  { color: 'bg-lime-500', size: 112, top: 85, left: 70 },
+  { color: 'bg-lime-200', size: 48, top: 25, left: 30 },
+  { color: 'bg-lime-300', size: 72, top: 60, left: 50 },
+  { color: 'bg-lime-100', size: 56, top: 5, left: 90 },
+  { color: 'bg-lime-400', size: 88, top: 80, left: 40 },
+  { color: 'bg-lime-300', size: 40, top: 90, left: 10 },
+  { color: 'bg-lime-500', size: 104, top: 15, left: 60 },
+  { color: 'bg-lime-200', size: 68, top: 50, left: 85 },
+
+  // 🔹 Nuevos círculos agregados
+  { color: 'bg-lime-300', size: 52, top: 5, left: 15 },
+  { color: 'bg-lime-400', size: 60, top: 10, left: 50 },
+  { color: 'bg-lime-500', size: 100, top: 55, left: 10 },
+  { color: 'bg-lime-300', size: 90, top: 65, left: 85 },
+  { color: 'bg-lime-400', size: 76, top: 80, left: 15 },
+  { color: 'bg-lime-100', size: 44, top: 35, left: 60 },
+  { color: 'bg-lime-200', size: 84, top: 25, left: 10 },
+  { color: 'bg-lime-400', size: 50, top: 45, left: 75 },
+];
 </script>
 
 <style scoped>
