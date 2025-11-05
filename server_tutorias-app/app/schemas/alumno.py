@@ -1,16 +1,21 @@
-# schemas/alumno.py
+"""
+Esquemas Pydantic para validación y serialización de datos de Alumno.
 
-from pydantic import BaseModel, Field, field_validator, EmailStr
+Define los diferentes esquemas utilizados en las operaciones CRUD y autenticación
+de alumnos en el sistema de tutorías.
+"""
+
+from pydantic import BaseModel, Field, field_validator, EmailStr, ConfigDict
 from typing import List, Optional
 
-# Importamos el Enum definido en el modelo para reutilizarlo
-# from app.models.alumno import EstadoAlumno 
-
-# 💡 Idea: Podríamos preguntarle al usuario el formato exacto de su num_control
-# Por ahora, un ejemplo: 8 dígitos numéricos.
-# Ejemplo: r"^\d{8}$"  (una 'r' antes de las comillas indica un raw string)
 
 class AlumnoBase(BaseModel):
+    """
+    Esquema base con los campos comunes de Alumno.
+    
+    Incluye validaciones de longitud y sanitización de campos de texto.
+    """
+    
     nombre: str = Field(..., min_length=2, max_length=100)
     apellido_p: str = Field(..., min_length=2, max_length=100)
     apellido_m: Optional[str] = None
@@ -18,93 +23,165 @@ class AlumnoBase(BaseModel):
     carrera: str = Field(..., min_length=3, max_length=100)
     semestre_actual: int = Field(..., ge=1, le=14)
     estado: str
-    # curp: str = Field(..., min_length=18, max_length=18)
     telefono: Optional[str] = None
     correo: EmailStr
-
-    # ✅ 4. (Opcional pero recomendado) Sanitizar entradas de texto
+    
     @field_validator('nombre', 'apellido_p', 'apellido_m', 'carrera', mode='before')
     def sanitize_text_fields(cls, v):
+        """
+        Elimina espacios en blanco al inicio y final de campos de texto.
+        
+        Args:
+            v: Valor del campo a sanitizar.
+        
+        Returns:
+            Cadena sanitizada.
+        
+        Raises:
+            ValueError: Si el campo está vacío después de eliminar espacios.
+        """
         if isinstance(v, str):
-            # Elimina espacios en blanco al inicio/final y previene strings vacíos
             stripped = v.strip()
             if not stripped:
                 raise ValueError("Este campo no puede estar vacío.")
             return stripped
         return v
 
+
 class AlumnoCreate(AlumnoBase):
-    # ✅ 5. Validación de longitud mínima para la contraseña
+    """
+    Esquema para la creación de un nuevo alumno.
+    
+    Incluye el campo de contraseña con validación de longitud mínima.
+    """
+    
     contraseña: str = Field(..., min_length=8)
 
 
 class AlumnoUpdate(BaseModel):
-    # Aplicamos las mismas validaciones a los campos opcionales
+    """
+    Esquema para la actualización parcial de un alumno.
+    
+    Todos los campos son opcionales y solo los proporcionados serán actualizados.
+    """
+    
     nombre: Optional[str] = Field(default=None, min_length=2, max_length=100)
     apellido_p: Optional[str] = Field(default=None, min_length=2, max_length=100)
     apellido_m: Optional[str] = Field(default=None, max_length=100)
     num_control: Optional[str] = Field(default=None, max_length=50)
-    
-    # ✅ 1. Eliminamos min_length de aquí para manejarlo con un validador personalizado
-    contraseña: Optional[str] = None 
-    
+    contraseña: Optional[str] = None
     carrera: Optional[str] = Field(default=None, min_length=3, max_length=100)
     semestre_actual: Optional[int] = Field(default=None, ge=1, le=14)
     estado: Optional[str] = None
-    # curp: Optional[str] = Field(default=None, min_length=18, max_length=18)
     telefono: Optional[str] = Field(default=None, max_length=100)
     correo: Optional[EmailStr] = None
     
-    # ✅ 2. Añadimos un validador que solo se activa si se escribe una nueva contraseña
     @field_validator('contraseña')
     def validate_new_password(cls, v):
-        # Si 'v' no es None y no es un string vacío...
+        """
+        Valida que la nueva contraseña tenga al menos 8 caracteres si se proporciona.
+        
+        Args:
+            v: Nueva contraseña a validar.
+        
+        Returns:
+            Contraseña validada o None si no se proporciona.
+        
+        Raises:
+            ValueError: Si la contraseña proporcionada tiene menos de 8 caracteres.
+        """
         if v and len(v) < 8:
             raise ValueError('La nueva contraseña debe tener al menos 8 caracteres.')
-        # Si es None o "", se permite.
         return v
-    
-    # (El sanitizador de AlumnoBase no se hereda, si se quisiera, habría que añadirlo aquí también)
 
 
 class AlumnoRead(AlumnoBase):
+    """
+    Esquema para lectura de datos de alumno.
+    
+    Incluye el identificador y el estado de cambio de contraseña.
+    """
+    
     id_alumno: int
     requires_password_change: bool
-
-    class Config:
-        from_attributes = True
+    
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AlumnoLogin(BaseModel):
+    """Esquema para autenticación de alumno."""
+    
     num_control: str
     contraseña: str
 
-class AlumnoReadBasic(AlumnoBase):
-    id_alumno: int
 
-    class Config:
-        from_attributes = True
+class AlumnoReadBasic(AlumnoBase):
+    """
+    Esquema simplificado para lectura de alumno.
+    
+    No incluye información sensible como el estado de cambio de contraseña.
+    """
+    
+    id_alumno: int
+    
+    model_config = ConfigDict(from_attributes=True)
+
 
 class AlumnoSetPassword(BaseModel):
+    """
+    Esquema para establecer contraseña inicial de alumno.
+    
+    Requiere número de control y contraseña actual antes de establecer nueva.
+    """
+    
     num_control: str
     contraseña_actual: str
     nueva_contraseña: str = Field(..., min_length=8)
 
+
 class AlumnoUpdatePassword(BaseModel):
+    """
+    Esquema para actualización de contraseña de alumno autenticado.
+    
+    Requiere contraseña actual para confirmar identidad.
+    """
+    
     contraseña_actual: str
     nueva_contraseña: str = Field(..., min_length=8)
 
+
 class AlumnosPage(BaseModel):
+    """
+    Esquema para respuesta paginada de alumnos.
+    
+    Incluye el total de registros y la lista de alumnos de la página actual.
+    """
+    
     total_alumnos: int
     alumnos: List[AlumnoRead]
 
+
 class AlumnoTokenData(BaseModel):
-    id: Optional[str] = None # Corresponde al 'sub' (id_alumno)
+    """
+    Datos extraídos del token JWT de un alumno.
+    
+    Attributes:
+        id: Identificador del alumno (extraído del campo 'sub' del token).
+        role: Rol del usuario en el sistema.
+    """
+    
+    id: Optional[str] = None
     role: Optional[str] = None
+
 
 class AlumnoTutoriaStatus(BaseModel):
     """
-    Define la respuesta para el estado de tutorías del alumno.
+    Estado de progreso de tutorías de un alumno.
+    
+    Attributes:
+        tutorias_completadas: Número de tutorías completadas por el alumno.
+        es_elegible: Indica si el alumno es elegible para continuar (>= 4 tutorías).
     """
+    
     tutorias_completadas: int
-    es_elegible: bool # True si tutorias_completadas >= 4
+    es_elegible: bool
