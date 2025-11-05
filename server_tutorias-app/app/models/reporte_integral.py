@@ -1,22 +1,54 @@
-# app/models/reporte_integral.py
+"""
+Modelo de base de datos para la entidad Reporte Integral.
 
-from sqlmodel import SQLModel, Field, Relationship # Añadido Relationship
-from typing import Optional, TYPE_CHECKING # Añadido TYPE_CHECKING
+Define la estructura de la tabla de reportes integrales que almacenan
+información detallada de seguimiento y evaluación de las tutorías, incluyendo
+asistencias, canalizaciones y materias del alumno.
+"""
+
+from sqlmodel import SQLModel, Field, Relationship
+from sqlalchemy import DateTime
+from typing import Optional, TYPE_CHECKING
 from datetime import datetime, timezone
-from sqlalchemy import Column, DateTime, ForeignKey # Añadido ForeignKey
 
-# Para la relación (opcional pero recomendado)
 if TYPE_CHECKING:
     from app.models.tutoria import Tutoria
 
+
+def get_utc_now() -> datetime:
+    """Retorna la fecha y hora actual en UTC."""
+    return datetime.now(timezone.utc)
+
+
 class ReporteIntegral(SQLModel, table=True):
+    """
+    Representa un reporte integral de seguimiento de tutoría.
+    
+    Cada reporte está asociado a una tutoría específica y contiene
+    información sobre asistencias, seguimientos narrativos, canalizaciones
+    y desempeño académico del alumno.
+    
+    Attributes:
+        id: Identificador único del reporte.
+        id_tutoria: ID de la tutoría asociada (relación obligatoria).
+        tutoria_grupal: Número de tutorías grupales realizadas.
+        tutoria_individual: Número de tutorías individuales realizadas.
+        seguimiento_1: Texto libre del primer seguimiento (máx 500 caracteres).
+        seguimiento_2: Texto libre del segundo seguimiento (máx 500 caracteres).
+        seguimiento_3: Texto libre del tercer seguimiento (máx 500 caracteres).
+        jefatura_academica: Número de canalizaciones a jefatura académica.
+        ciencias_basicas: Número de canalizaciones a ciencias básicas.
+        psicologia: Número de canalizaciones a psicología.
+        materias_aprobadas: Cantidad de materias aprobadas por el alumno.
+        materias_no_aprobadas: Texto con lista/detalle de materias no aprobadas.
+        created_at: Fecha y hora de creación del reporte.
+        updated_at: Fecha y hora de última actualización del reporte.
+        tutoria: Relación con el modelo Tutoria.
+    """
+    
     id: Optional[int] = Field(default=None, primary_key=True)
-
-    # --- NUEVA CLAVE FORÁNEA ---
     id_tutoria: int = Field(foreign_key="tutoria.id_tutoria", index=True)
-    # ---------------------------
-
-    # --- Campos del formulario (sin cambios) ---
+    
     tutoria_grupal: int = Field(default=0)
     tutoria_individual: int = Field(default=0)
     seguimiento_1: Optional[str] = Field(default=None, max_length=500)
@@ -27,21 +59,16 @@ class ReporteIntegral(SQLModel, table=True):
     psicologia: int = Field(default=0)
     materias_aprobadas: int = Field(default=0)
     materias_no_aprobadas: Optional[str] = Field(default=None, max_length=500)
-
-    # --- Timestamps (sin cambios) ---
+    
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc)
+        sa_type=DateTime(timezone=True), #type: ignore
+        default_factory=get_utc_now
     )
+    
     updated_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
-        sa_column=Column(
-            DateTime(timezone=True),
-            default=lambda: datetime.now(timezone.utc),
-            onupdate=lambda: datetime.now(timezone.utc)
-        )
+        sa_type=DateTime(timezone=True), #type: ignore
+        default_factory=get_utc_now,
+        sa_column_kwargs={"onupdate": get_utc_now}
     )
-
-    # --- Relación Inversa (Opcional pero útil) ---
-    # Permite acceder a la tutoría desde el reporte si lo necesitas
+    
     # tutoria: Optional["Tutoria"] = Relationship(back_populates="reportes_integrales")
-    # Nota: Si añades esto, también debes añadir 'reportes_integrales: List["ReporteIntegral"] = Relationship(back_populates="tutoria")' en models/tutoria.py

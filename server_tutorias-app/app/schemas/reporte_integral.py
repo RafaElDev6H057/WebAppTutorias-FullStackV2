@@ -1,11 +1,22 @@
-# app/schemas/reporte_integral.py
+"""
+Esquemas Pydantic para validación y serialización de datos de Reporte Integral.
 
-from pydantic import BaseModel, Field
+Define los diferentes esquemas utilizados en las operaciones CRUD de reportes
+integrales de tutorías, con validaciones numéricas y de texto.
+"""
+
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 
-# --- Esquema Base ---
-# Contiene todos los campos del formulario del reporte
+
 class ReporteIntegralBase(BaseModel):
+    """
+    Esquema base con los campos comunes de Reporte Integral.
+    
+    Incluye validaciones de valores no negativos para campos numéricos
+    y longitudes máximas para campos de texto.
+    """
+    
     tutoria_grupal: int = Field(ge=0, default=0)
     tutoria_individual: int = Field(ge=0, default=0)
     seguimiento_1: Optional[str] = None
@@ -17,23 +28,38 @@ class ReporteIntegralBase(BaseModel):
     materias_aprobadas: int = Field(ge=0, default=0)
     materias_no_aprobadas: Optional[str] = None
 
-# --- Esquema para Crear ---
-# Hereda del Base y añade el ID de la tutoría asociada
+
 class ReporteIntegralCreate(ReporteIntegralBase):
-    id_tutoria: int # Obligatorio al crear o actualizar vía POST
+    """
+    Esquema para la creación de un nuevo reporte integral.
+    
+    Requiere especificar la tutoría asociada mediante su ID.
+    """
+    
+    id_tutoria: int
 
-# --- Esquema para Leer ---
-# Hereda del Base y añade los IDs generados por la BD
+
 class ReporteIntegralRead(ReporteIntegralBase):
-    id: int # ID del propio reporte
-    id_tutoria: int # ID de la tutoría asociada
+    """
+    Esquema para lectura de datos de reporte integral.
+    
+    Incluye los identificadores del reporte y de la tutoría asociada.
+    """
+    
+    id: int
+    id_tutoria: int
+    
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        from_attributes = True # Permite crear desde el modelo ORM
 
-# --- Esquema para Actualizar (vía PUT) ---
-# Todos los campos son opcionales para permitir actualizaciones parciales
 class ReporteIntegralUpdate(BaseModel):
+    """
+    Esquema para la actualización parcial de un reporte integral.
+    
+    Todos los campos son opcionales y solo los proporcionados serán actualizados.
+    No permite cambiar la tutoría asociada (id_tutoria no incluido).
+    """
+    
     tutoria_grupal: Optional[int] = Field(default=None, ge=0)
     tutoria_individual: Optional[int] = Field(default=None, ge=0)
     seguimiento_1: Optional[str] = None
@@ -44,4 +70,3 @@ class ReporteIntegralUpdate(BaseModel):
     psicologia: Optional[int] = Field(default=None, ge=0)
     materias_aprobadas: Optional[int] = Field(default=None, ge=0)
     materias_no_aprobadas: Optional[str] = None
-    # Nota: No incluimos 'id_tutoria', ya que la relación no debería cambiarse al actualizar
