@@ -1,23 +1,40 @@
-# app/database.py
+"""
+Configuración de base de datos y gestión de sesiones SQLModel.
+
+Configura el motor de base de datos SQLite y proporciona funciones
+para inicialización de tablas y generación de sesiones para dependencias.
+"""
 
 from sqlmodel import SQLModel, create_engine, Session
 
-# 1. Definimos la URL para la base de datos SQLite.
-# Esto creará un archivo llamado "database.db" en la raíz de tu proyecto.
 DATABASE_URL = "sqlite:///./database.db"
 
-# 2. Creamos el "engine" con un argumento especial para SQLite.
 engine = create_engine(
-    DATABASE_URL, 
-    echo=True, 
+    DATABASE_URL,
+    echo=True,
     connect_args={"check_same_thread": False}
 )
 
-# Esta función no necesita cambios.
+
 def create_db_and_tables():
+    """
+    Crea todas las tablas definidas en los modelos SQLModel.
+    
+    Esta función debe ser llamada al inicio de la aplicación
+    para garantizar que todas las tablas existen en la base de datos.
+    """
     SQLModel.metadata.create_all(engine)
 
-# Esta función tampoco necesita cambios.
+
 def get_session():
+    """
+    Generador de sesiones de base de datos para inyección de dependencias.
+    
+    Crea y proporciona una sesión de base de datos que se cierra automáticamente
+    al finalizar la petición. Utilizado como dependencia en endpoints de FastAPI.
+    
+    Yields:
+        Session: Sesión activa de base de datos.
+    """
     with Session(engine) as session:
         yield session

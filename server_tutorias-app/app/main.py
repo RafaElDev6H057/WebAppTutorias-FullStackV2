@@ -1,40 +1,55 @@
+"""
+Punto de entrada principal de la aplicación FastAPI.
+
+Configura la aplicación, middlewares CORS, inicialización de base de datos
+y registro de todos los routers del sistema de gestión de tutorías.
+"""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import create_db_and_tables
-from app.routers import administradores, alumnos, avisos, tutores, tutorias, reportes, configuracion  # Importamos el router
-
+from app.routers import (
+    administradores,
+    alumnos,
+    avisos,
+    tutores,
+    tutorias,
+    reportes,
+    configuracion
+)
 
 app = FastAPI(title="API CRUD Tutorías")
 
-# Configurar CORS
 origins = [
-    "http://localhost:5173",  # 👈 Vite por defecto
+    "http://localhost:5173",
     "http://127.0.0.1:5173",
-    # "https://mi-dominio.com"  # 👈 aquí agregas tu dominio real en producción
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # dominios permitidos
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # permitir todos los métodos: GET, POST, PUT, DELETE, etc.
-    allow_headers=["*"],  # permitir todas las cabeceras
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Al iniciar la app, se crean las tablas
+
 @app.on_event("startup")
 async def on_startup():
+    """
+    Evento de inicio de la aplicación.
+    
+    Crea las tablas de la base de datos si no existen.
+    Maneja errores de inicialización de forma silenciosa para
+    permitir recargas graciosas durante el desarrollo.
+    """
     try:
         create_db_and_tables()
     except Exception as e:
-        print(f"Error during startup: {e}")
-        # Optionally, re-raise the exception if it's critical and not a CancelledError
-        # However, for graceful reloads, we might just log and continue.
-    finally:
-        pass # Ensure any cleanup or finalization happens if needed
+        print(f"Error durante inicialización: {e}")
 
-# Incluir routers
+
 app.include_router(administradores.router, prefix="/api")
 app.include_router(alumnos.router, prefix="/api")
 app.include_router(tutores.router, prefix="/api")
