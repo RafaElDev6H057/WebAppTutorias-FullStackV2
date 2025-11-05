@@ -1,12 +1,19 @@
-# populate_tutors.py
+"""
+Script de población de datos iniciales de tutores.
 
-import getpass
+Carga una lista predefinida de tutores del TecNM Campus Fresnillo
+en la base de datos, generando contraseñas temporales basadas en
+sus correos electrónicos y forzando cambio de contraseña en primer acceso.
+
+Uso:
+    python populate_tutors.py
+"""
+
 from sqlmodel import Session, select
+from sqlalchemy.exc import IntegrityError
+
 from app.database import engine
 from app.models.tutor import Tutor
-from sqlalchemy.exc import IntegrityError
-from app.models.alumno import Alumno
-from app.models.tutoria import Tutoria
 
 tutor_data = [
     {
@@ -257,16 +264,26 @@ tutor_data = [
     },
 ]
 
+
 def populate_tutors():
+    """
+    Carga los tutores predefinidos en la base de datos.
+    
+    Genera contraseñas temporales basadas en el usuario del correo
+    (parte antes del @) más el sufijo 'itsf'. Marca todos los tutores
+    para requerir cambio de contraseña en su primer acceso.
+    
+    Omite tutores que ya existen en la base de datos basándose en
+    el correo electrónico único.
+    """
     print(f"--- Iniciando la carga de {len(tutor_data)} tutores ---")
+    
     created_count = 0
     skipped_count = 0
-
-    # Usamos una sesión de base de datos
+    
     with Session(engine) as session:
         for data in tutor_data:
             try:
-                # 1. Verificar si el tutor ya existe por su correo
                 existing_tutor = session.exec(
                     select(Tutor).where(Tutor.correo == data["correo"])
                 ).first()
@@ -276,39 +293,35 @@ def populate_tutors():
                     skipped_count += 1
                     continue
                 
-                # 2. Generar la contraseña temporal
-                # (Tomamos lo que está antes del @ y le añadimos 'itsf')
                 usuario_correo = data["correo"].split('@')[0]
                 temp_password = f"{usuario_correo}itsf"
                 
-                # 3. Crear el nuevo objeto Tutor
                 new_tutor = Tutor(
                     nombre=data["nombre"].title(),
                     apellido_p=data["apellido_p"].title(),
                     apellido_m=data["apellido_m"].title(),
                     correo=data["correo"],
-                    contraseña=temp_password,        # Contraseña en texto plano
-                    requires_password_change=True # Forzamos el cambio
+                    contraseña=temp_password,
+                    requires_password_change=True
                 )
                 
                 session.add(new_tutor)
                 created_count += 1
-            
+                
             except IntegrityError as e:
-                # Esto atraparía otros errores, como un correo duplicado
                 session.rollback()
                 print(f"🔴 ERROR: No se pudo agregar a '{data['correo']}'. Error: {e}")
             except Exception as e:
                 session.rollback()
                 print(f"🔴 ERROR INESPERADO con '{data['correo']}': {e}")
         
-        # 4. Guardar todos los nuevos tutores en la base de datos
         if created_count > 0:
             session.commit()
-            
+    
     print("\n--- ¡Proceso completado! ---")
     print(f"✅ Tutores creados exitosamente: {created_count}")
     print(f"🟡 Tutores omitidos (ya existían): {skipped_count}")
+
 
 if __name__ == "__main__":
     populate_tutors()
