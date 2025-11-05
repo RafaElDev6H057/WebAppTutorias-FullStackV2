@@ -190,6 +190,42 @@
             <!-- Acciones -->
             <div class="flex gap-2">
               <button
+                @click="descargarPDF(reporte)"
+                :disabled="isDownloadingPDF[reporte.id]"
+                class="flex-1 px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg
+                  v-if="isDownloadingPDF[reporte.id]"
+                  class="animate-spin h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                {{ isDownloadingPDF[reporte.id] ? 'Descargando...' : 'PDF' }}
+              </button>
+              <button
                 @click="editarReporte(reporte)"
                 class="flex-1 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-1"
               >
@@ -327,13 +363,14 @@
               type="range"
               min="0"
               max="100"
-              step="5"
+              step="10"
               class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-500"
             />
             <input
               v-model.number="formulario.porcentaje_avance"
               type="number"
               min="0"
+              step="10"
               max="100"
               required
               class="w-20 px-3 py-2 border border-gray-300 rounded-md text-center focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
@@ -586,6 +623,7 @@ const tutorData = ref(null)
 const isLoading = ref(false)
 const isGuardando = ref(false)
 const isEliminando = ref(false)
+const isDownloadingPDF = ref({})
 const successMessage = ref(null)
 const errorMessage = ref(null)
 const mostrarModalEliminar = ref(false)
@@ -738,6 +776,51 @@ const eliminarReporte = async () => {
   }
 }
 
+// ==================== NUEVA FUNCIÓN: DESCARGAR PDF ====================
+const descargarPDF = async (reporte) => {
+  isDownloadingPDF.value[reporte.id] = true
+  errorMessage.value = null
+
+  try {
+    const token = localStorage.getItem('accessToken')
+    const response = await axios.get(
+      `http://localhost:8000/api/reportes/general-1/${reporte.id}/pdf`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: 'blob', // IMPORTANTE: para recibir el PDF como blob
+      },
+    )
+
+    // Crear un URL temporal para el blob
+    const blob = new Blob([response.data], { type: 'application/pdf' })
+    const url = window.URL.createObjectURL(blob)
+
+    // Crear un link temporal y hacer click para descargar
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `Reporte_${reporte.nombre_proyecto.replace(/\s+/g, '_')}_${reporte.id}.pdf`
+    document.body.appendChild(link)
+    link.click()
+
+    // Limpiar
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+
+    successMessage.value = '✅ PDF descargado exitosamente'
+    setTimeout(() => {
+      successMessage.value = null
+    }, 3000)
+
+    console.log('✅ PDF descargado:', reporte.nombre_proyecto)
+  } catch (error) {
+    console.error('❌ Error al descargar PDF:', error)
+    errorMessage.value = 'No se pudo descargar el PDF. Intenta de nuevo.'
+  } finally {
+    isDownloadingPDF.value[reporte.id] = false
+  }
+}
 // ==================== HANDLERS ====================
 const crearNuevoReporte = async () => {
   // Si no tenemos los datos del tutor, obtenerlos primero
