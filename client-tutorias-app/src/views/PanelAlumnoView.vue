@@ -21,7 +21,7 @@
     </div>
 
     <!-- Navigation Bar -->
-    <nav class="bg-lime-500 border-b border-gray-700">
+    <nav class="bg-lime-500 border-b border-lime-700">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
           <div class="flex items-center space-x-4">
@@ -90,7 +90,7 @@
             <!-- Botón Cambiar Contraseña -->
             <button
               @click="openChangePasswordModal"
-              class="bg-white hover:bg-lime-300 text-lime-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200"
+              class="bg-white hover:bg-lime-300 hover:text-lime-900 text-lime-700 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200"
             >
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -105,7 +105,7 @@
 
             <button
               @click="handleLogout"
-              class="bg-white hover:bg-lime-300 text-lime-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200"
+              class="bg-white hover:bg-lime-300 hover:text-lime-900 text-lime-700 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200"
             >
               <span>Cerrar Sesión</span>
             </button>
@@ -116,7 +116,7 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 relative z-10">
-      <h1 class="text-3xl font-bold text-gray-600 mb-8">Mis Tutorías</h1>
+      <h1 class="text-3xl font-bold text-gray-800 mb-8">Mis Tutorías</h1>
 
       <!-- Banner de Advertencia de Contraseña Insegura -->
       <Transition
@@ -178,7 +178,7 @@
       >
         <div
           v-if="estadoTutorias && !estadoTutorias.es_elegible"
-          class="mb-6 bg-gray-200 border-l-4 border-black p-4 rounded-md backdrop-blur-sm"
+          class="mb-6 bg-lime-500/30 border-l-4 border-lime-800 p-4 rounded-md backdrop-blur-sm"
         >
           <div class="flex items-start">
             <svg
@@ -201,7 +201,7 @@
                 de acreditación.
               </p>
               <div class="mt-2 flex items-center">
-                <div class="flex-1 bg-gray-700 rounded-full h-2 mr-3">
+                <div class="flex-1 bg-gray-800 rounded-full h-2 mr-3">
                   <div
                     class="bg-gradient-to-r from-black to-green-500 h-2 rounded-full transition-all duration-500"
                     :style="{
@@ -312,7 +312,7 @@
           v-for="tutoria in sortedTutorias"
           :key="tutoria.semestre"
           :class="[
-            'bg-gray-800 rounded-lg p-6 border-l-4 shadow-lg hover:shadow-xl transition-shadow duration-300',
+            'bg-slate-600 rounded-lg p-6 border-l-4 shadow-lg hover:shadow-xl transition-shadow duration-300',
             {
               'border-green-500': tutoria.estado === 'completada',
               'border-orange-500': tutoria.estado === 'en curso',
@@ -1099,7 +1099,7 @@ const circles = [
   { color: 'bg-lime-100', size: 44, top: 35, left: 60 },
   { color: 'bg-lime-200', size: 84, top: 25, left: 10 },
   { color: 'bg-lime-400', size: 50, top: 45, left: 75 },
-];
+]
 </script>
 
 <style scoped>

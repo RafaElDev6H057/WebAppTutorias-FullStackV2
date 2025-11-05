@@ -3,7 +3,7 @@
   <div class="space-y-4">
     <!-- Header -->
     <div class="flex items-center gap-3 mb-4">
-      <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -12,8 +12,8 @@
         />
       </svg>
       <div>
-        <h2 class="text-xl font-bold text-gray-700">Avisos Importantes</h2>
-        <p class="text-sm text-gray-400">Mantente informado sobre las últimas novedades</p>
+        <h2 class="text-xl font-bold text-gray-800">Avisos Importantes</h2>
+        <p class="text-sm text-gray-700">Mantente informado sobre las últimas novedades</p>
       </div>
     </div>
 
@@ -70,13 +70,13 @@
         <div
           v-for="aviso in avisos"
           :key="aviso.id"
-          class="bg-gray-800/50 backdrop-blur-sm border border-gray-500/30 rounded-lg p-4 hover:border-gray-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-gray-500/20"
+          class="bg-lime-400/50 backdrop-blur-sm border border-gray-500/30 rounded-lg p-4 hover:border-gray-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-gray-500/20"
         >
           <!-- Badge "Nuevo" si fue creado hace menos de 7 días -->
           <div class="flex items-start justify-between mb-3">
             <div class="flex-1">
               <div class="flex items-center gap-2 mb-1">
-                <h3 class="text-lg font-bold text-white">{{ aviso.titulo }}</h3>
+                <h3 class="text-lg font-bold text-black">{{ aviso.titulo }}</h3>
                 <span
                   v-if="isNew(aviso.created_at)"
                   class="px-2 py-1 text-xs font-semibold bg-green-500 text-white rounded-full animate-pulse"
@@ -84,7 +84,7 @@
                   NUEVO
                 </span>
               </div>
-              <p class="text-sm text-gray-300 leading-relaxed">{{ aviso.descripcion }}</p>
+              <p class="text-sm text-gray-800 leading-relaxed">{{ aviso.descripcion }}</p>
             </div>
           </div>
 
@@ -127,7 +127,7 @@
           </div>
 
           <!-- Fecha de publicación -->
-          <div class="mt-3 flex items-center gap-2 text-xs text-gray-500">
+          <div class="mt-3 flex items-center gap-2 text-xs text-gray-700">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
@@ -143,9 +143,9 @@
     </div>
 
     <!-- ==================== SIN AVISOS ==================== -->
-    <div v-else class="bg-gray-800/30 border border-gray-700 rounded-lg p-8 text-center">
+    <div v-else class="bg-lime-500/30 border border-lime-700 rounded-lg p-8 text-center">
       <svg
-        class="w-16 h-16 text-gray-600 mx-auto mb-4"
+        class="w-16 h-16 text-gray-800 mx-auto mb-4"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -157,8 +157,8 @@
           d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
         />
       </svg>
-      <p class="text-white text-sm">No hay avisos disponibles en este momento</p>
-      <p class="text-white text-xs mt-2">Vuelve más tarde para ver nuevas publicaciones</p>
+      <p class="text-black text-sm">No hay avisos disponibles en este momento</p>
+      <p class="text-black text-xs mt-2">Vuelve más tarde para ver nuevas publicaciones</p>
     </div>
   </div>
 </template>
