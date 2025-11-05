@@ -1,16 +1,27 @@
-# app/schemas/reporte1.py
+"""
+Esquemas Pydantic para validación y serialización de datos de Reporte1.
 
-from pydantic import BaseModel, Field
+Define los diferentes esquemas utilizados en las operaciones CRUD de reportes
+de proyectos de tutores, con validaciones de porcentaje y campos de texto.
+"""
+
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
-from datetime import datetime # Para el schema Read
+from datetime import datetime
 
-# --- Esquema Base ---
-# Contiene los campos que el tutor enviará
+
 class Reporte1Base(BaseModel):
+    """
+    Esquema base con los campos comunes de Reporte1.
+    
+    Incluye validaciones de longitud para campos de texto y
+    validación de rango para el porcentaje de avance (0-100).
+    """
+    
     nombre_tutor: str = Field(max_length=300)
     periodo: str = Field(max_length=100)
     nombre_proyecto: str = Field(max_length=500)
-    porcentaje_avance: float = Field(ge=0, le=100) # Validamos que sea un porcentaje
+    porcentaje_avance: float = Field(ge=0, le=100)
     objetivo: str
     descripcion: str
     metas: str
@@ -19,14 +30,25 @@ class Reporte1Base(BaseModel):
     conclusiones: str
     observaciones: str
 
-# --- Esquema para Crear ---
-# El 'id_tutor' no se pide en el JSON, se tomará del token
+
 class Reporte1Create(Reporte1Base):
+    """
+    Esquema para la creación de un nuevo Reporte1.
+    
+    El id_tutor no se incluye en el esquema ya que se obtiene
+    automáticamente del token JWT del usuario autenticado.
+    """
+    
     pass
 
-# --- Esquema para Actualizar ---
-# Todos los campos son opcionales
+
 class Reporte1Update(BaseModel):
+    """
+    Esquema para la actualización parcial de un Reporte1.
+    
+    Todos los campos son opcionales y solo los proporcionados serán actualizados.
+    """
+    
     nombre_tutor: Optional[str] = Field(default=None, max_length=300)
     periodo: Optional[str] = Field(default=None, max_length=100)
     nombre_proyecto: Optional[str] = Field(default=None, max_length=500)
@@ -39,13 +61,18 @@ class Reporte1Update(BaseModel):
     conclusiones: Optional[str] = None
     observaciones: Optional[str] = None
 
-# --- Esquema para Leer ---
-# Devuelve los datos del reporte MÁS los IDs y timestamps
+
 class Reporte1Read(Reporte1Base):
-    id: int # ID del propio reporte
-    id_tutor: int # ID del tutor que lo creó
+    """
+    Esquema para lectura de datos de Reporte1.
+    
+    Incluye los identificadores del reporte y del tutor creador,
+    además de los timestamps de creación y actualización.
+    """
+    
+    id: int
+    id_tutor: int
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        from_attributes = True # Permite crear desde el modelo ORM
+    
+    model_config = ConfigDict(from_attributes=True)
