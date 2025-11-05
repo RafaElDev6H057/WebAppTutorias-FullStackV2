@@ -1,10 +1,16 @@
+"""
+Coordenadas para posicionamiento de campos en el PDF de Reporte General 1.
+
+Define las posiciones exactas (en milímetros) donde se deben renderizar los campos
+del reporte de proyecto de tutor, incluyendo coordenadas para marcar el porcentaje
+de avance mediante círculos en escala de 10% a 100%.
+"""
+
 from reportlab.lib.units import mm
 from reportlab.lib.pagesizes import LETTER
 
-# Página 1: siempre se usa
 REF_W, REF_H = LETTER
 
-# Coordenadas base de ejemplo (ajusta según tu plantilla real)
 coords = {
     "campos": {
         "profesor": (68 * mm, 222.4 * mm),
@@ -20,8 +26,6 @@ coords = {
         "firma_profesor": (25 * mm, 49 * mm),
         "firma_jefe": (102 * mm, 49 * mm),
     },
-
-    # Coordenadas para los círculos del porcentaje (10% al 100%)
     "porcentajes": {
         "10": (27.6 * mm, 201.5 * mm),
         "20": (45.6 * mm, 201.5 * mm),
