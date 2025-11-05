@@ -19,15 +19,21 @@ from app.models.tutor import Tutor
 from app.models.tutoria import Tutoria, EstadoTutoria
 from app.models.alumno import Alumno
 from app.models.reporte_integral import ReporteIntegral
+from app.models.reporte1 import Reporte1
+
+# --- Services ---
+from app.services import reporte1_service
 
 # Coordinate Files
 from app.core.pdf_coords.coords_pagina1 import coords as coords_p1, REF_W as P1_REF_W, REF_H as P1_REF_H
 from app.core.pdf_coords.coords_pagina2 import coords as coords_p2, REF_W as P2_REF_W, REF_H as P2_REF_H
 from app.core.pdf_coords.coords_constancia import coords_constancia, REF_W as CONST_REF_W, REF_H as CONST_REF_H
+from app.core.pdf_coords.coords_reporte_g1 import coords as coords_r1, REF_W as R1_REF_W, REF_H as R1_REF_H
 
 # Path to template PDF
 TEMPLATE_PDF_PATH = "app/pdf_templates/formato.pdf"
 TEMPLATE_CONSTANCIA_PATH = "app/pdf_templates/formato_constancia.pdf"
+TEMPLATE_REPORTE1_PATH = "app/pdf_templates/formato_reporte_g1.pdf"
 
 # --- Helper Function _draw_page_overlay (SIN CAMBIOS) ---
 def _draw_page_overlay(
@@ -254,3 +260,188 @@ def generate_constancia_pdf(db: Session, id_alumno: int) -> io.BytesIO:
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Ocurrió un error al generar la constancia: {e}")
+    
+# =========================================================
+# === NUEVAS FUNCIONES AUXILIARES PARA REPORTE 1 (G1) ===
+# =========================================================
+
+def _dividir_texto_por_ancho(can: canvas.Canvas, texto: str, max_ancho: float, max_lineas: int) -> List[str]:
+    """
+    Divide el texto naturalmente según el ancho disponible (en puntos).
+    Adaptado de tu script 'ya.py'.
+    """
+    lineas = []
+    # Asegurarnos de que el texto no sea None
+    texto = texto or ""
+    for linea in texto.split("\n"):  # respeta saltos manuales
+        palabras = linea.split(" ")
+        linea_actual = ""
+        for palabra in palabras:
+            prueba = (linea_actual + " " + palabra).strip()
+            # Asumimos la fuente y tamaño que usaremos
+            # TODO: Pasar fontName y fontSize como argumentos si varían
+            if can.stringWidth(prueba, "Helvetica", 10) <= max_ancho:
+                linea_actual = prueba
+            else:
+                lineas.append(linea_actual)
+                linea_actual = palabra
+                if len(lineas) >= max_lineas:
+                    return lineas[:max_lineas]
+        if linea_actual:
+            lineas.append(linea_actual)
+            if len(lineas) >= max_lineas:
+                return lineas[:max_lineas]
+    return lineas[:max_lineas]
+
+def _draw_multiline_text(
+    can: canvas.Canvas,
+    coord: tuple,
+    texto: str,
+    max_ancho_mm: float,
+    max_lineas: int,
+    line_height_mm: float = 4 * mm,
+    scale_x: float = 1.0,
+    scale_y: float = 1.0,
+    line_height_scale: float = 1.0
+):
+    """
+    Dibuja texto multilínea en una coordenada escalada, dividiéndolo con la función auxiliar.
+    """
+    x_start_mm, y_start_mm = coord
+    
+    # Escalar las coordenadas y dimensiones
+    x_start_pts = x_start_mm * scale_x
+    y_start_pts = y_start_mm * scale_y
+    line_height_pts = line_height_mm * line_height_scale # Usamos scale_y para la altura de línea
+    max_ancho_pts = max_ancho_mm * scale_x # El ancho se escala con scale_x
+    
+    # Dividimos el texto
+    lineas = _dividir_texto_por_ancho(can, texto, max_ancho_pts, max_lineas)
+    
+    # Dibujamos línea por línea, de arriba hacia abajo
+    y = y_start_pts
+    for linea in lineas:
+        can.drawString(x_start_pts, y, linea)
+        y -= line_height_pts # Moverse hacia abajo para la siguiente línea
+
+# ==============================================
+# === NUEVA FUNCIÓN PRINCIPAL PARA REPORTE 1 (G1) ===
+# ==============================================
+
+def generate_reporte1_pdf(db: Session, reporte_id: int) -> io.BytesIO:
+    """
+    Genera el PDF del Reporte 1 (Avance de Proyecto) para un reporte específico.
+    """
+    # 1. Obtener los datos del reporte desde la BD
+    reporte = reporte1_service.get_reporte1_por_id(db, reporte_id)
+    # get_reporte1_por_id ya lanza 404 si no se encuentra
+    
+    # 2. Preparar el diccionario de datos para el PDF
+    # Mapeamos los nombres del modelo a los nombres de las coordenadas
+    datos_pdf = {
+        "profesor": reporte.nombre_tutor,
+        "periodo": reporte.periodo,
+        "proyecto": reporte.nombre_proyecto,
+        "objetivo": reporte.objetivo,
+        "descripcion": reporte.descripcion,
+        "metas": reporte.metas,
+        "actividades": reporte.actividades,
+        "documentos": reporte.documentos_anexados or "", # Usar string vacío si es None
+        "conclusiones": reporte.conclusiones,
+        "observaciones": reporte.observaciones,
+        "firma_profesor": reporte.nombre_tutor, # Usamos el nombre del tutor
+        "firma_jefe": "", # Dejar vacío, o buscarlo si es necesario
+    }
+
+    # 3. Generar el PDF
+    try:
+        reader = PdfReader(TEMPLATE_REPORTE1_PATH)
+        writer = PdfWriter()
+        base_page = reader.pages[0] # Este reporte solo tiene 1 página
+        
+        base_w = float(base_page.mediabox.width)
+        base_h = float(base_page.mediabox.height)
+        
+        packet = io.BytesIO()
+        can = canvas.Canvas(packet, pagesize=(base_w, base_h))
+        
+        # Calculamos los factores de escala (las referencias vienen del archivo de coords)
+        scale_x = base_w / R1_REF_W
+        scale_y = base_h / R1_REF_H
+        
+        # --- Dibujar los datos en el lienzo ---
+        
+        # A. Definir fuentes y tamaños (¡ajustar según sea necesario!)
+        can.setFont("Helvetica", 10) # Fuente por defecto
+        
+        # B. Dibujar campos de texto simples
+        campos_simples = ["profesor", "periodo", "proyecto", "firma_profesor", "firma_jefe"]
+        for campo in campos_simples:
+            if campo in coords_r1["campos"]:
+                x_mm, y_mm = coords_r1["campos"][campo]
+                texto = datos_pdf.get(campo, "")
+                can.drawString(x_mm * scale_x, y_mm * scale_y, texto)
+
+        # C. Dibujar campos de texto multilínea
+        # Ajusta los anchos (mm) y líneas máximas según tu plantilla
+        line_height_mm = 4 * mm
+        
+        _draw_multiline_text(can, coords_r1["campos"]["objetivo"], datos_pdf["objetivo"], 
+                            max_ancho_mm=55*mm, max_lineas=10, line_height_mm=line_height_mm, 
+                            scale_x=scale_x, scale_y=scale_y, line_height_scale=scale_y)
+        _draw_multiline_text(can, coords_r1["campos"]["descripcion"], datos_pdf["descripcion"], 
+                            max_ancho_mm=55*mm, max_lineas=10, line_height_mm=line_height_mm,
+                            scale_x=scale_x, scale_y=scale_y, line_height_scale=scale_y)
+        _draw_multiline_text(can, coords_r1["campos"]["metas"], datos_pdf["metas"], 
+                            max_ancho_mm=55*mm, max_lineas=10, line_height_mm=line_height_mm,
+                            scale_x=scale_x, scale_y=scale_y, line_height_scale=scale_y)
+        _draw_multiline_text(can, coords_r1["campos"]["actividades"], datos_pdf["actividades"], 
+                            max_ancho_mm=170*mm, max_lineas=6, line_height_mm=line_height_mm,
+                            scale_x=scale_x, scale_y=scale_y, line_height_scale=scale_y)
+        _draw_multiline_text(can, coords_r1["campos"]["documentos"], datos_pdf["documentos"], 
+                            max_ancho_mm=170*mm, max_lineas=3, line_height_mm=line_height_mm,
+                            scale_x=scale_x, scale_y=scale_y, line_height_scale=scale_y)
+        _draw_multiline_text(can, coords_r1["campos"]["conclusiones"], datos_pdf["conclusiones"], 
+                            max_ancho_mm=170*mm, max_lineas=3, line_height_mm=line_height_mm,
+                            scale_x=scale_x, scale_y=scale_y, line_height_scale=scale_y)
+        _draw_multiline_text(can, coords_r1["campos"]["observaciones"], datos_pdf["observaciones"], 
+                            max_ancho_mm=170*mm, max_lineas=3, line_height_mm=line_height_mm,
+                            scale_x=scale_x, scale_y=scale_y, line_height_scale=scale_y)
+
+        # D. Dibujar la marca del porcentaje
+        # Convertimos el float (ej. 70.0) a string "70"
+        porcentaje_str = str(int(reporte.porcentaje_avance)) 
+        if porcentaje_str in coords_r1["porcentajes"]:
+            x_mm, y_mm = coords_r1["porcentajes"][porcentaje_str]
+            can.setFont("Helvetica-Bold", 14) # Más grande para la marca
+            can.drawCentredString(x_mm * scale_x, y_mm * scale_y, "✔")
+        
+        # Guardar el lienzo
+        can.save()
+        packet.seek(0)
+        
+        # Fusionar el overlay (lienzo) con la plantilla
+        overlay_reader = PdfReader(packet)
+        base_page.merge_page(overlay_reader.pages[0])
+        writer.add_page(base_page)
+
+        # 5. Guardar el PDF final en memoria
+        output_pdf_stream = io.BytesIO()
+        writer.write(output_pdf_stream)
+        
+        # Cerrar todos los streams
+        writer.close()
+        overlay_reader.stream.close()
+        if hasattr(reader, 'stream') and not reader.stream.closed:
+            reader.stream.close()
+        
+        output_pdf_stream.seek(0) # Rebobinar
+        return output_pdf_stream
+
+    except FileNotFoundError:
+        raise HTTPException(status_code=500, detail=f"No se encontró la plantilla de reporte: {TEMPLATE_REPORTE1_PATH}")
+    except Exception as e:
+        print(f"ERROR generando Reporte 1 PDF: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Ocurrió un error al generar el Reporte 1: {e}")

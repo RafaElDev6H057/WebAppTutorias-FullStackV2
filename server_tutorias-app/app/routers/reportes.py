@@ -348,6 +348,63 @@ def handle_delete_reporte1(
     reporte1_service.delete_reporte1(db=session, reporte_existente=reporte_existente)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
+@router.get(
+    "/general-1/{reporte_id}/pdf",
+    response_class=StreamingResponse, # Indica que la respuesta es un stream
+    summary="Descargar Reporte 1 en PDF"
+)
+async def handle_generate_reporte1_pdf(
+    reporte_id: int,
+    session: Session = Depends(get_session),
+    # Protegido: Admin o el Tutor propietario
+    current_user: Union[Administrador, Tutor] = Depends(get_current_user)
+):
+    """
+    Genera y devuelve el PDF del Reporte 1 (Avance de Proyecto)
+    para un reporte específico.
+    Accesible por Admins o por el Tutor que lo creó.
+    """
+    # 1. Obtener el reporte para verificar permisos
+    reporte = reporte1_service.get_reporte1_por_id(db=session, reporte_id=reporte_id)
+    
+    # 2. Validación de Permisos
+    if isinstance(current_user, Tutor) and reporte.id_tutor != current_user.id_tutor:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permiso para generar este reporte."
+        )
+
+    try:
+        # 3. Llamar al servicio que genera el PDF en memoria
+        pdf_stream: io.BytesIO = pdf_generator_service.generate_reporte1_pdf(
+            db=session, reporte_id=reporte_id
+        )
+
+        # 4. Definir el nombre del archivo
+        filename = f"Reporte_Avance_{reporte.nombre_proyecto[:20]}_{reporte.periodo}.pdf"
+
+        # 5. Devolver el stream como una respuesta PDF
+        return StreamingResponse(
+            content=pdf_stream,
+            media_type="application/pdf",
+            headers={
+                # Fuerza la descarga en el navegador
+                "Content-Disposition": f"attachment; filename={filename}" 
+            }
+        )
+    except HTTPException as http_exc:
+        # Re-lanzar errores conocidos (ej. 404 si el reporte no existe)
+        raise http_exc
+    except Exception as e:
+        # Capturar errores inesperados del generador de PDF
+        print(f"ERROR INESPERADO al generar PDF para reporte1 {reporte_id}: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Ocurrió un error inesperado al generar el PDF."
+        )
+
 @router.post("/general-2", response_model=Reporte2Read, status_code=status.HTTP_201_CREATED)
 def handle_create_reporte2(
     data: Reporte2Create,
