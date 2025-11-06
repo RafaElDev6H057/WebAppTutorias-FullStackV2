@@ -94,7 +94,7 @@
               :href="aviso.link"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 text-lime-400 hover:text-lime-300 text-sm font-medium transition-colors duration-200 group"
+              class="inline-flex items-center gap-2 text-lime-800 hover:text-lime-700 text-sm font-medium transition-colors duration-200 group"
             >
               <svg
                 class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"
@@ -209,9 +209,10 @@ const fetchAvisos = async () => {
 // ==================== UTILITY FUNCTIONS ====================
 const formatDate = (dateString) => {
   const date = new Date(dateString)
-  return date.toLocaleDateString('es-MX', {
+  const utcMinus6 = new Date(date.getTime() - 6 * 60 * 60 * 1000)
+  return utcMinus6.toLocaleDateString('es-MX', {
     year: 'numeric',
-    month: 'long',
+    month: 'short',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',

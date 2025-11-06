@@ -528,7 +528,8 @@ const resetForm = () => {
 // ==================== UTILITY FUNCTIONS ====================
 const formatDate = (dateString) => {
   const date = new Date(dateString)
-  return date.toLocaleDateString('es-MX', {
+  const utcMinus6 = new Date(date.getTime() - 6 * 60 * 60 * 1000)
+  return utcMinus6.toLocaleDateString('es-MX', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',

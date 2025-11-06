@@ -329,13 +329,17 @@
           <label class="block text-sm font-medium text-gray-700 mb-1">
             Periodo <span class="text-red-500">*</span>
           </label>
-          <input
+          <select
             v-model="formulario.periodo"
-            type="text"
             required
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-            placeholder="Ej: Enero - Junio 2025"
-          />
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
+          >
+            <option value="" disabled selected>Selecciona un periodo</option>
+            <option v-for="periodo in periodosDisponibles" :key="periodo" :value="periodo">
+              {{ periodo }}
+            </option>
+          </select>
+          <p class="text-xs text-gray-500 mt-1">Selecciona el periodo académico del reporte</p>
         </div>
 
         <!-- Nombre del Proyecto -->
@@ -343,13 +347,29 @@
           <label class="block text-sm font-medium text-gray-700 mb-1">
             Nombre del Proyecto <span class="text-red-500">*</span>
           </label>
-          <input
+          <textarea
             v-model="formulario.nombre_proyecto"
-            type="text"
             required
+            rows="3"
+            :maxlength="caracterLimites.nombre_proyecto"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            :class="{ 'border-red-500': isLimiteExcedido('nombre_proyecto') }"
             placeholder="Nombre del proyecto"
-          />
+          ></textarea>
+          <div class="flex justify-between items-center mt-1">
+            <p class="text-xs text-gray-500">
+              Máximo {{ caracterLimites.nombre_proyecto }} caracteres
+            </p>
+            <p :class="['text-xs font-medium', getColorIndicador('nombre_proyecto')]">
+              {{ getCaracterCount('nombre_proyecto') }} / {{ caracterLimites.nombre_proyecto }}
+              <span v-if="getCaracterRestantes('nombre_proyecto') >= 0">
+                ({{ getCaracterRestantes('nombre_proyecto') }} restantes)
+              </span>
+              <span v-else class="text-red-600 font-bold">
+                (¡Excedido por {{ Math.abs(getCaracterRestantes('nombre_proyecto')) }}!)
+              </span>
+            </p>
+          </div>
         </div>
 
         <!-- Porcentaje de Avance -->
@@ -361,7 +381,7 @@
             <input
               v-model.number="formulario.porcentaje_avance"
               type="range"
-              min="0"
+              min="10"
               max="100"
               step="10"
               class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-500"
@@ -369,7 +389,7 @@
             <input
               v-model.number="formulario.porcentaje_avance"
               type="number"
-              min="0"
+              min="10"
               step="10"
               max="100"
               required
@@ -387,9 +407,23 @@
             v-model="formulario.objetivo"
             required
             rows="3"
+            :maxlength="caracterLimites.objetivo"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            :class="{ 'border-red-500': isLimiteExcedido('objetivo') }"
             placeholder="Describe el objetivo del proyecto"
           ></textarea>
+          <div class="flex justify-between items-center mt-1">
+            <p class="text-xs text-gray-500">Máximo {{ caracterLimites.objetivo }} caracteres</p>
+            <p :class="['text-xs font-medium', getColorIndicador('objetivo')]">
+              {{ getCaracterCount('objetivo') }} / {{ caracterLimites.objetivo }}
+              <span v-if="getCaracterRestantes('objetivo') >= 0">
+                ({{ getCaracterRestantes('objetivo') }} restantes)
+              </span>
+              <span v-else class="text-red-600 font-bold">
+                (¡Excedido por {{ Math.abs(getCaracterRestantes('objetivo')) }}!)
+              </span>
+            </p>
+          </div>
         </div>
 
         <!-- Descripción -->
@@ -401,9 +435,23 @@
             v-model="formulario.descripcion"
             required
             rows="3"
+            :maxlength="caracterLimites.descripcion"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            :class="{ 'border-red-500': isLimiteExcedido('descripcion') }"
             placeholder="Descripción del proyecto"
           ></textarea>
+          <div class="flex justify-between items-center mt-1">
+            <p class="text-xs text-gray-500">Máximo {{ caracterLimites.descripcion }} caracteres</p>
+            <p :class="['text-xs font-medium', getColorIndicador('descripcion')]">
+              {{ getCaracterCount('descripcion') }} / {{ caracterLimites.descripcion }}
+              <span v-if="getCaracterRestantes('descripcion') >= 0">
+                ({{ getCaracterRestantes('descripcion') }} restantes)
+              </span>
+              <span v-else class="text-red-600 font-bold">
+                (¡Excedido por {{ Math.abs(getCaracterRestantes('descripcion')) }}!)
+              </span>
+            </p>
+          </div>
         </div>
 
         <!-- Metas -->
@@ -415,9 +463,23 @@
             v-model="formulario.metas"
             required
             rows="3"
+            :maxlength="caracterLimites.metas"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            :class="{ 'border-red-500': isLimiteExcedido('metas') }"
             placeholder="Metas a alcanzar"
           ></textarea>
+          <div class="flex justify-between items-center mt-1">
+            <p class="text-xs text-gray-500">Máximo {{ caracterLimites.metas }} caracteres</p>
+            <p :class="['text-xs font-medium', getColorIndicador('metas')]">
+              {{ getCaracterCount('metas') }} / {{ caracterLimites.metas }}
+              <span v-if="getCaracterRestantes('metas') >= 0">
+                ({{ getCaracterRestantes('metas') }} restantes)
+              </span>
+              <span v-else class="text-red-600 font-bold">
+                (¡Excedido por {{ Math.abs(getCaracterRestantes('metas')) }}!)
+              </span>
+            </p>
+          </div>
         </div>
 
         <!-- Actividades -->
@@ -429,9 +491,23 @@
             v-model="formulario.actividades"
             required
             rows="3"
+            :maxlength="caracterLimites.actividades"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            :class="{ 'border-red-500': isLimiteExcedido('actividades') }"
             placeholder="Actividades realizadas"
           ></textarea>
+          <div class="flex justify-between items-center mt-1">
+            <p class="text-xs text-gray-500">Máximo {{ caracterLimites.actividades }} caracteres</p>
+            <p :class="['text-xs font-medium', getColorIndicador('actividades')]">
+              {{ getCaracterCount('actividades') }} / {{ caracterLimites.actividades }}
+              <span v-if="getCaracterRestantes('actividades') >= 0">
+                ({{ getCaracterRestantes('actividades') }} restantes)
+              </span>
+              <span v-else class="text-red-600 font-bold">
+                (¡Excedido por {{ Math.abs(getCaracterRestantes('actividades')) }}!)
+              </span>
+            </p>
+          </div>
         </div>
 
         <!-- Documentos Anexados -->
@@ -442,10 +518,27 @@
           <textarea
             v-model="formulario.documentos_anexados"
             required
-            rows="2"
+            rows="3"
+            :maxlength="caracterLimites.documentos_anexados"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            :class="{ 'border-red-500': isLimiteExcedido('documentos_anexados') }"
             placeholder="Lista de documentos anexados"
           ></textarea>
+          <div class="flex justify-between items-center mt-1">
+            <p class="text-xs text-gray-500">
+              Máximo {{ caracterLimites.documentos_anexados }} caracteres
+            </p>
+            <p :class="['text-xs font-medium', getColorIndicador('documentos_anexados')]">
+              {{ getCaracterCount('documentos_anexados') }} /
+              {{ caracterLimites.documentos_anexados }}
+              <span v-if="getCaracterRestantes('documentos_anexados') >= 0">
+                ({{ getCaracterRestantes('documentos_anexados') }} restantes)
+              </span>
+              <span v-else class="text-red-600 font-bold">
+                (¡Excedido por {{ Math.abs(getCaracterRestantes('documentos_anexados')) }}!)
+              </span>
+            </p>
+          </div>
         </div>
 
         <!-- Conclusiones -->
@@ -457,20 +550,55 @@
             v-model="formulario.conclusiones"
             required
             rows="3"
+            :maxlength="caracterLimites.conclusiones"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            :class="{ 'border-red-500': isLimiteExcedido('conclusiones') }"
             placeholder="Conclusiones del proyecto"
           ></textarea>
+          <div class="flex justify-between items-center mt-1">
+            <p class="text-xs text-gray-500">
+              Máximo {{ caracterLimites.conclusiones }} caracteres
+            </p>
+            <p :class="['text-xs font-medium', getColorIndicador('conclusiones')]">
+              {{ getCaracterCount('conclusiones') }} / {{ caracterLimites.conclusiones }}
+              <span v-if="getCaracterRestantes('conclusiones') >= 0">
+                ({{ getCaracterRestantes('conclusiones') }} restantes)
+              </span>
+              <span v-else class="text-red-600 font-bold">
+                (¡Excedido por {{ Math.abs(getCaracterRestantes('conclusiones')) }}!)
+              </span>
+            </p>
+          </div>
         </div>
 
         <!-- Observaciones -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1"> Observaciones </label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Observaciones <span class="text-red-500">*</span>
+          </label>
           <textarea
             v-model="formulario.observaciones"
+            required
             rows="3"
+            :maxlength="caracterLimites.observaciones"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            :class="{ 'border-red-500': isLimiteExcedido('observaciones') }"
             placeholder="Observaciones adicionales (opcional)"
           ></textarea>
+          <div class="flex justify-between items-center mt-1">
+            <p class="text-xs text-gray-500">
+              Máximo {{ caracterLimites.observaciones }} caracteres
+            </p>
+            <p :class="['text-xs font-medium', getColorIndicador('observaciones')]">
+              {{ getCaracterCount('observaciones') }} / {{ caracterLimites.observaciones }}
+              <span v-if="getCaracterRestantes('observaciones') >= 0">
+                ({{ getCaracterRestantes('observaciones') }} restantes)
+              </span>
+              <span v-else class="text-red-600 font-bold">
+                (¡Excedido por {{ Math.abs(getCaracterRestantes('observaciones')) }}!)
+              </span>
+            </p>
+          </div>
         </div>
 
         <!-- Botones -->
@@ -644,6 +772,18 @@ const formulario = ref({
   observaciones: '',
 })
 
+// ==================== LÍMITES DE CARACTERES ====================
+const caracterLimites = {
+  nombre_proyecto: 60,
+  objetivo: 200,
+  descripcion: 200,
+  metas: 200,
+  actividades: 270,
+  documentos_anexados: 270,
+  conclusiones: 270,
+  observaciones: 270,
+}
+
 // ==================== API CALLS ====================
 const fetchTutorData = async () => {
   try {
@@ -690,6 +830,13 @@ const fetchReportes = async () => {
 }
 
 const guardarReporte = async () => {
+  const camposExcedidos = Object.keys(caracterLimites).filter((campo) => isLimiteExcedido(campo))
+
+  if (camposExcedidos.length > 0) {
+    errorMessage.value = `Los siguientes campos exceden el límite de caracteres: ${camposExcedidos.join(', ')}`
+    return
+  }
+
   isGuardando.value = true
   errorMessage.value = null
   successMessage.value = null
@@ -837,7 +984,7 @@ const crearNuevoReporte = async () => {
       : '',
     periodo: '',
     nombre_proyecto: '',
-    porcentaje_avance: 0,
+    porcentaje_avance: 10,
     objetivo: '',
     descripcion: '',
     metas: '',
@@ -889,7 +1036,8 @@ const cancelarEliminar = () => {
 // ==================== UTILITY FUNCTIONS ====================
 const formatDate = (dateString) => {
   const date = new Date(dateString)
-  return date.toLocaleDateString('es-MX', {
+  const utcMinus6 = new Date(date.getTime() - 6 * 60 * 60 * 1000)
+  return utcMinus6.toLocaleDateString('es-MX', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -897,6 +1045,48 @@ const formatDate = (dateString) => {
     minute: '2-digit',
   })
 }
+
+// ==================== VALIDACIÓN DE CARACTERES ====================
+const getCaracterCount = (campo) => {
+  return formulario.value[campo]?.length || 0
+}
+
+const getCaracterRestantes = (campo) => {
+  const limite = caracterLimites[campo]
+  const actual = getCaracterCount(campo)
+  return limite - actual
+}
+
+const isLimiteExcedido = (campo) => {
+  return getCaracterRestantes(campo) < 0
+}
+
+const getColorIndicador = (campo) => {
+  const restantes = getCaracterRestantes(campo)
+  const limite = caracterLimites[campo]
+  const porcentaje = (restantes / limite) * 100
+
+  if (porcentaje > 20) return 'text-gray-500'
+  if (porcentaje > 10) return 'text-yellow-500'
+  return 'text-red-500'
+}
+
+// ==================== GENERACIÓN DE PERIODOS ====================
+const generarPeriodos = () => {
+  const periodos = []
+  const añoActual = new Date().getFullYear()
+  const añoInicio = añoActual // Mostrar desde 2 años atrás
+  const añoFin = añoActual + 1 // Hasta 3 años adelante
+
+  for (let año = añoInicio; año <= añoFin; año++) {
+    periodos.push(`Enero - Junio ${año}`)
+    periodos.push(`Agosto - Diciembre ${año}`)
+  }
+
+  return periodos
+}
+
+const periodosDisponibles = generarPeriodos()
 
 // ==================== LIFECYCLE ====================
 onMounted(async () => {
