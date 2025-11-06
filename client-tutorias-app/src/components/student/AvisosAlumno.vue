@@ -3,24 +3,28 @@
   <div class="space-y-4">
     <!-- Header -->
     <div class="flex items-center gap-3 mb-4">
-      <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-        />
-      </svg>
+      <div
+        class="w-12 h-12 bg-gradient-to-br from-lime-100 to-lime-200 rounded-full flex items-center justify-center shadow-md"
+      >
+        <svg class="w-6 h-6 text-lime-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+          />
+        </svg>
+      </div>
       <div>
         <h2 class="text-xl font-bold text-gray-800">Avisos Importantes</h2>
-        <p class="text-sm text-gray-700">Mantente informado sobre las últimas novedades</p>
+        <p class="text-sm text-gray-600">Mantente informado sobre las últimas novedades</p>
       </div>
     </div>
 
     <!-- ==================== LOADING ==================== -->
     <div v-if="isLoading" class="flex justify-center items-center py-12">
       <svg
-        class="animate-spin h-8 w-8 text-gray-400"
+        class="animate-spin h-8 w-8 text-lime-500"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -39,20 +43,20 @@
           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
         ></path>
       </svg>
-      <span class="ml-2 text-gray-400">Cargando avisos...</span>
+      <span class="ml-3 text-gray-600">Cargando avisos...</span>
     </div>
 
     <!-- ==================== ERROR ==================== -->
-    <div v-else-if="errorMessage" class="bg-red-900/20 border border-red-500/50 rounded-lg p-4">
+    <div v-else-if="errorMessage" class="bg-red-50 border border-red-200 rounded-lg p-4 shadow-sm">
       <div class="flex items-center gap-2">
-        <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+        <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
           <path
             fill-rule="evenodd"
             d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
             clip-rule="evenodd"
           />
         </svg>
-        <p class="text-sm text-red-300">{{ errorMessage }}</p>
+        <p class="text-sm text-red-800 font-medium">{{ errorMessage }}</p>
       </div>
     </div>
 
@@ -70,34 +74,37 @@
         <div
           v-for="aviso in avisos"
           :key="aviso.id"
-          class="bg-lime-400/50 backdrop-blur-sm border border-gray-500/30 rounded-lg p-4 hover:border-gray-500/60 transition-all duration-300 hover:shadow-lg hover:shadow-gray-500/20"
+          class="bg-gradient-to-br from-lime-50 to-lime-100 border border-lime-300 rounded-lg p-5 hover:border-lime-400 hover:shadow-lg transition-all duration-300 group"
         >
           <!-- Badge "Nuevo" si fue creado hace menos de 7 días -->
           <div class="flex items-start justify-between mb-3">
             <div class="flex-1">
-              <div class="flex items-center gap-2 mb-1">
-                <h3 class="text-lg font-bold text-black">{{ aviso.titulo }}</h3>
+              <div class="flex items-center gap-2 mb-2 flex-wrap">
+                <h3 class="text-lg font-bold text-gray-900">{{ aviso.titulo }}</h3>
                 <span
                   v-if="isNew(aviso.created_at)"
-                  class="px-2 py-1 text-xs font-semibold bg-green-500 text-white rounded-full animate-pulse"
+                  class="px-2.5 py-1 text-xs font-bold bg-gradient-to-r from-lime-500 to-lime-600 text-white rounded-full shadow-md animate-pulse"
                 >
-                  NUEVO
+                  ✨ NUEVO
                 </span>
               </div>
-              <p class="text-sm text-gray-800 leading-relaxed">{{ aviso.descripcion }}</p>
+              <p class="text-sm text-gray-700 leading-relaxed">{{ aviso.descripcion }}</p>
             </div>
           </div>
 
           <!-- Link (si existe) -->
-          <div v-if="aviso.link" class="mt-3 pt-3 border-t border-gray-700">
+          <div
+            v-if="aviso.link"
+            class="mt-4 pt-4 border-t border-lime-200 group-hover:border-lime-300 transition-colors"
+          >
             <a
               :href="aviso.link"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 text-lime-800 hover:text-lime-700 text-sm font-medium transition-colors duration-200 group"
+              class="inline-flex items-center gap-2 text-lime-700 hover:text-lime-800 text-sm font-semibold transition-colors duration-200 group/link"
             >
               <svg
-                class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"
+                class="w-4 h-4 group-hover/link:rotate-12 transition-transform duration-200"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -111,7 +118,7 @@
               </svg>
               Ver más información
               <svg
-                class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"
+                class="w-4 h-4 group-hover/link:translate-x-1 transition-transform duration-200"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -127,8 +134,13 @@
           </div>
 
           <!-- Fecha de publicación -->
-          <div class="mt-3 flex items-center gap-2 text-xs text-gray-700">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="mt-4 flex items-center gap-2 text-xs text-gray-600">
+            <svg
+              class="w-4 h-4 text-lime-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -136,29 +148,31 @@
                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <span>Publicado: {{ formatDate(aviso.created_at) }}</span>
+            <span class="font-medium">Publicado: {{ formatDate(aviso.created_at) }}</span>
           </div>
         </div>
       </TransitionGroup>
     </div>
 
     <!-- ==================== SIN AVISOS ==================== -->
-    <div v-else class="bg-lime-500/30 border border-lime-700 rounded-lg p-8 text-center">
-      <svg
-        class="w-16 h-16 text-gray-800 mx-auto mb-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
+    <div
+      v-else
+      class="bg-gradient-to-br from-lime-50 to-white border-2 border-lime-200 rounded-lg p-8 text-center"
+    >
+      <div
+        class="w-20 h-20 bg-gradient-to-br from-lime-100 to-lime-200 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-        />
-      </svg>
-      <p class="text-black text-sm">No hay avisos disponibles en este momento</p>
-      <p class="text-black text-xs mt-2">Vuelve más tarde para ver nuevas publicaciones</p>
+        <svg class="w-10 h-10 text-lime-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+          />
+        </svg>
+      </div>
+      <p class="text-gray-800 font-semibold mb-2">No hay avisos disponibles en este momento</p>
+      <p class="text-gray-600 text-sm">Vuelve más tarde para ver nuevas publicaciones</p>
     </div>
   </div>
 </template>
