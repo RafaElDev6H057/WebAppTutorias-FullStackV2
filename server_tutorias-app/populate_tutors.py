@@ -9,11 +9,13 @@ Uso:
     python populate_tutors.py
 """
 
+import getpass
 from sqlmodel import Session, select
-from sqlalchemy.exc import IntegrityError
-
 from app.database import engine
 from app.models.tutor import Tutor
+from sqlalchemy.exc import IntegrityError
+from app.models.alumno import Alumno
+from app.models.tutoria import Tutoria
 
 tutor_data = [
     {
