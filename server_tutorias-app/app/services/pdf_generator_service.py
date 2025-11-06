@@ -32,7 +32,7 @@ from app.core.pdf_coords.coords_reporte_g1 import coords as coords_r1, REF_W as 
 
 TEMPLATE_PDF_PATH = "app/pdf_templates/formato.pdf"
 TEMPLATE_CONSTANCIA_PATH = "app/pdf_templates/formato_constancia.pdf"
-TEMPLATE_REPORTE1_PATH = "app/pdf_templates/formato_reporte_g1.pdf"
+TEMPLATE_REPORTE1_PATH = "app/pdf_templates/formato_reporte_g1_new.pdf"
 
 
 def _draw_page_overlay(
@@ -522,8 +522,8 @@ def generate_reporte1_pdf(db: Session, reporte_id: int) -> io.BytesIO:
         porcentaje_str = str(int(reporte.porcentaje_avance))
         if porcentaje_str in coords_r1["porcentajes"]:
             x_mm, y_mm = coords_r1["porcentajes"][porcentaje_str]
-            can.setFont("Helvetica-Bold", 14)
-            can.drawCentredString(x_mm * scale_x, y_mm * scale_y, "✔")
+            can.setFont("Helvetica-Bold", 40)
+            can.drawCentredString(x_mm * scale_x, y_mm * scale_y, "O")
         
         can.save()
         packet.seek(0)
