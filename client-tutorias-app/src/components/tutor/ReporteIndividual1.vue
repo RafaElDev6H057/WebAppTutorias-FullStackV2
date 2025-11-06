@@ -982,7 +982,7 @@ const crearNuevoReporte = async () => {
     nombre_tutor: tutorData.value
       ? `${tutorData.value.nombre} ${tutorData.value.apellido_p} ${tutorData.value.apellido_m}`.trim()
       : '',
-    periodo: '',
+    periodo: getPeriodoActual(),
     nombre_proyecto: '',
     porcentaje_avance: 10,
     objetivo: '',
@@ -1087,6 +1087,20 @@ const generarPeriodos = () => {
 }
 
 const periodosDisponibles = generarPeriodos()
+
+// ==================== PERIODO ACTUAL ====================
+const getPeriodoActual = () => {
+  const hoy = new Date()
+  const mes = hoy.getMonth() + 1 // 1-12
+  const año = hoy.getFullYear()
+
+  // Enero - Junio (meses 1-7)
+  if (mes >= 1 && mes <= 7) {
+    return `Enero - Junio ${año}`
+  }
+  // Agosto - Diciembre (meses 8-12)
+  return `Agosto - Diciembre ${año}`
+}
 
 // ==================== LIFECYCLE ====================
 onMounted(async () => {
