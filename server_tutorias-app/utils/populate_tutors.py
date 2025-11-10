@@ -8,14 +8,17 @@ sus correos electrónicos y forzando cambio de contraseña en primer acceso.
 Uso:
     python populate_tutors.py
 """
-
+import sys
+import os
 import getpass
 from sqlmodel import Session, select
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from app.database import engine
 from app.models.tutor import Tutor
 from sqlalchemy.exc import IntegrityError
 from app.models.alumno import Alumno
 from app.models.tutoria import Tutoria
+
 
 tutor_data = [
     {

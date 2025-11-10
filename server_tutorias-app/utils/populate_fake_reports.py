@@ -1,15 +1,18 @@
 # populate_fake_reports.py
-
+import sys
+import os
 import io
 import random # 👈 1. Importamos el módulo random
 from sqlmodel import Session, select
 from fastapi import HTTPException
 from typing import List
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.database import engine
 from app.models.tutoria import Tutoria
 from app.models.reporte_integral import ReporteIntegral
 from app.schemas.reporte_integral import ReporteIntegralCreate
+
 
 # --- CONFIGURACIÓN ---
 PERIODO_A_RELLENAR = "22025" 

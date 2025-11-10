@@ -8,13 +8,16 @@ de contraseñas.
 Uso:
     python create_first_admin.py
 """
-
+import sys
+import os
 import getpass
 from sqlmodel import Session, select
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.database import engine
 from app.models.administrador import Administrador
 from app.core.security import get_password_hash
+
 
 
 def create_admin_user():

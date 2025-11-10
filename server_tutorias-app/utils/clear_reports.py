@@ -1,13 +1,16 @@
 # clear_reports.py
-
+import sys
+import os
 import io
 from sqlmodel import Session, select, update, delete
 from fastapi import HTTPException
 from typing import List
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.database import engine
 from app.models.tutoria import Tutoria
 from app.models.reporte_integral import ReporteIntegral
+
 
 def clear_integral_reports():
     print("--- Iniciando limpieza de Reportes Integrales y Banderas ---")
