@@ -15,9 +15,9 @@ import io
 from app.database import get_session
 from app.models.reporte_integral import ReporteIntegral
 from app.schemas.reporte_integral import ReporteIntegralCreate, ReporteIntegralRead, ReporteIntegralUpdate
-from app.services import reporte_integral_service
+from app.services import reporte_integral_service, excel_generator_service
 from app.services import pdf_generator_service
-from app.core.dependencies import get_current_user, get_current_tutor_user, oauth2_scheme_tutor
+from app.core.dependencies import get_current_user, get_current_tutor_user, oauth2_scheme_tutor, get_current_admin_user
 from app.models.administrador import Administrador
 from app.models.tutor import Tutor
 from app.models.tutoria import Tutoria
@@ -474,6 +474,60 @@ async def handle_generate_reporte1_pdf(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Ocurrió un error inesperado al generar el PDF."
+        )
+    
+# ==================================
+# === GENERACIÓN DE EXCEL ANEXO 3 ===
+# ==================================
+
+@router.get(
+    "/anexo-3/excel/{periodo}",
+    summary="Generar Excel del Anexo 3 por Periodo (Admin)",
+    # Definimos el tipo de respuesta para que Swagger sepa qué esperar
+    responses={
+        200: {
+            "content": {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}}
+        }
+    },
+    response_class=StreamingResponse # La respuesta real es un stream
+)
+async def handle_generate_anexo3_excel(
+    periodo: str,
+    session: Session = Depends(get_session),
+    # Protegido: Solo Admins
+    current_admin: Administrador = Depends(get_current_admin_user)
+):
+    """
+    Genera y devuelve el archivo Excel "Anexo 3" (Hoja 1 y 2)
+    parcialmente rellenado con los datos de la BD para un periodo específico.
+    """
+    try:
+        # 1. Llamar al servicio que genera el Excel en memoria (BytesIO)
+        excel_stream: io.BytesIO = excel_generator_service.generate_anexo3_reporte(
+            db=session, periodo=periodo
+        )
+
+        # 2. Definir el nombre del archivo
+        filename = f"ANEXO_3_Periodo_{periodo}.xlsx"
+
+        # 3. Devolver el stream como una respuesta Excel
+        return StreamingResponse(
+            content=excel_stream,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}"
+            }
+        )
+    except HTTPException as http_exc:
+        # Re-lanzar errores conocidos (ej. 404 si no hay tutorías)
+        raise http_exc
+    except Exception as e:
+        print(f"ERROR INESPERADO al generar Excel Anexo 3 para {periodo}: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Ocurrió un error inesperado al generar el reporte Excel."
         )
 
 
