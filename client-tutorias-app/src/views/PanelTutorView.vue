@@ -28,7 +28,7 @@
           <div class="flex justify-between h-16">
             <div class="flex items-center">
               <img
-                class="h-12 w-12 border-2 border-white"
+                class="h-12 w-12 border-2 border-white rounded-full"
                 src="/EscudoITSF.png"
                 alt="Escudo ITSF"
               />
@@ -229,6 +229,155 @@
                 />
               </svg>
             </button>
+          </div>
+        </Transition>
+
+        <!-- Tabla de Alumnos Tutorados (COMPONENTE) -->
+        <TablaAlumnosTutorados
+          :students="students"
+          :loading="loading"
+          :search-query="searchQuery"
+          :current-page="currentPage"
+          :total-pages="totalPages"
+          :total-items="totalItems"
+          :items-per-page="itemsPerPage"
+          @view-details="viewDetails"
+          @delete-tutoria="abrirModalEliminar"
+          @prev-page="prevPage"
+          @next-page="nextPage"
+          @go-to-page="goToPage"
+        />
+
+        <!-- Modal de detalles del estudiante -->
+        <Transition
+          enter-active-class="transition ease-out duration-300"
+          enter-from-class="opacity-0 scale-95"
+          enter-to-class="opacity-100 scale-100"
+          leave-active-class="transition ease-in duration-200"
+          leave-from-class="opacity-100 scale-100"
+          leave-to-class="opacity-0 scale-95"
+        >
+          <div v-if="showModal" class="fixed inset-0 z-50 overflow-y-auto">
+            <div
+              class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+            >
+              <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+              </div>
+
+              <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"
+                >&#8203;</span
+              >
+
+              <div
+                v-if="selectedStudent"
+                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+              >
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div class="absolute top-4 right-4">
+                    <button
+                      @click="closeModal"
+                      class="text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <h2 class="text-2xl font-bold mb-6 text-gray-900 border-b pb-2">
+                    Detalles del Estudiante
+                  </h2>
+
+                  <div class="space-y-6">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                      <h3 class="text-lg font-semibold text-coral-600 mb-3">
+                        Información del Alumno
+                      </h3>
+                      <div class="space-y-2">
+                        <div class="grid grid-cols-3 gap-2">
+                          <span class="text-gray-600 font-medium">Nombre:</span>
+                          <span class="col-span-2 text-gray-900"
+                            >{{ selectedStudent.nombre }} {{ selectedStudent.apellido_p }}
+                            {{ selectedStudent.apellido_m }}</span
+                          >
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                          <span class="text-gray-600 font-medium">Número de Control:</span>
+                          <span class="col-span-2 text-gray-900">{{
+                            selectedStudent.num_control
+                          }}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                          <span class="text-gray-600 font-medium">Carrera:</span>
+                          <span class="col-span-2 text-gray-900">{{
+                            selectedStudent.carrera
+                          }}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                          <span class="text-gray-600 font-medium">Semestre Actual:</span>
+                          <span class="col-span-2 text-gray-900"
+                            >{{ selectedStudent.semestre_actual }}°</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                      <h3 class="text-lg font-semibold text-coral-600 mb-3">
+                        Información de la Tutoría
+                      </h3>
+                      <div class="space-y-2">
+                        <div class="grid grid-cols-3 gap-2">
+                          <span class="text-gray-600 font-medium">Nivel de Tutoría:</span>
+                          <span class="col-span-2 text-gray-900"
+                            >{{ selectedStudent.tutoring.semestre }}°</span
+                          >
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                          <span class="text-gray-600 font-medium">Periodo:</span>
+                          <span class="col-span-2 text-gray-900">{{
+                            selectedStudent.tutoring.periodo
+                          }}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                          <span class="text-gray-600 font-medium">Día:</span>
+                          <span class="col-span-2 text-gray-900">{{
+                            capitalize(selectedStudent.tutoring)
+                          }}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                          <span class="text-gray-600 font-medium">Hora:</span>
+                          <span class="col-span-2 text-gray-900">{{
+                            formatoHora(selectedStudent.tutoring)
+                          }}</span>
+                        </div>
+                        <div class="mt-4">
+                          <span class="text-gray-600 font-medium block mb-1">Observaciones:</span>
+                          <p class="text-gray-900 bg-white p-3 rounded border">
+                            {{ selectedStudent.tutoring.observaciones || 'Sin observaciones' }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-6 flex justify-end">
+                    <button
+                      @click="closeModal"
+                      class="bg-coral-500 hover:bg-coral-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200"
+                    >
+                      Cerrar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </Transition>
 
@@ -588,46 +737,6 @@
           </div>
         </Transition>
 
-        <!-- Modal para Reporte Integral (individual) -->
-        <Transition
-          enter-active-class="transition ease-out duration-300"
-          enter-from-class="opacity-0 scale-95"
-          enter-to-class="opacity-100 scale-100"
-          leave-active-class="transition ease-in duration-200"
-          leave-from-class="opacity-100 scale-100"
-          leave-to-class="opacity-0 scale-95"
-        >
-          <div
-            v-if="showReporteIntegralModal"
-            class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
-          >
-            <div
-              class="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white"
-            >
-              <div class="flex justify-end items-center mb-4">
-                <button
-                  @click="closeReporteIntegralModal"
-                  class="text-gray-500 hover:text-gray-700"
-                >
-                  <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-              <ReporteIntegralTutoria
-                v-if="selectedStudent"
-                :nombre="selectedStudent.name"
-                :num_control="selectedStudent.controlNumber"
-              />
-            </div>
-          </div>
-        </Transition>
-
         <!-- Modal para Primer Reporte -->
         <Transition
           enter-active-class="transition ease-out duration-300"
@@ -715,429 +824,10 @@
             </div>
           </div>
         </Transition>
-
-        <!-- Pestañas -->
-        <div class="border-b border-gray-200">
-          <nav class="-mb-px flex space-x-8">
-            <a
-              v-for="tab in tabs"
-              :key="tab.id"
-              href="#"
-              @click.prevent="currentTab = tab.id"
-              :class="[
-                currentTab === tab.id
-                  ? 'border-coral-500 text-coral-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-                'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm',
-              ]"
-            >
-              {{ tab.name }}
-            </a>
-          </nav>
-        </div>
-
-        <!-- Tabla de estudiantes -->
-        <div class="mt-8 flex flex-col">
-          <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-              <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg bg-white">
-                <!-- Loading State -->
-                <div v-if="loading" class="p-8">
-                  <div class="flex flex-col items-center justify-center space-y-4">
-                    <svg
-                      class="animate-spin h-12 w-12 text-coral-500"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      ></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    <p class="text-gray-600 text-sm font-medium">Cargando estudiantes...</p>
-                  </div>
-
-                  <!-- Skeleton Loader -->
-                  <div class="mt-6 space-y-3 animate-pulse">
-                    <div
-                      v-for="i in 5"
-                      :key="i"
-                      class="flex items-center space-x-4 p-4 border-t border-gray-200"
-                    >
-                      <div class="flex-1 space-y-2">
-                        <div class="h-4 bg-gray-200 rounded w-3/4"></div>
-                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
-                      </div>
-                      <div class="h-6 bg-gray-200 rounded w-20"></div>
-                      <div class="h-8 bg-gray-200 rounded w-32"></div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Tabla con datos -->
-                <table v-else-if="students.length > 0" class="min-w-full divide-y divide-gray-200">
-                  <thead class="bg-gray-50">
-                    <tr>
-                      <th
-                        v-for="header in tableHeaders"
-                        :key="header.key"
-                        scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                      >
-                        {{ header.label }}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody class="bg-white divide-y divide-gray-200">
-                    <tr
-                      v-for="student in students"
-                      :key="student.id"
-                      class="hover:bg-gray-50 transition-colors"
-                    >
-                      <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                          <div class="ml-4">
-                            <div class="text-sm font-medium text-gray-900">
-                              {{ student.name }}
-                            </div>
-                            <div class="text-sm text-gray-500">
-                              {{ student.controlNumber }}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">{{ student.semester }}° Semestre</div>
-                      </td>
-                      <td class="px-6 py-4 whitespace-nowrap">
-                        <span
-                          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                          :class="
-                            student.status === 'A'
-                              ? 'bg-orange-500/20 text-orange-400'
-                              : 'bg-green-500/20 text-green-400'
-                          "
-                        >
-                          {{ student.status }}
-                        </span>
-                      </td>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {{ student.tutorialPeriod }}
-                      </td>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <a
-                          href="#"
-                          @click.prevent="viewDetails(student)"
-                          class="text-coral-600 hover:text-coral-900 mx-4"
-                          >Ver detalles</a
-                        >
-                        <!-- <button
-                          @click="openReporteIntegralModal(student)"
-                          class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-150 ease-in-out inline-flex items-center gap-2 ml-2"
-                        >
-                          Reporte Integral
-                        </button> -->
-                        <button
-                          @click="abrirModalEliminar(student)"
-                          class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-150 ease-in-out inline-flex items-center gap-2 ml-2"
-                          title="Eliminar tutoría"
-                        >
-                          <svg
-                            class="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
-                          Eliminar
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <!-- Estado vacío -->
-                <div v-else-if="!loading && students.length === 0" class="text-center py-12 px-4">
-                  <svg
-                    class="mx-auto h-16 w-16 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                    />
-                  </svg>
-                  <h3 class="mt-4 text-lg font-medium text-gray-900">
-                    No se encontraron estudiantes
-                  </h3>
-                  <p class="mt-2 text-sm text-gray-500">
-                    {{
-                      searchQuery
-                        ? 'No hay estudiantes que coincidan con tu búsqueda.'
-                        : 'No se le está aplicando tutoría a ningún alumno.'
-                    }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Paginación -->
-        <div
-          v-if="!loading && students.length > 0"
-          class="py-3 flex items-center justify-between bg-white mt-4 rounded-lg px-4"
-        >
-          <div class="flex-1 flex justify-between sm:hidden">
-            <button
-              @click="prevPage"
-              :disabled="currentPage === 1 || loading"
-              class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Anterior
-            </button>
-            <button
-              @click="nextPage"
-              :disabled="currentPage === totalPages || loading"
-              class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Siguiente
-            </button>
-          </div>
-          <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p class="text-sm text-gray-700">
-                Mostrando
-                <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
-                a
-                <span class="font-medium">{{
-                  Math.min(currentPage * itemsPerPage, totalItems)
-                }}</span>
-                de
-                <span class="font-medium">{{ totalItems }}</span>
-                resultados
-              </p>
-            </div>
-            <div>
-              <nav
-                class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-                aria-label="Pagination"
-              >
-                <button
-                  @click="prevPage"
-                  :disabled="currentPage === 1 || loading"
-                  class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span class="sr-only">Anterior</span>
-                  <svg
-                    class="h-5 w-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </button>
-                <button
-                  v-for="page in totalPages"
-                  :key="page"
-                  @click="goToPage(page)"
-                  :disabled="loading"
-                  :class="[
-                    currentPage === page
-                      ? 'z-10 bg-coral-50 border-coral-500 text-coral-600'
-                      : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50',
-                    'relative inline-flex items-center px-4 py-2 border text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed',
-                  ]"
-                >
-                  {{ page }}
-                </button>
-                <button
-                  @click="nextPage"
-                  :disabled="currentPage === totalPages || loading"
-                  class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span class="sr-only">Siguiente</span>
-                  <svg
-                    class="h-5 w-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </button>
-              </nav>
-            </div>
-          </div>
-        </div>
-
-        <!-- Modal de detalles -->
-        <Transition
-          enter-active-class="transition ease-out duration-300"
-          enter-from-class="opacity-0 scale-95"
-          enter-to-class="opacity-100 scale-100"
-          leave-active-class="transition ease-in duration-200"
-          leave-from-class="opacity-100 scale-100"
-          leave-to-class="opacity-0 scale-95"
-        >
-          <div v-if="showModal" class="fixed inset-0 z-50 overflow-y-auto">
-            <div
-              class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
-            >
-              <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-              </div>
-
-              <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"
-                >&#8203;</span
-              >
-
-              <div
-                v-if="selectedStudent"
-                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-              >
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <div class="absolute top-4 right-4">
-                    <button
-                      @click="closeModal"
-                      class="text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <h2 class="text-2xl font-bold mb-6 text-gray-900 border-b pb-2">
-                    Detalles del Estudiante
-                  </h2>
-
-                  <div class="space-y-6">
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                      <h3 class="text-lg font-semibold text-coral-600 mb-3">
-                        Información del Alumno
-                      </h3>
-                      <div class="space-y-2">
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Nombre:</span>
-                          <span class="col-span-2 text-gray-900"
-                            >{{ selectedStudent.nombre }} {{ selectedStudent.apellido_p }}
-                            {{ selectedStudent.apellido_m }}</span
-                          >
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Número de Control:</span>
-                          <span class="col-span-2 text-gray-900">{{
-                            selectedStudent.num_control
-                          }}</span>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Carrera:</span>
-                          <span class="col-span-2 text-gray-900">{{
-                            selectedStudent.carrera
-                          }}</span>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Semestre Actual:</span>
-                          <span class="col-span-2 text-gray-900"
-                            >{{ selectedStudent.semestre_actual }}°</span
-                          >
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                      <h3 class="text-lg font-semibold text-coral-600 mb-3">
-                        Información de la Tutoría
-                      </h3>
-                      <div class="space-y-2">
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Nivel de Tutoría:</span>
-                          <span class="col-span-2 text-gray-900"
-                            >{{ selectedStudent.tutoring.semestre }}°</span
-                          >
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Periodo:</span>
-                          <span class="col-span-2 text-gray-900">{{
-                            selectedStudent.tutoring.periodo
-                          }}</span>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Día:</span>
-                          <span class="col-span-2 text-gray-900">{{
-                            capitalize(selectedStudent.tutoring)
-                          }}</span>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Hora:</span>
-                          <span class="col-span-2 text-gray-900">{{
-                            formatoHora(selectedStudent.tutoring)
-                          }}</span>
-                        </div>
-                        <div class="mt-4">
-                          <span class="text-gray-600 font-medium block mb-1">Observaciones:</span>
-                          <p class="text-gray-900 bg-white p-3 rounded border">
-                            {{ selectedStudent.tutoring.observaciones || 'Sin observaciones' }}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="mt-6 flex justify-end">
-                    <button
-                      @click="closeModal"
-                      class="bg-coral-500 hover:bg-coral-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200"
-                    >
-                      Cerrar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Transition>
       </main>
     </div>
 
-    <!-- Modal Reporte Integral Masivo (FUERA de main, al nivel del root div) -->
+    <!-- Modal Reporte Integral Masivo -->
     <Transition
       enter-active-class="transition ease-out duration-300"
       enter-from-class="opacity-0"
@@ -1161,478 +851,22 @@
       </div>
     </Transition>
 
-    <!-- Modal Crear Tutoría -->
-    <Transition
-      enter-active-class="transition ease-out duration-300"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition ease-in duration-200"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div v-if="showModalCrearTutoria" class="fixed inset-0 z-[9999] overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen p-4">
-          <div class="fixed inset-0 bg-black opacity-50" @click="cerrarModalCrear"></div>
+    <!-- Modal Crear Tutoría (COMPONENTE) -->
+    <ModalCrearTutoria
+      :show="showModalCrearTutoria"
+      :tutor-id="tutor?.id_tutor"
+      @close="showModalCrearTutoria = false"
+      @success="handleTutoriaCreada"
+    />
 
-          <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6 z-10">
-            <!-- Header -->
-            <div class="flex justify-between items-center mb-6 border-b pb-3">
-              <h2 class="text-2xl font-bold text-gray-900">Crear Nueva Tutoría</h2>
-              <button
-                @click="cerrarModalCrear"
-                :disabled="isCreating"
-                class="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
-              >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            <!-- Búsqueda de Alumno -->
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                🔍 Buscar Alumno <span class="text-red-500">*</span>
-              </label>
-              <input
-                v-model="searchAlumnoQuery"
-                @input="buscarAlumnos"
-                type="text"
-                :disabled="isCreating"
-                placeholder="Nombre, apellido o número de control..."
-                class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-coral-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
-              />
-              <p class="text-xs text-gray-500 mt-1">Mínimo 3 caracteres</p>
-
-              <!-- Dropdown de resultados -->
-              <Transition
-                enter-active-class="transition ease-out duration-200"
-                enter-from-class="opacity-0 translate-y-1"
-                enter-to-class="opacity-100 translate-y-0"
-                leave-active-class="transition ease-in duration-150"
-                leave-from-class="opacity-100"
-                leave-to-class="opacity-0"
-              >
-                <div
-                  v-if="alumnosEncontrados.length > 0 && !alumnoSeleccionado"
-                  class="mt-2 max-h-48 overflow-y-auto border-2 border-gray-200 rounded-lg shadow-lg bg-white"
-                >
-                  <div
-                    v-for="alumno in alumnosEncontrados"
-                    :key="alumno.id_alumno"
-                    @click="seleccionarAlumno(alumno)"
-                    class="p-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
-                  >
-                    <div class="font-medium text-gray-900">
-                      {{ alumno.nombre }} {{ alumno.apellido_p }} {{ alumno.apellido_m }}
-                    </div>
-                    <div class="text-sm text-gray-500">
-                      {{ alumno.num_control }} - {{ alumno.carrera }}
-                    </div>
-                  </div>
-                </div>
-              </Transition>
-
-              <!-- Alumno seleccionado -->
-              <Transition
-                enter-active-class="transition ease-out duration-200"
-                enter-from-class="opacity-0 scale-95"
-                enter-to-class="opacity-100 scale-100"
-                leave-active-class="transition ease-in duration-150"
-                leave-from-class="opacity-100"
-                leave-to-class="opacity-0"
-              >
-                <div
-                  v-if="alumnoSeleccionado"
-                  class="mt-2 p-3 bg-green-50 border-2 border-green-300 rounded-lg flex items-start justify-between"
-                >
-                  <div class="flex items-start">
-                    <svg
-                      class="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                    <div>
-                      <div class="font-medium text-green-900">
-                        {{ alumnoSeleccionado.nombre }} {{ alumnoSeleccionado.apellido_p }}
-                        {{ alumnoSeleccionado.apellido_m }}
-                      </div>
-                      <div class="text-sm text-green-700">{{ alumnoSeleccionado.num_control }}</div>
-                    </div>
-                  </div>
-                  <button
-                    @click="clearAlumnoSelection"
-                    :disabled="isCreating"
-                    class="text-green-600 hover:text-green-800 disabled:opacity-50"
-                  >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </Transition>
-            </div>
-
-            <!-- Semestre -->
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                📚 Semestre <span class="text-red-500">*</span>
-              </label>
-              <select
-                v-model="semestreSeleccionado"
-                :disabled="isCreating"
-                class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-coral-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
-              >
-                <option value="">Seleccionar semestre...</option>
-                <option v-for="sem in 9" :key="sem" :value="sem">{{ sem }}° Semestre</option>
-              </select>
-            </div>
-
-            <!-- Periodo -->
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                📅 Periodo <span class="text-red-500">*</span>
-              </label>
-              <input
-                v-model="periodoInput"
-                @input="validarPeriodoInput"
-                type="text"
-                maxlength="5"
-                :disabled="isCreating"
-                placeholder="22025"
-                class="w-full px-3 py-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :class="
-                  errorPeriodo
-                    ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
-                    : 'border-gray-300 focus:ring-coral-500 focus:border-coral-500'
-                "
-              />
-              <p v-if="errorPeriodo" class="text-red-500 text-xs mt-1 flex items-center">
-                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fill-rule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-                {{ errorPeriodo }}
-              </p>
-              <p class="text-gray-500 text-xs mt-1">
-                Debe empezar con "2" y tener 5 dígitos. Ej: 22025
-              </p>
-            </div>
-
-            <!-- Mensajes de error -->
-            <Transition
-              enter-active-class="transition ease-out duration-200"
-              enter-from-class="opacity-0 translate-y-1"
-              enter-to-class="opacity-100 translate-y-0"
-              leave-active-class="transition ease-in duration-150"
-              leave-from-class="opacity-100"
-              leave-to-class="opacity-0"
-            >
-              <div
-                v-if="errorModalCrear"
-                class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded"
-              >
-                <div class="flex items-start">
-                  <svg
-                    class="w-5 h-5 text-red-500 mr-2 flex-shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  <p class="text-sm text-red-800 font-medium">{{ errorModalCrear }}</p>
-                </div>
-              </div>
-            </Transition>
-
-            <!-- Botones -->
-            <div class="flex gap-3 pt-4 border-t">
-              <button
-                @click="cerrarModalCrear"
-                :disabled="isCreating"
-                class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-              >
-                Cancelar
-              </button>
-              <button
-                @click="crearTutoria"
-                :disabled="
-                  isCreating ||
-                  !alumnoSeleccionado ||
-                  !semestreSeleccionado ||
-                  errorPeriodo ||
-                  periodoInput.length !== 5
-                "
-                class="flex-1 px-4 py-2 rounded-lg font-bold text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed transition-all inline-flex justify-center items-center shadow-md hover:shadow-lg"
-                :class="
-                  isCreating ||
-                  !alumnoSeleccionado ||
-                  !semestreSeleccionado ||
-                  errorPeriodo ||
-                  periodoInput.length !== 5
-                    ? 'bg-gray-400'
-                    : 'bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 focus:ring-orange-500'
-                "
-              >
-                <svg
-                  v-if="isCreating"
-                  class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  ></circle>
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                {{ isCreating ? 'Creando...' : 'Crear Tutoría' }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Transition>
-
-    <!-- Modal Eliminar Tutoría con Confirmación -->
-    <Transition
-      enter-active-class="transition ease-out duration-300"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition ease-in duration-200"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div v-if="showModalEliminarTutoria" class="fixed inset-0 z-[9999] overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen p-4">
-          <div class="fixed inset-0 bg-black opacity-50" @click="cerrarModalEliminar"></div>
-
-          <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6 z-10">
-            <!-- Header con icono de advertencia -->
-            <div class="flex items-start mb-6">
-              <div class="flex-shrink-0 bg-red-100 rounded-full p-3 mr-4">
-                <svg
-                  class="w-8 h-8 text-red-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-              </div>
-              <div class="flex-1">
-                <h2 class="text-xl font-bold text-gray-900 mb-2">⚠️ Confirmar Eliminación</h2>
-                <p class="text-sm text-gray-600">
-                  Esta acción es <strong class="text-red-600">permanente e irreversible</strong>
-                </p>
-              </div>
-              <button
-                @click="cerrarModalEliminar"
-                :disabled="isDeleting"
-                class="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 -mt-1"
-              >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            <!-- Información del alumno -->
-            <div
-              v-if="tutoriaAEliminar"
-              class="mb-6 p-4 bg-gray-50 border-l-4 border-red-500 rounded"
-            >
-              <p class="text-sm text-gray-700 mb-2">Estás a punto de eliminar la tutoría de:</p>
-              <div class="font-bold text-gray-900 text-lg">
-                {{ tutoriaAEliminar.name }}
-              </div>
-              <div class="text-sm text-gray-600 mt-1">
-                No. Control: {{ tutoriaAEliminar.controlNumber }}
-              </div>
-              <div class="text-sm text-gray-600">
-                Semestre: {{ tutoriaAEliminar.semester }}° - Periodo:
-                {{ tutoriaAEliminar.tutorialPeriod }}
-              </div>
-            </div>
-
-            <!-- Advertencia -->
-            <div class="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-              <div class="flex items-start">
-                <svg
-                  class="w-5 h-5 text-yellow-400 mr-2 flex-shrink-0 mt-0.5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-                <div class="text-sm text-yellow-800">
-                  <strong>Importante:</strong> Se eliminarán todos los datos relacionados con esta
-                  tutoría, incluyendo reportes y seguimientos.
-                </div>
-              </div>
-            </div>
-
-            <!-- Input de confirmación de correo -->
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                🔒 Para confirmar, escribe tu correo electrónico
-              </label>
-              <input
-                v-model="correoConfirmacion"
-                type="email"
-                :disabled="isDeleting"
-                placeholder="tu.correo@example.com"
-                class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
-                @keyup.enter="eliminarTutoria"
-              />
-              <p class="text-xs text-gray-500 mt-1">
-                Tu correo: <strong class="text-gray-700">{{ tutor?.correo }}</strong>
-              </p>
-            </div>
-
-            <!-- Mensajes de error -->
-            <Transition
-              enter-active-class="transition ease-out duration-200"
-              enter-from-class="opacity-0 translate-y-1"
-              enter-to-class="opacity-100 translate-y-0"
-              leave-active-class="transition ease-in duration-150"
-              leave-from-class="opacity-100"
-              leave-to-class="opacity-0"
-            >
-              <div
-                v-if="errorModalEliminar"
-                class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded"
-              >
-                <div class="flex items-start">
-                  <svg
-                    class="w-5 h-5 text-red-500 mr-2 flex-shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  <p class="text-sm text-red-800 font-medium">{{ errorModalEliminar }}</p>
-                </div>
-              </div>
-            </Transition>
-
-            <!-- Botones -->
-            <div class="flex gap-3 pt-4 border-t">
-              <button
-                @click="cerrarModalEliminar"
-                :disabled="isDeleting"
-                class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-              >
-                Cancelar
-              </button>
-              <button
-                @click="eliminarTutoria"
-                :disabled="
-                  isDeleting ||
-                  !correoConfirmacion ||
-                  correoConfirmacion.trim().toLowerCase() !== tutor?.correo?.trim().toLowerCase()
-                "
-                class="flex-1 px-4 py-2 rounded-lg font-bold text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed transition-all inline-flex justify-center items-center shadow-md hover:shadow-lg"
-                :class="
-                  isDeleting ||
-                  !correoConfirmacion ||
-                  correoConfirmacion.trim().toLowerCase() !== tutor?.correo?.trim().toLowerCase()
-                    ? 'bg-gray-400'
-                    : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 focus:ring-red-500'
-                "
-              >
-                <svg
-                  v-if="isDeleting"
-                  class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  ></circle>
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                <svg
-                  v-else
-                  class="w-5 h-5 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-                {{ isDeleting ? 'Eliminando...' : 'Eliminar Tutoría' }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Transition>
+    <!-- Modal Eliminar Tutoría (COMPONENTE) -->
+    <ModalEliminarTutoria
+      :show="showModalEliminarTutoria"
+      :tutoria="tutoriaAEliminar"
+      :tutor-email="tutor?.correo"
+      @close="showModalEliminarTutoria = false"
+      @success="handleTutoriaEliminada"
+    />
   </div>
 </template>
 
@@ -1642,11 +876,12 @@ import { useRouter } from 'vue-router'
 import axios from 'axios'
 import TutorService from '@/services/TutorService.js'
 import ReporteIntegralMasivo from '@/components/ReporteIntegralMasivo.vue'
-import ReporteIntegralTutoria from '@/components/ReporteIntegralTutoria.vue'
-// import PrimerReporteTutoria from '@/components/PrimerReporteTutoria.vue'
 import SegundoReporteTutoria from '@/components/SegundoReporteTutoria.vue'
 import BaseSearchInput from '@/components/ui/BaseSearchInput.vue'
 import ReporteIndividual1 from '@/components/tutor/ReporteIndividual1.vue'
+import TablaAlumnosTutorados from '@/components/tutor/TablaAlumnosTutorados.vue'
+import ModalCrearTutoria from '@/components/tutor/ModalCrearTutoria.vue'
+import ModalEliminarTutoria from '@/components/tutor/ModalEliminarTutoria.vue'
 
 // ==================== ROUTER ====================
 const router = useRouter()
@@ -1660,7 +895,6 @@ let debounceTimer = null
 
 // ==================== UI STATE ====================
 const searchQuery = ref('')
-const currentTab = ref('current')
 const currentPage = ref(1)
 const itemsPerPage = ref(5)
 const loading = ref(false)
@@ -1668,30 +902,13 @@ const error = ref(null)
 
 // ==================== MODALS STATE ====================
 const showModal = ref(false)
-const showReporteIntegralModal = ref(false)
 const mostrarModalPrimerReporte = ref(false)
 const mostrarModalSegundoReporte = ref(false)
 const showChangePasswordModal = ref(false)
 const showReporteIntegralMasivo = ref(false)
-
-// ==================== MODAL CREAR TUTORÍA STATE ====================
 const showModalCrearTutoria = ref(false)
-const searchAlumnoQuery = ref('')
-const alumnosEncontrados = ref([])
-const alumnoSeleccionado = ref(null)
-const semestreSeleccionado = ref('')
-const periodoInput = ref('')
-const errorPeriodo = ref(null)
-const errorModalCrear = ref(null)
-const isCreating = ref(false)
-let debounceTimerAlumnos = null
-
-// ==================== MODAL ELIMINAR TUTORÍA STATE ====================
 const showModalEliminarTutoria = ref(false)
 const tutoriaAEliminar = ref(null)
-const correoConfirmacion = ref('')
-const errorModalEliminar = ref(null)
-const isDeleting = ref(false)
 
 // ==================== PASSWORD CHANGE STATE ====================
 const passwordForm = ref({
@@ -1708,19 +925,6 @@ const passwordChangeError = ref(null)
 const passwordChangeSuccess = ref(false)
 
 // ==================== CONSTANTS ====================
-const tabs = [
-  { id: 'current', name: 'Tutorados Actuales' },
-  { id: 'past', name: 'Tutorados Anteriores' },
-]
-
-const tableHeaders = [
-  { key: 'name', label: 'Estudiante' },
-  { key: 'semester', label: 'Nivel de Tutoría' },
-  { key: 'status', label: 'Estado' },
-  { key: 'tutorialPeriod', label: 'Periodo' },
-  { key: 'actions', label: 'Acciones' },
-]
-
 const circles = [
   { color: 'bg-coral-500', size: 96, top: 10, left: 5 },
   { color: 'bg-navy-600', size: 64, top: 20, left: 80 },
@@ -1738,9 +942,7 @@ const circles = [
 
 // ==================== COMPUTED ====================
 const students = computed(() => {
-  return studentsData.value.filter((student) =>
-    currentTab.value === 'current' ? student.status === 'A' : student.status === 'completada',
-  )
+  return studentsData.value
 })
 
 const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage.value))
@@ -1787,6 +989,7 @@ const fetchAssignedStudents = async (page) => {
     return
   }
 
+  // loading.value = true
   error.value = null
 
   try {
@@ -1810,13 +1013,11 @@ const fetchAssignedStudents = async (page) => {
       status: tutoria.alumno?.estado || 'N/A',
       tutorialPeriod: tutoria.periodo,
       tutoringId: tutoria.id_tutoria,
-      // Agregar campos necesarios para el ReporteIntegralMasivo
       nombre: tutoria.alumno
         ? `${tutoria.alumno.nombre || ''} ${tutoria.alumno.apellido_p || ''} ${tutoria.alumno.apellido_m || ''}`.trim()
         : 'Alumno Desconocido',
       num_control: tutoria.alumno?.num_control || 'N/A',
     }))
-    console.log(studentsData)
   } catch (err) {
     console.error('Error al obtener las tutorías asignadas:', err)
     if (
@@ -1943,9 +1144,29 @@ const handleChangePassword = async () => {
   }
 }
 
+// ==================== TUTORÍA HANDLERS ====================
+const handleTutoriaCreada = async () => {
+  showModalCrearTutoria.value = false
+  await fetchAssignedStudents(currentPage.value)
+}
+
+const abrirModalCrear = () => {
+  showModalCrearTutoria.value = true
+}
+
+const abrirModalEliminar = (student) => {
+  tutoriaAEliminar.value = student
+  showModalEliminarTutoria.value = true
+}
+
+const handleTutoriaEliminada = async () => {
+  showModalEliminarTutoria.value = false
+  tutoriaAEliminar.value = null
+  await fetchAssignedStudents(1)
+}
+
 // ==================== SEARCH WATCHER ====================
-// eslint-disable-next-line
-watch(searchQuery, (newQuery, oldQuery) => {
+watch(searchQuery, () => {
   clearTimeout(debounceTimer)
 
   debounceTimer = setTimeout(() => {
@@ -1955,23 +1176,11 @@ watch(searchQuery, (newQuery, oldQuery) => {
 })
 
 // ==================== MODAL HANDLERS ====================
-// const openReporteIntegralModal = (student) => {
-//   selectedStudent.value = student
-//   showReporteIntegralModal.value = true
-// }
-
-const closeReporteIntegralModal = () => {
-  showReporteIntegralModal.value = false
-  selectedStudent.value = null
-}
-
 const viewDetails = async (student) => {
   try {
     const tutoringResponse = await axios.get(
       `http://localhost:8000/api/tutorias/alumno/${student.tutoringId}`,
     )
-    console.log('STUDENT', student)
-    console.log('TUTORIA RESPONSE', tutoringResponse)
 
     selectedStudent.value = {
       ...tutoringResponse.data.alumno,
@@ -1990,7 +1199,6 @@ const closeModal = () => {
 }
 
 const openReporteIntegralMasivo = () => {
-  console.log('Abriendo modal masivo...')
   showReporteIntegralMasivo.value = true
 }
 
@@ -2053,7 +1261,6 @@ const descargarPDFReporteIntegral = async () => {
     loading.value = true
     const token = localStorage.getItem('accessToken')
 
-    // Obtener el periodo desde la primera tutoría (todas deberían tener el mismo periodo)
     const periodo = studentsData.value[0]?.tutorialPeriod || '22025'
 
     const response = await axios.get(
@@ -2062,22 +1269,19 @@ const descargarPDFReporteIntegral = async () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        responseType: 'blob', // IMPORTANTE: para recibir el PDF como blob
+        responseType: 'blob',
       },
     )
 
-    // Crear un URL temporal para el blob
     const blob = new Blob([response.data], { type: 'application/pdf' })
     const url = window.URL.createObjectURL(blob)
 
-    // Crear un link temporal y hacer click para descargar
     const link = document.createElement('a')
     link.href = url
     link.download = `Reporte_Integral_${tutor.value.nombre}_${periodo}.pdf`
     document.body.appendChild(link)
     link.click()
 
-    // Limpiar
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
 
@@ -2091,237 +1295,6 @@ const descargarPDFReporteIntegral = async () => {
     }
   } finally {
     loading.value = false
-  }
-}
-
-// ==================== CREAR TUTORÍA HANDLERS ====================
-const abrirModalCrear = () => {
-  showModalCrearTutoria.value = true
-  searchAlumnoQuery.value = ''
-  alumnosEncontrados.value = []
-  alumnoSeleccionado.value = null
-  semestreSeleccionado.value = ''
-  periodoInput.value = ''
-  errorPeriodo.value = null
-  errorModalCrear.value = null
-}
-
-const cerrarModalCrear = () => {
-  if (!isCreating.value) {
-    showModalCrearTutoria.value = false
-    searchAlumnoQuery.value = ''
-    alumnosEncontrados.value = []
-    alumnoSeleccionado.value = null
-    semestreSeleccionado.value = ''
-    periodoInput.value = ''
-    errorPeriodo.value = null
-    errorModalCrear.value = null
-  }
-}
-
-const buscarAlumnos = async () => {
-  clearTimeout(debounceTimerAlumnos)
-
-  if (searchAlumnoQuery.value.length < 3) {
-    alumnosEncontrados.value = []
-    return
-  }
-
-  debounceTimerAlumnos = setTimeout(async () => {
-    try {
-      const token = localStorage.getItem('accessToken')
-      const response = await axios.get('http://localhost:8000/api/alumnos/', {
-        params: {
-          page: 1,
-          size: 100,
-          search: searchAlumnoQuery.value,
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      // Ajustar según la estructura de respuesta del backend
-      alumnosEncontrados.value = response.data.alumnos || response.data
-    } catch (error) {
-      console.error('Error al buscar alumnos:', error)
-      alumnosEncontrados.value = []
-    }
-  }, 300)
-}
-
-const seleccionarAlumno = (alumno) => {
-  alumnoSeleccionado.value = alumno
-  alumnosEncontrados.value = []
-  searchAlumnoQuery.value = `${alumno.nombre} ${alumno.apellido_p} ${alumno.apellido_m}`
-}
-
-const clearAlumnoSelection = () => {
-  alumnoSeleccionado.value = null
-  searchAlumnoQuery.value = ''
-}
-
-const validarPeriodoInput = () => {
-  errorPeriodo.value = null
-
-  if (periodoInput.value.length === 0) return
-
-  // Solo números
-  if (!/^\d+$/.test(periodoInput.value)) {
-    errorPeriodo.value = 'El periodo debe contener solo números'
-    return
-  }
-
-  // Si ya tiene 5 caracteres, validar completo
-  if (periodoInput.value.length === 5) {
-    if (!periodoInput.value.startsWith('2')) {
-      errorPeriodo.value = 'El periodo debe empezar con "2"'
-    }
-  } else if (periodoInput.value.length > 5) {
-    periodoInput.value = periodoInput.value.slice(0, 5)
-  }
-}
-
-const crearTutoria = async () => {
-  errorModalCrear.value = null
-
-  // Validaciones
-  if (!alumnoSeleccionado.value) {
-    errorModalCrear.value = 'Debes seleccionar un alumno'
-    return
-  }
-
-  if (!semestreSeleccionado.value) {
-    errorModalCrear.value = 'Debes seleccionar un semestre'
-    return
-  }
-
-  if (periodoInput.value.length !== 5) {
-    errorModalCrear.value = 'El periodo debe tener exactamente 5 dígitos'
-    return
-  }
-
-  if (!periodoInput.value.startsWith('2')) {
-    errorModalCrear.value = 'El periodo debe empezar con "2"'
-    return
-  }
-
-  if (errorPeriodo.value) {
-    return
-  }
-
-  isCreating.value = true
-
-  try {
-    const token = localStorage.getItem('accessToken')
-    const response = await axios.post(
-      'http://localhost:8000/api/tutorias/',
-      {
-        periodo: periodoInput.value,
-        estado: 'pendiente',
-        observaciones: null,
-        semestre: parseInt(semestreSeleccionado.value),
-        alumno_id: alumnoSeleccionado.value.id_alumno,
-        tutor_id: tutor.value.id_tutor,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
-
-    if (response.status === 201 || response.status === 200) {
-      error.value = null
-      // Mostrar mensaje de éxito temporal
-      const nombreCompleto = `${alumnoSeleccionado.value.nombre} ${alumnoSeleccionado.value.apellido_p}`
-      alert(`✅ Tutoría creada exitosamente para ${nombreCompleto}`)
-
-      cerrarModalCrear()
-      await fetchAssignedStudents(currentPage.value) // Recargar lista
-    }
-  } catch (err) {
-    console.error('Error al crear tutoría:', err)
-    if (err.response?.data?.detail) {
-      errorModalCrear.value = err.response.data.detail
-    } else if (err.response?.status === 400) {
-      errorModalCrear.value = 'Datos inválidos. Verifica la información.'
-    } else if (err.response?.status === 409) {
-      errorModalCrear.value = 'Este alumno ya tiene una tutoría asignada para este semestre.'
-    } else {
-      errorModalCrear.value = 'Error al crear la tutoría. Intenta de nuevo.'
-    }
-  } finally {
-    isCreating.value = false
-  }
-}
-
-// ==================== ELIMINAR TUTORÍA HANDLERS ====================
-const abrirModalEliminar = (student) => {
-  tutoriaAEliminar.value = student
-  console.log('Tutoría a eliminar:', tutoriaAEliminar.value)
-  showModalEliminarTutoria.value = true
-  correoConfirmacion.value = ''
-  errorModalEliminar.value = null
-}
-
-const cerrarModalEliminar = () => {
-  if (!isDeleting.value) {
-    showModalEliminarTutoria.value = false
-    tutoriaAEliminar.value = null
-    correoConfirmacion.value = ''
-    errorModalEliminar.value = null
-  }
-}
-
-const eliminarTutoria = async () => {
-  errorModalEliminar.value = null
-
-  // Validar que el correo coincida
-  if (correoConfirmacion.value.trim().toLowerCase() !== tutor.value.correo.trim().toLowerCase()) {
-    errorModalEliminar.value = 'El correo ingresado no coincide con tu correo registrado'
-    return
-  }
-
-  if (!tutoriaAEliminar.value?.tutoringId) {
-    errorModalEliminar.value = 'No se puede eliminar esta tutoría. ID no disponible.'
-    return
-  }
-
-  isDeleting.value = true
-
-  try {
-    const token = localStorage.getItem('accessToken')
-    const response = await axios.delete(
-      `http://localhost:8000/api/tutorias/${tutoriaAEliminar.value.tutoringId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
-
-    if (response.status === 200 || response.status === 204) {
-      error.value = null
-      // Mostrar mensaje de éxito
-      alert(`✅ Tutoría de ${tutoriaAEliminar.value.name} eliminada exitosamente`)
-
-      cerrarModalEliminar()
-      await fetchAssignedStudents(currentPage.value) // Recargar lista
-    }
-  } catch (err) {
-    console.error('Error al eliminar tutoría:', err)
-    if (err.response?.status === 404) {
-      errorModalEliminar.value = 'La tutoría no fue encontrada. Puede que ya haya sido eliminada.'
-    } else if (err.response?.status === 403) {
-      errorModalEliminar.value = 'No tienes permisos para eliminar esta tutoría.'
-    } else if (err.response?.data?.detail) {
-      errorModalEliminar.value = err.response.data.detail
-    } else {
-      errorModalEliminar.value = 'Error al eliminar la tutoría. Intenta de nuevo.'
-    }
-  } finally {
-    isDeleting.value = false
   }
 }
 
