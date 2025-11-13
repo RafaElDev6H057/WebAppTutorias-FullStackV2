@@ -43,52 +43,104 @@
               </div>
             </div>
             <div class="flex items-center gap-3">
-              <button
-                @click="openChangePasswordModal"
-                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Cambiar Contraseña
-              </button>
-              <button
-                @click="descargarPDFReporteIntegral"
-                :disabled="loading || !studentsData.length"
-                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
-              >
-                <svg
-                  v-if="loading"
-                  class="animate-spin h-4 w-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
+              <!-- Dropdown de Acciones -->
+              <div class="relative z-20" ref="dropdownRef">
+                <button
+                  @click="showDropdown = !showDropdown"
+                  class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center gap-2"
                 >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  Acciones
+                  <svg
+                    class="w-4 h-4 transition-transform"
+                    :class="showDropdown ? 'rotate-180' : ''"
+                    fill="none"
                     stroke="currentColor"
-                    stroke-width="4"
-                  ></circle>
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <Transition
+                  enter-active-class="transition ease-out duration-100"
+                  enter-from-class="transform opacity-0 scale-95"
+                  enter-to-class="transform opacity-100 scale-100"
+                  leave-active-class="transition ease-in duration-75"
+                  leave-from-class="transform opacity-100 scale-100"
+                  leave-to-class="transform opacity-0 scale-95"
+                >
+                  <div
+                    v-if="showDropdown"
+                    class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+                  >
+                    <div class="py-1">
+                      <button
+                        @click="handleOpenChangePasswordModal()"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 inline-flex items-center gap-2"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                          />
+                        </svg>
+                        Cambiar Contraseña
+                      </button>
+                      <button
+                        @click="handleDescargarPDF()"
+                        :disabled="loading || !studentsData.length"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
+                        </svg>
+                        Descargar PDF
+                      </button>
+                    </div>
+                  </div>
+                </Transition>
+              </div>
+
+              <!-- Botón Cerrar Sesión -->
+              <button
+                @click="handleLogout"
+                class="bg-coral-500 hover:bg-coral-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center gap-2"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                   />
                 </svg>
-                {{ loading ? 'Generando...' : 'Descargar PDF' }}
-              </button>
-              <button
-                @click="handleLogout"
-                class="bg-coral-500 hover:bg-coral-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-              >
                 Cerrar Sesión
               </button>
             </div>
@@ -104,50 +156,145 @@
         />
 
         <!-- Encabezado y búsqueda -->
-        <div
-          class="px-4 py-6 sm:px-0 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-x-6"
-        >
-          <div class="flex items-center justify-between w-full mb-4 sm:mb-0 gap-4">
+        <div class="px-4 py-6 sm:px-0">
+          <div
+            class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6"
+          >
             <h1 class="text-3xl font-bold text-gray-900">Dashboard del Tutor</h1>
-            <button
-              @click="abrirModalCrear"
-              class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md font-medium inline-flex items-center gap-2 transition-colors shadow-md hover:shadow-lg"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 4v16m8-8H4"
+
+            <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+              <!-- Botón Crear Tutoría -->
+              <button
+                @click="abrirModalCrear"
+                class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md font-medium inline-flex items-center justify-center gap-2 transition-colors shadow-md hover:shadow-lg"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                Crear Tutoría
+              </button>
+
+              <!-- Dropdown de Reportes -->
+              <div class="relative" ref="reportesDropdownRef">
+                <button
+                  @click="showReportesDropdown = !showReportesDropdown"
+                  class="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md font-medium inline-flex items-center justify-center gap-2 transition-colors shadow-md hover:shadow-lg"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Reportes
+                  <svg
+                    class="w-4 h-4 transition-transform"
+                    :class="showReportesDropdown ? 'rotate-180' : ''"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                <!-- Reportes Dropdown Menu -->
+                <Transition
+                  enter-active-class="transition ease-out duration-100"
+                  enter-from-class="transform opacity-0 scale-95"
+                  enter-to-class="transform opacity-100 scale-100"
+                  leave-active-class="transition ease-in duration-75"
+                  leave-from-class="transform opacity-100 scale-100"
+                  leave-to-class="transform opacity-0 scale-95"
+                >
+                  <div
+                    v-if="showReportesDropdown"
+                    class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10"
+                  >
+                    <div class="py-1">
+                      <button
+                        @click="handleOpenReporteIntegralMasivo()"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 inline-flex items-center gap-2"
+                      >
+                        <svg
+                          class="w-4 h-4 text-purple-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
+                        </svg>
+                        Reporte Integral
+                      </button>
+                      <button
+                        @click="handleMostrarModalPrimerReporte()"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 inline-flex items-center gap-2"
+                      >
+                        <svg
+                          class="w-4 h-4 text-orange-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
+                        </svg>
+                        1° Reporte
+                      </button>
+                      <button
+                        @click="handleMostrarModalSegundoReporte()"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 inline-flex items-center gap-2"
+                      >
+                        <svg
+                          class="w-4 h-4 text-orange-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
+                        </svg>
+                        2° Reporte
+                      </button>
+                    </div>
+                  </div>
+                </Transition>
+              </div>
+
+              <!-- Búsqueda -->
+              <div class="w-full sm:w-64">
+                <BaseSearchInput
+                  v-model="searchQuery"
+                  :disabled="loading"
+                  placeholder="Buscar estudiante..."
                 />
-              </svg>
-              Crear Tutoría
-            </button>
-          </div>
-          <button
-            @click="openReporteIntegralMasivo"
-            class="w-44 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors font-medium"
-          >
-            Reporte Integral
-          </button>
-          <button
-            @click="mostrarModalPrimerReporte = true"
-            class="w-44 px-4 py-2 bg-coral-600 text-white rounded-md hover:bg-orange-600 transition-colors font-medium"
-          >
-            1° Reporte
-          </button>
-          <button
-            @click="mostrarModalSegundoReporte = true"
-            class="w-44 px-4 py-2 bg-coral-600 text-white rounded-md hover:bg-orange-600 transition-colors font-medium"
-          >
-            2° Reporte
-          </button>
-          <div class="w-full sm:w-64">
-            <BaseSearchInput
-              v-model="searchQuery"
-              :disabled="loading"
-              placeholder="Buscar estudiante..."
-            />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -356,7 +503,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import TutorService from '@/services/TutorService.js'
@@ -387,6 +534,10 @@ const currentPage = ref(1)
 const itemsPerPage = ref(5)
 const loading = ref(false)
 const error = ref(null)
+const showDropdown = ref(false)
+const showReportesDropdown = ref(false)
+const dropdownRef = ref(null)
+const reportesDropdownRef = ref(null)
 
 // ==================== MODALS STATE ====================
 const showModal = ref(false)
@@ -431,6 +582,16 @@ const students = computed(() => {
 
 const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage.value))
 
+// ==================== CLICK OUTSIDE HANDLER ====================
+const handleClickOutside = (event) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+    showDropdown.value = false
+  }
+  if (reportesDropdownRef.value && !reportesDropdownRef.value.contains(event.target)) {
+    showReportesDropdown.value = false
+  }
+}
+
 // ==================== API CALLS ====================
 const fetchCurrentTutor = async () => {
   try {
@@ -473,7 +634,7 @@ const fetchAssignedStudents = async (page) => {
     return
   }
 
-  // loading.value = true
+  loading.value = true
   error.value = null
 
   try {
@@ -599,14 +760,37 @@ const handleReporteIntegralSuccess = () => {
   closeReporteIntegralMasivo()
 }
 
-// Handler de éxito
 const handlePasswordChanged = async () => {
   showChangePasswordModal.value = false
 
-  // Actualizar el estado del tutor
   if (tutor.value) {
     tutor.value.requires_password_change = false
   }
+}
+
+const handleOpenChangePasswordModal = () => {
+  openChangePasswordModal()
+  showDropdown.value = false
+}
+
+const handleDescargarPDF = () => {
+  descargarPDFReporteIntegral()
+  showDropdown.value = false
+}
+
+const handleOpenReporteIntegralMasivo = () => {
+  openReporteIntegralMasivo()
+  showDropdown.value = false
+}
+
+const handleMostrarModalPrimerReporte = () => {
+  mostrarModalPrimerReporte.value = true
+  showReportesDropdown.value = false
+}
+
+const handleMostrarModalSegundoReporte = () => {
+  mostrarModalSegundoReporte.value = true
+  showReportesDropdown.value = false
 }
 
 // ==================== PAGINATION ====================
@@ -642,7 +826,7 @@ const descargarPDFReporteIntegral = async () => {
     loading.value = true
     const token = localStorage.getItem('accessToken')
 
-    const periodo = studentsData.value[0]?.tutorialPeriod || '22025'
+    const periodo = studentsData.value?.tutorialPeriod || '22025'
 
     const response = await axios.get(
       `http://localhost:8000/api/reportes/integral/pdf/tutor/${tutor.value.id_tutor}/periodo/${periodo}`,
@@ -682,6 +866,11 @@ const descargarPDFReporteIntegral = async () => {
 // ==================== LIFECYCLE ====================
 onMounted(async () => {
   await fetchCurrentTutor()
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
@@ -690,7 +879,6 @@ onMounted(async () => {
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-/* Animaciones para los círculos */
 @keyframes float-1 {
   0%,
   100% {
@@ -733,7 +921,6 @@ onMounted(async () => {
   animation: float-3 5s ease-in-out infinite;
 }
 
-/* Colores personalizados */
 .bg-coral-300 {
   background-color: #ff9f92;
 }
@@ -765,14 +952,5 @@ onMounted(async () => {
 }
 .hover\:bg-coral-600:hover {
   background-color: #ff5242;
-}
-.hover\:text-coral-900:hover {
-  color: #cc2d1d;
-}
-.bg-coral-50 {
-  background-color: #fff1f0;
-}
-.border-coral-500 {
-  border-color: #ff6b5b;
 }
 </style>
