@@ -98,49 +98,10 @@
 
       <!-- Contenido principal -->
       <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <!-- Banner de Advertencia de Contraseña Insegura -->
-        <Transition
-          enter-active-class="transition ease-out duration-300"
-          enter-from-class="opacity-0 translate-y-2"
-          enter-to-class="opacity-100 translate-y-0"
-          leave-active-class="transition ease-in duration-200"
-          leave-from-class="opacity-100"
-          leave-to-class="opacity-0"
-        >
-          <div
-            v-if="tutor?.requires_password_change"
-            class="mx-4 mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-md"
-          >
-            <div class="flex items-start">
-              <svg
-                class="w-6 h-6 text-yellow-400 mr-3 flex-shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
-              <div class="flex-1">
-                <h3 class="text-sm font-medium text-yellow-800">Contraseña Insegura</h3>
-                <p class="mt-1 text-sm text-yellow-700">
-                  Tu contraseña actual no está protegida adecuadamente. Por seguridad, te
-                  recomendamos cambiarla lo antes posible.
-                </p>
-                <button
-                  @click="openChangePasswordModal"
-                  class="mt-3 text-sm font-medium text-yellow-800 hover:text-yellow-900 underline"
-                >
-                  Cambiar contraseña ahora →
-                </button>
-              </div>
-            </div>
-          </div>
-        </Transition>
+        <BannerPasswordWarning
+          :show="tutor?.requires_password_change"
+          @change-password="openChangePasswordModal"
+        />
 
         <!-- Encabezado y búsqueda -->
         <div
@@ -249,493 +210,17 @@
         />
 
         <!-- Modal de detalles del estudiante -->
-        <Transition
-          enter-active-class="transition ease-out duration-300"
-          enter-from-class="opacity-0 scale-95"
-          enter-to-class="opacity-100 scale-100"
-          leave-active-class="transition ease-in duration-200"
-          leave-from-class="opacity-100 scale-100"
-          leave-to-class="opacity-0 scale-95"
-        >
-          <div v-if="showModal" class="fixed inset-0 z-50 overflow-y-auto">
-            <div
-              class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
-            >
-              <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-              </div>
-
-              <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"
-                >&#8203;</span
-              >
-
-              <div
-                v-if="selectedStudent"
-                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-              >
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <div class="absolute top-4 right-4">
-                    <button
-                      @click="closeModal"
-                      class="text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <h2 class="text-2xl font-bold mb-6 text-gray-900 border-b pb-2">
-                    Detalles del Estudiante
-                  </h2>
-
-                  <div class="space-y-6">
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                      <h3 class="text-lg font-semibold text-coral-600 mb-3">
-                        Información del Alumno
-                      </h3>
-                      <div class="space-y-2">
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Nombre:</span>
-                          <span class="col-span-2 text-gray-900"
-                            >{{ selectedStudent.nombre }} {{ selectedStudent.apellido_p }}
-                            {{ selectedStudent.apellido_m }}</span
-                          >
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Número de Control:</span>
-                          <span class="col-span-2 text-gray-900">{{
-                            selectedStudent.num_control
-                          }}</span>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Carrera:</span>
-                          <span class="col-span-2 text-gray-900">{{
-                            selectedStudent.carrera
-                          }}</span>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Semestre Actual:</span>
-                          <span class="col-span-2 text-gray-900"
-                            >{{ selectedStudent.semestre_actual }}°</span
-                          >
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                      <h3 class="text-lg font-semibold text-coral-600 mb-3">
-                        Información de la Tutoría
-                      </h3>
-                      <div class="space-y-2">
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Nivel de Tutoría:</span>
-                          <span class="col-span-2 text-gray-900"
-                            >{{ selectedStudent.tutoring.semestre }}°</span
-                          >
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Periodo:</span>
-                          <span class="col-span-2 text-gray-900">{{
-                            selectedStudent.tutoring.periodo
-                          }}</span>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Día:</span>
-                          <span class="col-span-2 text-gray-900">{{
-                            capitalize(selectedStudent.tutoring)
-                          }}</span>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                          <span class="text-gray-600 font-medium">Hora:</span>
-                          <span class="col-span-2 text-gray-900">{{
-                            formatoHora(selectedStudent.tutoring)
-                          }}</span>
-                        </div>
-                        <div class="mt-4">
-                          <span class="text-gray-600 font-medium block mb-1">Observaciones:</span>
-                          <p class="text-gray-900 bg-white p-3 rounded border">
-                            {{ selectedStudent.tutoring.observaciones || 'Sin observaciones' }}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="mt-6 flex justify-end">
-                    <button
-                      @click="closeModal"
-                      class="bg-coral-500 hover:bg-coral-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200"
-                    >
-                      Cerrar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Transition>
+        <ModalDetallesEstudiante :show="showModal" :student="selectedStudent" @close="closeModal" />
 
         <!-- Modal de Cambio de Contraseña -->
-        <Transition
-          enter-active-class="transition ease-out duration-300"
-          enter-from-class="opacity-0 scale-95"
-          enter-to-class="opacity-100 scale-100"
-          leave-active-class="transition ease-in duration-200"
-          leave-from-class="opacity-100 scale-100"
-          leave-to-class="opacity-0 scale-95"
-        >
-          <div
-            v-if="showChangePasswordModal"
-            class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
-          >
-            <div
-              class="relative top-20 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-md bg-white"
-            >
-              <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h2 class="text-xl font-semibold text-gray-900">Cambiar Contraseña</h2>
-                <button
-                  @click="closeChangePasswordModal"
-                  :disabled="isChangingPassword"
-                  class="text-gray-500 hover:text-gray-700 disabled:opacity-50"
-                >
-                  <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <!-- Mensaje de advertencia para primera vez -->
-              <div
-                v-if="tutor?.requires_password_change"
-                class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md"
-              >
-                <p class="text-sm text-yellow-800">
-                  <strong>Importante:</strong> Esta es tu primera vez cambiando la contraseña. Por
-                  favor, elige una contraseña segura.
-                </p>
-              </div>
-
-              <!-- Mensaje de éxito -->
-              <Transition
-                enter-active-class="transition ease-out duration-300"
-                enter-from-class="opacity-0 translate-y-2"
-                enter-to-class="opacity-100 translate-y-0"
-                leave-active-class="transition ease-in duration-200"
-                leave-from-class="opacity-100"
-                leave-to-class="opacity-0"
-              >
-                <div
-                  v-if="passwordChangeSuccess"
-                  class="mb-4 p-3 bg-green-50 border-l-4 border-green-400 rounded-md"
-                >
-                  <div class="flex items-center">
-                    <svg
-                      class="w-5 h-5 text-green-400 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <p class="text-sm text-green-800 font-medium">
-                      ¡Contraseña cambiada exitosamente!
-                    </p>
-                  </div>
-                </div>
-              </Transition>
-
-              <!-- Mensaje de error -->
-              <Transition
-                enter-active-class="transition ease-out duration-300"
-                enter-from-class="opacity-0 translate-y-2"
-                enter-to-class="opacity-100 translate-y-0"
-                leave-active-class="transition ease-in duration-200"
-                leave-from-class="opacity-100"
-                leave-to-class="opacity-0"
-              >
-                <div
-                  v-if="passwordChangeError"
-                  class="mb-4 p-3 bg-red-50 border-l-4 border-red-400 rounded-md"
-                >
-                  <div class="flex items-start">
-                    <svg
-                      class="w-5 h-5 text-red-400 mr-2 flex-shrink-0 mt-0.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <p class="text-sm text-red-800">{{ passwordChangeError }}</p>
-                  </div>
-                </div>
-              </Transition>
-
-              <!-- Formulario -->
-              <form @submit.prevent="handleChangePassword" class="space-y-4">
-                <!-- Campo de Correo (solo para primera vez) -->
-                <div v-if="tutor?.requires_password_change">
-                  <label for="correo" class="block text-sm font-medium text-gray-700 mb-1">
-                    Correo Electrónico
-                  </label>
-                  <input
-                    id="correo"
-                    v-model="passwordForm.correo"
-                    type="email"
-                    required
-                    :disabled="isChangingPassword"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                    placeholder="tu.correo@example.com"
-                  />
-                </div>
-
-                <!-- Contraseña Actual -->
-                <div>
-                  <label
-                    for="current-password"
-                    class="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Contraseña Actual
-                  </label>
-                  <div class="relative">
-                    <input
-                      id="current-password"
-                      v-model="passwordForm.currentPassword"
-                      :type="showCurrentPassword ? 'text' : 'password'"
-                      required
-                      :disabled="isChangingPassword"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                      placeholder="••••••••"
-                    />
-                    <button
-                      type="button"
-                      @click="showCurrentPassword = !showCurrentPassword"
-                      class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                    >
-                      <svg
-                        v-if="!showCurrentPassword"
-                        class="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        />
-                      </svg>
-                      <svg
-                        v-else
-                        class="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Nueva Contraseña -->
-                <div>
-                  <label for="new-password" class="block text-sm font-medium text-gray-700 mb-1">
-                    Nueva Contraseña
-                  </label>
-                  <div class="relative">
-                    <input
-                      id="new-password"
-                      v-model="passwordForm.newPassword"
-                      :type="showNewPassword ? 'text' : 'password'"
-                      required
-                      minlength="8"
-                      :disabled="isChangingPassword"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                      placeholder="••••••••"
-                    />
-                    <button
-                      type="button"
-                      @click="showNewPassword = !showNewPassword"
-                      class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                    >
-                      <svg
-                        v-if="!showNewPassword"
-                        class="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        />
-                      </svg>
-                      <svg
-                        v-else
-                        class="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                  <p class="mt-1 text-xs text-gray-500">Mínimo 8 caracteres</p>
-                </div>
-
-                <!-- Confirmar Nueva Contraseña -->
-                <div>
-                  <label
-                    for="confirm-password"
-                    class="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Confirmar Nueva Contraseña
-                  </label>
-                  <div class="relative">
-                    <input
-                      id="confirm-password"
-                      v-model="passwordForm.confirmPassword"
-                      :type="showConfirmPassword ? 'text' : 'password'"
-                      required
-                      minlength="8"
-                      :disabled="isChangingPassword"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                      placeholder="••••••••"
-                    />
-                    <button
-                      type="button"
-                      @click="showConfirmPassword = !showConfirmPassword"
-                      class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                    >
-                      <svg
-                        v-if="!showConfirmPassword"
-                        class="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        />
-                      </svg>
-                      <svg
-                        v-else
-                        class="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Botones -->
-                <div class="flex gap-3 pt-4">
-                  <button
-                    type="button"
-                    @click="closeChangePasswordModal"
-                    :disabled="isChangingPassword"
-                    class="flex-1 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    :disabled="isChangingPassword"
-                    class="flex-1 px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex justify-center items-center"
-                  >
-                    <svg
-                      v-if="isChangingPassword"
-                      class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      ></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    {{ isChangingPassword ? 'Cambiando...' : 'Cambiar Contraseña' }}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </Transition>
+        <ModalCambiarPassword
+          :show="showChangePasswordModal"
+          user-type="tutor"
+          :requires-password-change="tutor?.requires_password_change"
+          :current-email="tutor?.correo"
+          @close="showChangePasswordModal = false"
+          @success="handlePasswordChanged"
+        />
 
         <!-- Modal para Primer Reporte -->
         <Transition
@@ -882,6 +367,9 @@ import ReporteIndividual1 from '@/components/tutor/ReporteIndividual1.vue'
 import TablaAlumnosTutorados from '@/components/tutor/TablaAlumnosTutorados.vue'
 import ModalCrearTutoria from '@/components/tutor/ModalCrearTutoria.vue'
 import ModalEliminarTutoria from '@/components/tutor/ModalEliminarTutoria.vue'
+import ModalCambiarPassword from '@/components/shared/ModalCambiarPassword.vue'
+import ModalDetallesEstudiante from '@/components/tutor/ModalDetallesEstudiante.vue'
+import BannerPasswordWarning from '@/components/shared/BannerPasswordWarning.vue'
 
 // ==================== ROUTER ====================
 const router = useRouter()
@@ -917,10 +405,6 @@ const passwordForm = ref({
   newPassword: '',
   confirmPassword: '',
 })
-const showCurrentPassword = ref(false)
-const showNewPassword = ref(false)
-const showConfirmPassword = ref(false)
-const isChangingPassword = ref(false)
 const passwordChangeError = ref(null)
 const passwordChangeSuccess = ref(false)
 
@@ -1049,101 +533,6 @@ const openChangePasswordModal = () => {
   }
 }
 
-const closeChangePasswordModal = () => {
-  if (!isChangingPassword.value) {
-    showChangePasswordModal.value = false
-    passwordForm.value = {
-      correo: tutor.value?.correo || '',
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-    }
-    showCurrentPassword.value = false
-    showNewPassword.value = false
-    showConfirmPassword.value = false
-    passwordChangeError.value = null
-    passwordChangeSuccess.value = false
-  }
-}
-
-const handleChangePassword = async () => {
-  passwordChangeError.value = null
-  passwordChangeSuccess.value = false
-
-  if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-    passwordChangeError.value = 'Las contraseñas no coinciden.'
-    return
-  }
-
-  if (passwordForm.value.newPassword.length < 8) {
-    passwordChangeError.value = 'La nueva contraseña debe tener al menos 8 caracteres.'
-    return
-  }
-
-  if (tutor.value.requires_password_change && !passwordForm.value.correo) {
-    passwordChangeError.value = 'El correo es requerido.'
-    return
-  }
-
-  isChangingPassword.value = true
-
-  try {
-    const token = localStorage.getItem('accessToken')
-
-    if (tutor.value.requires_password_change) {
-      const response = await axios.post('http://localhost:8000/api/tutores/set-password', {
-        correo: passwordForm.value.correo,
-        contraseña_actual: passwordForm.value.currentPassword,
-        nueva_contraseña: passwordForm.value.newPassword,
-      })
-
-      if (response.status === 200) {
-        passwordChangeSuccess.value = true
-        tutor.value.requires_password_change = false
-
-        setTimeout(() => {
-          closeChangePasswordModal()
-        }, 2000)
-      }
-    } else {
-      const response = await axios.put(
-        'http://localhost:8000/api/tutores/change-password',
-        {
-          contraseña_actual: passwordForm.value.currentPassword,
-          nueva_contraseña: passwordForm.value.newPassword,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
-
-      if (response.status === 200) {
-        passwordChangeSuccess.value = true
-
-        setTimeout(() => {
-          closeChangePasswordModal()
-        }, 2000)
-      }
-    }
-  } catch (err) {
-    console.error('Error al cambiar la contraseña:', err)
-
-    if (err.response && err.response.data && err.response.data.detail) {
-      passwordChangeError.value = err.response.data.detail
-    } else if (err.response && err.response.status === 400) {
-      passwordChangeError.value = 'Contraseña actual incorrecta.'
-    } else if (err.response && err.response.status === 401) {
-      passwordChangeError.value = 'No tienes autorización para realizar esta acción.'
-    } else {
-      passwordChangeError.value = 'Error al cambiar la contraseña. Intenta de nuevo.'
-    }
-  } finally {
-    isChangingPassword.value = false
-  }
-}
-
 // ==================== TUTORÍA HANDLERS ====================
 const handleTutoriaCreada = async () => {
   showModalCrearTutoria.value = false
@@ -1210,6 +599,16 @@ const handleReporteIntegralSuccess = () => {
   closeReporteIntegralMasivo()
 }
 
+// Handler de éxito
+const handlePasswordChanged = async () => {
+  showChangePasswordModal.value = false
+
+  // Actualizar el estado del tutor
+  if (tutor.value) {
+    tutor.value.requires_password_change = false
+  }
+}
+
 // ==================== PAGINATION ====================
 const prevPage = () => {
   if (currentPage.value > 1) {
@@ -1228,24 +627,6 @@ const nextPage = () => {
 const goToPage = (page) => {
   currentPage.value = page
   fetchAssignedStudents(page)
-}
-
-// ==================== UTILITY FUNCTIONS ====================
-const capitalize = (tutoria) => {
-  if (tutoria.dia != null) {
-    return tutoria.dia.charAt(0).toUpperCase() + tutoria.dia.slice(1)
-  }
-  return null
-}
-
-const formatoHora = (tutoria) => {
-  if (tutoria.hora != null) {
-    const [horas, minutos] = tutoria.hora.split(':').map(Number)
-    const ampm = horas < 12 ? 'AM' : 'PM'
-    const horaFormateada = `${horas % 12 || 12}:${minutos.toString().padStart(2, '0')} ${ampm}`
-    return horaFormateada
-  }
-  return null
 }
 
 // ==================== AUTH ====================
