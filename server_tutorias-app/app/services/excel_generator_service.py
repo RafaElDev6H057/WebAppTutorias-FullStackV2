@@ -53,35 +53,25 @@ def generate_anexo3_reporte(db: Session, periodo: str) -> io.BytesIO:
     thin_side = Side(style="thin", color="000000")
     all_borders = Border(left=thin_side, top=thin_side, right=thin_side, bottom=thin_side)
     bold_font = Font(bold=True)
-
-    # ==========================================
-    # === PROCESAMIENTO HOJA 2 (DETALLE) ===
-    # ==========================================
+    
+    # --- 4. Estructura para acumular datos del Resumen (Hoja 1) ---
+    resumen_data: Dict[tuple, Dict[str, Any]] = {}
+    
+    # --- 5. Rellenar Hoja 2 (Detalle) y Acumular para Hoja 1 ---
     try:
         sheet2 = workbook["Hoja2"]
     except KeyError:
         raise HTTPException(status_code=500, detail="La plantilla no contiene una hoja llamada 'Hoja2'.")
 
-    # Datos estáticos Hoja 2
     fecha_actual = datetime.now().strftime("%d/%m/%Y")
     sheet2["K14"] = fecha_actual
 
-    # Lógica de Filas Dinámicas Hoja 2
     FILA_INICIO_H2 = 18
     fila_actual_h2 = FILA_INICIO_H2
 
-    # --- Estructura para acumular datos del Resumen (Hoja 1) ---
-    # Clave: (carrera, semestre)
-    # Valor: Diccionario con contadores
-    resumen_data: Dict[tuple, Dict[str, Any]] = {}
-
     for index, (tutoria, alumno, reporte) in enumerate(resultados):
-        # --- A. Llenar Hoja 2 (Detalle) ---
-        sheet2[f'A{fila_actual_h2}'] = f"{alumno.apellido_p} {alumno.apellido_m or ''} {alumno.nombre}".strip()
-        sheet2[f'B{fila_actual_h2}'] = alumno.num_control
-        sheet2[f'J{fila_actual_h2}'] = reporte.psicologia + reporte.ciencias_basicas + reporte.jefatura_academica
         
-        # Variables auxiliares para el resumen
+        # --- A. Preparar variables auxiliares (para Hoja 1 y Hoja 2) ---
         r_grupal = 0
         r_individual = 0
         r_psicologia = 0
@@ -89,52 +79,53 @@ def generate_anexo3_reporte(db: Session, periodo: str) -> io.BytesIO:
         r_jefatura = 0
 
         if reporte:
-            sheet2[f'C{fila_actual_h2}'] = reporte.tutoria_grupal
-            sheet2[f'D{fila_actual_h2}'] = reporte.tutoria_individual
-            sheet2[f'K{fila_actual_h2}'] = 1 if reporte.psicologia > 0 else 0
-            sheet2[f'Q{fila_actual_h2}'] = 1 if reporte.ciencias_basicas > 0 else 0
-            sheet2[f'R{fila_actual_h2}'] = 1 if reporte.jefatura_academica > 0 else 0
-            
-            # Valores para acumular
             r_grupal = reporte.tutoria_grupal
             r_individual = reporte.tutoria_individual
             r_psicologia = 1 if reporte.psicologia > 0 else 0
             r_ciencias = 1 if reporte.ciencias_basicas > 0 else 0
             r_jefatura = 1 if reporte.jefatura_academica > 0 else 0
-        else:
-            sheet2[f'C{fila_actual_h2}'] = 0
-            sheet2[f'D{fila_actual_h2}'] = 0
-            sheet2[f'K{fila_actual_h2}'] = ""
-            sheet2[f'Q{fila_actual_h2}'] = ""
-            sheet2[f'R{fila_actual_h2}'] = ""
 
-        # Bordes Hoja 2
-        for col_num in range(1, 19):
+        # --- B. Llenar Hoja 2 (Detalle) ---
+        sheet2[f'A{fila_actual_h2}'] = f"{alumno.apellido_p} {alumno.apellido_m or ''} {alumno.nombre}".strip()
+        sheet2[f'B{fila_actual_h2}'] = alumno.num_control
+        sheet2[f'C{fila_actual_h2}'] = r_grupal
+        sheet2[f'D{fila_actual_h2}'] = r_individual
+        sheet2[f'J{fila_actual_h2}'] = r_psicologia + r_ciencias + r_jefatura # Suma de canalizaciones por alumno
+        sheet2[f'K{fila_actual_h2}'] = r_psicologia
+        sheet2[f'Q{fila_actual_h2}'] = r_ciencias
+        sheet2[f'R{fila_actual_h2}'] = r_jefatura
+
+        # Aplicar bordes Hoja 2
+        for col_num in range(1, 19): # Col A a R
             cell = sheet2.cell(row=fila_actual_h2, column=col_num)
             cell.border = all_borders
         
         fila_actual_h2 += 1
 
-        # --- B. Acumular Datos para Hoja 1 (Resumen) ---
+        # --- C. Acumular Datos para Hoja 1 (Resumen) ---
         clave = (alumno.carrera, alumno.semestre_actual)
         
         if clave not in resumen_data:
             resumen_data[clave] = {
-                "tutores_ids": set(), # Usamos un set para contar tutores únicos
+                "tutores_ids": set(),
                 "total_grupal": 0,
                 "total_individual": 0,
-                "total_canalizaciones": 0
+                "total_canalizaciones": 0,
+                "total_psicologia": 0,    # <-- NUEVO ACUMULADOR
+                "total_ciencias": 0,      # <-- NUEVO ACUMULADOR
+                "total_jefatura": 0       # <-- NUEVO ACUMULADOR
             }
         
         # Actualizar acumuladores
         resumen_data[clave]["tutores_ids"].add(tutoria.tutor_id)
         resumen_data[clave]["total_grupal"] += r_grupal
         resumen_data[clave]["total_individual"] += r_individual
-        # Canalizaciones: Suma de las 3 áreas
         resumen_data[clave]["total_canalizaciones"] += (r_psicologia + r_ciencias + r_jefatura)
+        resumen_data[clave]["total_psicologia"] += r_psicologia  # <-- NUEVA LÓGICA
+        resumen_data[clave]["total_ciencias"] += r_ciencias      # <-- NUEVA LÓGICA
+        resumen_data[clave]["total_jefatura"] += r_jefatura      # <-- NUEVA LÓGICA
 
-
-    # --- Totales Hoja 2 (Fórmulas) ---
+    # --- D. Totales Hoja 2 (Fórmulas) ---
     fila_total_h2 = fila_actual_h2
     fila_fin_datos_h2 = fila_actual_h2 - 1
     sheet2[f'A{fila_total_h2}'] = "TOTAL"
@@ -142,16 +133,15 @@ def generate_anexo3_reporte(db: Session, periodo: str) -> io.BytesIO:
     sheet2[f'C{fila_total_h2}'] = f"=SUM(C{FILA_INICIO_H2}:C{fila_fin_datos_h2})"
     sheet2[f'D{fila_total_h2}'] = f"=SUM(D{FILA_INICIO_H2}:D{fila_fin_datos_h2})"
     sheet2[f'J{fila_total_h2}'] = f"=SUM(J{FILA_INICIO_H2}:J{fila_fin_datos_h2})"
-    sheet2[f'K{fila_total_h2}'] = f"=COUNTIF(K{FILA_INICIO_H2}:K{fila_fin_datos_h2}, \"1\")"
-    sheet2[f'Q{fila_total_h2}'] = f"=COUNTIF(Q{FILA_INICIO_H2}:Q{fila_fin_datos_h2}, \"1\")"
-    sheet2[f'R{fila_total_h2}'] = f"=COUNTIF(R{FILA_INICIO_H2}:R{fila_fin_datos_h2}, \"1\")"
+    sheet2[f'K{fila_total_h2}'] = f"=SUM(K{FILA_INICIO_H2}:K{fila_fin_datos_h2})" # Contar 1s es lo mismo que sumar
+    sheet2[f'Q{fila_total_h2}'] = f"=SUM(Q{FILA_INICIO_H2}:Q{fila_fin_datos_h2})" # Contar 1s es lo mismo que sumar
+    sheet2[f'R{fila_total_h2}'] = f"=SUM(R{FILA_INICIO_H2}:R{fila_fin_datos_h2})" # Contar 1s es lo mismo que sumar
 
     for col_num in range(1, 19):
         cell = sheet2.cell(row=fila_total_h2, column=col_num)
         cell.border = all_borders
         cell.font = bold_font
         cell.alignment = Alignment(horizontal="center", vertical="center")
-
 
     # ==========================================
     # === PROCESAMIENTO HOJA 1 (RESUMEN) ===
@@ -161,52 +151,58 @@ def generate_anexo3_reporte(db: Session, periodo: str) -> io.BytesIO:
     except KeyError:
         raise HTTPException(status_code=500, detail="La plantilla no contiene una hoja llamada 'Hoja1'.")
 
+    # --- NUEVO: Rellenar Fecha en Hoja 1 ---
+    sheet1["L4"] = fecha_actual # Celda K14 en Hoja2, L4 en Hoja1
+
     FILA_INICIO_H1 = 18
     fila_actual_h1 = FILA_INICIO_H1
     
-    # Ordenar las claves por Carrera y luego por Semestre para que se vea bonito
     claves_ordenadas = sorted(resumen_data.keys(), key=lambda x: (x[0], x[1]))
 
     for carrera, semestre in claves_ordenadas:
         datos = resumen_data[(carrera, semestre)]
         
-        # Llenar Celdas
+        # --- Llenar Celdas (CON NUEVOS CAMPOS) ---
         sheet1[f'A{fila_actual_h1}'] = carrera
         sheet1[f'B{fila_actual_h1}'] = semestre
-        sheet1[f'C{fila_actual_h1}'] = len(datos["tutores_ids"]) # Cuenta de tutores únicos
+        sheet1[f'C{fila_actual_h1}'] = len(datos["tutores_ids"])
         sheet1[f'E{fila_actual_h1}'] = datos["total_grupal"]
         sheet1[f'F{fila_actual_h1}'] = datos["total_individual"]
-        # Columna R: Canalizaciones al semestre (Suma total)
         sheet1[f'R{fila_actual_h1}'] = datos["total_canalizaciones"]
+        sheet1[f'S{fila_actual_h1}'] = datos["total_psicologia"]    # <-- NUEVA CELDA
+        sheet1[f'Y{fila_actual_h1}'] = datos["total_ciencias"]      # <-- NUEVA CELDA
+        sheet1[f'Z{fila_actual_h1}'] = datos["total_jefatura"]      # <-- NUEVA CELDA
 
-        # Aplicar bordes a la fila (Columnas A hasta R, o hasta donde llegue el formato)
-        # Asumimos hasta la columna R (18) igual que la otra hoja
-        for col_num in range(1, 28):
+        # Aplicar bordes (extendido hasta Col Z = 26)
+        # 28 -> 27 (AA) -> 26 (Z)
+        # Range(1, 27) -> Col 1 a 26
+        # Range(1, 30) -> Col 1 a 29 (AC) (para cubrir todo el formato visible)
+        for col_num in range(1, 28): 
             cell = sheet1.cell(row=fila_actual_h1, column=col_num)
             cell.border = all_borders
-            # Alinear centro para que se vea mejor (opcional)
             cell.alignment = Alignment(horizontal="center", vertical="center")
             if col_num == 1: # Alinear carrera a la izquierda
                 cell.alignment = Alignment(horizontal="left", vertical="center")
 
         fila_actual_h1 += 1
 
-    # --- Totales Hoja 1 (Fórmulas) ---
+    # --- Totales Hoja 1 (Fórmulas CON NUEVOS CAMPOS) ---
     fila_total_h1 = fila_actual_h1
     fila_fin_datos_h1 = fila_actual_h1 - 1
     
     sheet1[f'A{fila_total_h1}'] = "TOTAL"
-    # Fusionar A y B para el título TOTAL
     sheet1.merge_cells(f'A{fila_total_h1}:B{fila_total_h1}') 
     
-    # Fórmulas de suma para las columnas numéricas
     sheet1[f'C{fila_total_h1}'] = f"=SUM(C{FILA_INICIO_H1}:C{fila_fin_datos_h1})"
     sheet1[f'E{fila_total_h1}'] = f"=SUM(E{FILA_INICIO_H1}:E{fila_fin_datos_h1})"
     sheet1[f'F{fila_total_h1}'] = f"=SUM(F{FILA_INICIO_H1}:F{fila_fin_datos_h1})"
     sheet1[f'R{fila_total_h1}'] = f"=SUM(R{FILA_INICIO_H1}:R{fila_fin_datos_h1})"
+    sheet1[f'S{fila_total_h1}'] = f"=SUM(S{FILA_INICIO_H1}:S{fila_fin_datos_h1})" # <-- NUEVA FÓRMULA
+    sheet1[f'Y{fila_total_h1}'] = f"=SUM(Y{FILA_INICIO_H1}:Y{fila_fin_datos_h1})" # <-- NUEVA FÓRMULA
+    sheet1[f'Z{fila_total_h1}'] = f"=SUM(Z{FILA_INICIO_H1}:Z{fila_fin_datos_h1})" # <-- NUEVA FÓRMULA
 
-    # Estilos Fila Total Hoja 1
-    for col_num in range(1, 19):
+    # Estilos Fila Total Hoja 1 (extendido hasta Col Z)
+    for col_num in range(1, 28):
         cell = sheet1.cell(row=fila_total_h1, column=col_num)
         cell.border = all_borders
         cell.font = bold_font
