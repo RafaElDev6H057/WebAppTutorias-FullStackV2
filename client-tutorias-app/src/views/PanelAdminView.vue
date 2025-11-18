@@ -108,6 +108,17 @@
             >
               ⚙️ Etapas
             </button>
+            <button
+              @click="activeTab = 'plantillas'"
+              :class="[
+                'px-4 py-3 font-medium text-sm rounded-t-lg transition-colors duration-200',
+                activeTab === 'plantillas'
+                  ? 'bg-purple-100 text-purple-700 border-b-2 border-purple-600'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50',
+              ]"
+            >
+              📄 Plantillas
+            </button>
           </nav>
         </div>
 
@@ -130,6 +141,11 @@
         <div v-if="activeTab === 'etapas'">
           <ConfiguracionEtapas />
         </div>
+
+        <!-- ==================== PANEL DE PLANTILLAS ==================== -->
+        <div v-if="activeTab === 'plantillas'">
+          <GestionPlantillas />
+        </div>
       </div>
     </main>
   </div>
@@ -144,6 +160,7 @@ import GestionAlumnos from '@/components/admin/GestionAlumnos.vue'
 import GestionTutores from '@/components/admin/GestionTutores.vue'
 import GestionAvisos from '@/components/admin/GestionAvisos.vue'
 import ConfiguracionEtapas from '@/components/admin/ConfiguracionEtapas.vue'
+import GestionPlantillas from '@/components/admin/GestionPlantillas.vue'
 
 // ==================== ROUTER ====================
 const router = useRouter()
