@@ -183,7 +183,7 @@
               <div class="relative" ref="reportesDropdownRef">
                 <button
                   @click="showReportesDropdown = !showReportesDropdown"
-                  class="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md font-medium inline-flex items-center justify-center gap-2 transition-colors shadow-md hover:shadow-lg"
+                  class="w-full sm:w-auto px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-md font-medium inline-flex items-center justify-center gap-2 transition-colors shadow-md hover:shadow-lg"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -561,19 +561,19 @@ const passwordChangeSuccess = ref(false)
 
 // ==================== CONSTANTS ====================
 const circles = [
-  { color: 'bg-coral-500', size: 96, top: 10, left: 5 },
-  { color: 'bg-navy-600', size: 64, top: 20, left: 80 },
-  { color: 'bg-coral-400', size: 128, top: 70, left: 20 },
-  { color: 'bg-navy-300', size: 80, top: 40, left: 95 },
-  { color: 'bg-coral-300', size: 112, top: 85, left: 70 },
-  { color: 'bg-navy-400', size: 48, top: 55, left: 10 },
-  { color: 'bg-coral-600', size: 72, top: 60, left: 50 },
-  { color: 'bg-navy-500', size: 56, top: 5, left: 90 },
-  { color: 'bg-coral-500', size: 88, top: 80, left: 40 },
-  { color: 'bg-navy-300', size: 40, top: 90, left: 10 },
-  { color: 'bg-coral-400', size: 104, top: 15, left: 60 },
-  { color: 'bg-navy-400', size: 68, top: 50, left: 85 },
-]
+  { color: 'bg-orange-500', size: 96, top: 10, left: 5 },    // Naranja principal
+  { color: 'bg-orange-300', size: 64, top: 20, left: 80 },   // Naranja suave
+  { color: 'bg-amber-400', size: 128, top: 70, left: 20 },   // Dorado cálido
+  { color: 'bg-amber-100', size: 80, top: 40, left: 95 },     // Gris muy claro
+  { color: 'bg-orange-600', size: 112, top: 85, left: 70 },  // Naranja intenso
+  { color: 'bg-amber-200', size: 48, top: 25, left: 30 },    // Amarillo crema
+  { color: 'bg-orange-400', size: 72, top: 60, left: 50 },   // Naranja medio
+  { color: 'bg-amber-200', size: 56, top: 5, left: 90 },      // Gris claro
+  { color: 'bg-orange-300', size: 88, top: 80, left: 40 },   // Naranja suave
+  { color: 'bg-amber-300', size: 40, top: 90, left: 10 },    // Dorado suave
+  { color: 'bg-orange-500', size: 104, top: 15, left: 60 },  // Naranja principal
+  { color: 'bg-amber-100', size: 68, top: 50, left: 85 },     // Gris muy claro
+];
 
 // ==================== COMPUTED ====================
 const students = computed(() => {
