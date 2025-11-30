@@ -99,7 +99,6 @@
     <!-- Right Side - Illustration -->
     <div class="w-1/2 flex items-center justify-center relative z-10 rounded-3xl">
       <div class="relative w-4/5 h-4/5">
-        
         <img
           src="/admin2.png"
           alt="Ilustración de espacio de trabajo"
@@ -126,29 +125,30 @@ const router = useRouter()
 
 const handleSubmit = async () => {
   try {
-    // 1. Preparamos los datos en el formato 'form-data'
     const formData = new URLSearchParams()
     formData.append('username', usuario.value)
     formData.append('password', password.value)
 
-    // 2. Hacemos la petición POST
     const response = await axios.post('http://localhost:8000/api/administradores/login', formData, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     })
 
-    // 3. Si el login es exitoso, la respuesta contendrá el token
     if (response.status === 200 && response.data.access_token) {
       console.log('Inicio de sesión exitoso:', response.data)
 
-      // 4. Guardamos el TOKEN en localStorage, no los datos del usuario
+      // 1. Guardar Token y ROL
       localStorage.setItem('accessToken', response.data.access_token)
+      localStorage.setItem('userRole', response.data.rol) // <-- Guardamos el rol que nos manda el backend
 
-      // (Opcional) Puedes guardar otros datos si los necesitas, pero el token es lo crucial
-      // localStorage.setItem('userRole', 'admin');
-
-      router.push('/login_admin/dashboard')
+      // 2. Redirección Inteligente
+      if (response.data.rol === 'super_admin') {
+        router.push('/login_admin/dashboard')
+      } else {
+        // Redirigir a la nueva vista simplificada para departamentos
+        router.push('/login_admin/descargas')
+      }
     }
   } catch (error) {
     console.error('Error en la solicitud:', error)
@@ -173,8 +173,7 @@ const circles = [
   { color: 'bg-rose-200', size: 40, top: 90, left: 10 },
   { color: 'bg-purple-400', size: 104, top: 15, left: 60 },
   { color: 'bg-gray-100', size: 68, top: 50, left: 85 },
-];
-
+]
 </script>
 
 <style scoped>

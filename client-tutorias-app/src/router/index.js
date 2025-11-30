@@ -40,6 +40,11 @@ const router = createRouter({
       name: 'panel_admin',
       component: () => import('../views/PanelAdminView.vue'),
     },
+    {
+      path: '/login_admin/descargas',
+      name: 'descargas-admin',
+      component: () => import('../views/DescargasView.vue'),
+    },
   ],
 })
 
