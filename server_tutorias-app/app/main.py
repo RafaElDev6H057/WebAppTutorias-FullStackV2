@@ -16,7 +16,8 @@ from app.routers import (
     tutores,
     tutorias,
     reportes,
-    configuracion
+    configuracion,
+    canalizaciones
 )
 
 app = FastAPI(title="API CRUD Tutorías")
@@ -57,3 +58,4 @@ app.include_router(tutorias.router, prefix="/api")
 app.include_router(reportes.router, prefix="/api")
 app.include_router(avisos.router, prefix="/api")
 app.include_router(configuracion.router, prefix="/api")
+app.include_router(canalizaciones.router, prefix="/api")
