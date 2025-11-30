@@ -50,27 +50,79 @@
               </p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <InicioRolCard
-                :icono="AdminLogo"
-                titulo="Administrador"
-                descripcion="Gestión y supervisión del sistema"
-                ruta="/login_admin"
-              ></InicioRolCard>
+            <!-- ==================== SECCIÓN 1: ACCESO GENERAL ==================== -->
+            <div class="space-y-4">
+              <div class="flex items-center gap-2">
+                <div
+                  class="h-1 w-12 bg-gradient-to-r from-green-600 to-blue-600 rounded-full"
+                ></div>
+                <h3 class="text-lg font-bold text-gray-800">Acceso General</h3>
+              </div>
 
-              <InicioRolCard
-                :icono="TutorLogo"
-                titulo="Tutor"
-                descripcion="Impartir y gestionar tutorías"
-                ruta="/login_tutor"
-              ></InicioRolCard>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <InicioRolCard
+                  :icono="AdminLogo"
+                  titulo="Administrador"
+                  descripcion="Gestión y supervisión del sistema"
+                  ruta="/login_admin"
+                  color="purple"
+                />
 
-              <InicioRolCard
-                :icono="AlumnoLogo"
-                titulo="Alumno"
-                descripcion="Accede a tus tutorías"
-                ruta="/login_alumno"
-              ></InicioRolCard>
+                <InicioRolCard
+                  :icono="TutorLogo"
+                  titulo="Tutor"
+                  descripcion="Impartir y gestionar tutorías"
+                  ruta="/login_tutor"
+                  color="blue"
+                />
+
+                <InicioRolCard
+                  :icono="AlumnoLogo"
+                  titulo="Alumno"
+                  descripcion="Accede a tus tutorías"
+                  ruta="/login_alumno"
+                  color="green"
+                />
+              </div>
+            </div>
+
+            <!-- ==================== SECCIÓN 2: ACCESO DEPARTAMENTOS ==================== -->
+            <div class="space-y-4">
+              <div class="flex items-center gap-2">
+                <div
+                  class="h-1 w-12 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full"
+                ></div>
+                <h3 class="text-lg font-bold text-gray-800">Acceso Departamental</h3>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <InicioRolCard
+                  :icono="PsicologiaLogo"
+                  titulo="Psicología"
+                  descripcion="Área de desarrollo estudiantil"
+                  ruta="/login_departamento/psicologia"
+                  color="teal"
+                  :isDepartamento="true"
+                />
+
+                <InicioRolCard
+                  :icono="CienciasLogo"
+                  titulo="Ciencias Básicas"
+                  descripcion="Departamento académico"
+                  ruta="/login_departamento/ciencias"
+                  color="indigo"
+                  :isDepartamento="true"
+                />
+
+                <InicioRolCard
+                  :icono="JefaturaLogo"
+                  titulo="Jefatura Académica"
+                  descripcion="Coordinación académica"
+                  ruta="/login_departamento/jefatura"
+                  color="rose"
+                  :isDepartamento="true"
+                />
+              </div>
             </div>
           </div>
 
@@ -134,6 +186,9 @@ import InicioRolCard from '@/components/InicioRolCard.vue'
 import AdminLogo from '@/components/icons/AdminLogo.vue'
 import TutorLogo from '@/components/icons/TutorLogo.vue'
 import AlumnoLogo from '@/components/icons/AlumnoLogo.vue'
+import PsicologiaLogo from '@/components/icons/PsicologiaLogo.vue'
+import CienciasLogo from '@/components/icons/CienciasLogo.vue'
+import JefaturaLogo from '@/components/icons/JefaturaLogo.vue'
 </script>
 
 <style scoped>

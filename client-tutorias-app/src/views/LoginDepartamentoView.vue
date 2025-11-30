@@ -28,34 +28,35 @@
         <!-- Back Link -->
         <RouterLink
           to="/"
-          class="text-white mb-8 text-lg bg-purple-600 inline-block px-2 py-1 rounded-lg font-bold hover:bg-purple-700 transition-colors"
+          :class="[
+            'mb-8 text-lg inline-block px-2 py-1 rounded-lg font-bold transition-colors',
+            departamentoConfig.buttonColor,
+          ]"
         >
           <HomeLogo></HomeLogo>
         </RouterLink>
 
         <!-- Form -->
         <form @submit.prevent="handleSubmit" class="space-y-8">
-          <!-- Título con ícono -->
+          <!-- Título dinámico con ícono -->
           <div class="space-y-2">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="h-14 w-14 bg-purple-100 rounded-xl flex items-center justify-center">
-                <svg
-                  class="w-7 h-7 text-purple-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
-                </svg>
+            <div class="flex items-center gap-3">
+              <div
+                :class="[
+                  'h-14 w-14 rounded-xl flex items-center justify-center',
+                  departamentoConfig.bgColor,
+                ]"
+              >
+                <component
+                  :is="departamentoConfig.icon"
+                  :class="['h-7 w-7', departamentoConfig.iconColor]"
+                ></component>
               </div>
               <div>
-                <h1 class="text-3xl font-bold text-slate-800">Administrador</h1>
-                <p class="text-sm text-slate-600">Panel de control del sistema</p>
+                <h1 class="text-3xl font-bold text-slate-800">
+                  {{ departamentoConfig.titulo }}
+                </h1>
+                <p class="text-sm text-slate-600">{{ departamentoConfig.descripcion }}</p>
               </div>
             </div>
           </div>
@@ -87,7 +88,8 @@
                 v-model="usuario"
                 type="text"
                 required
-                class="w-full px-6 py-3 text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-500 transition-all"
+                class="w-full px-6 py-3 text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:border-transparent placeholder-gray-500 transition-all"
+                :class="`focus:ring-${departamentoConfig.ringColor}`"
                 placeholder="Ingresa tu usuario"
               />
             </div>
@@ -102,7 +104,8 @@
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'"
                   required
-                  class="w-full px-6 py-3 text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-500 transition-all"
+                  class="w-full px-6 py-3 text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:border-transparent placeholder-gray-500 transition-all"
+                  :class="`focus:ring-${departamentoConfig.ringColor}`"
                   placeholder="Ingresa tu contraseña"
                 />
                 <button
@@ -124,7 +127,10 @@
           <button
             type="submit"
             :disabled="isLoading"
-            class="w-full bg-purple-600 text-white rounded-lg px-6 py-3 text-lg font-medium hover:bg-purple-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            :class="[
+              'w-full text-white rounded-lg px-6 py-3 text-lg font-medium transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2',
+              departamentoConfig.buttonColor,
+            ]"
           >
             <svg
               v-if="isLoading"
@@ -152,10 +158,10 @@
         </form>
 
         <!-- Info adicional -->
-        <div class="mt-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
+        <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
           <div class="flex items-start gap-2">
             <svg
-              class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5"
+              class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -165,9 +171,9 @@
                 clip-rule="evenodd"
               />
             </svg>
-            <p class="text-sm text-purple-800">
-              Este acceso es exclusivo para el Super Administrador del sistema. Si eres parte de un
-              departamento, utiliza el acceso correspondiente desde la página principal.
+            <p class="text-sm text-blue-800">
+              Este acceso es exclusivo para el personal del departamento. Si tienes problemas para
+              ingresar, contacta al administrador del sistema.
             </p>
           </div>
         </div>
@@ -178,8 +184,8 @@
     <div class="w-1/2 flex items-center justify-center relative z-10 rounded-3xl">
       <div class="relative w-4/5 h-4/5">
         <img
-          src="/admin2.png"
-          alt="Ilustración de espacio de trabajo"
+          :src="departamentoConfig.imagen"
+          :alt="`Ilustración de ${departamentoConfig.titulo}`"
           class="absolute inset-0 w-full h-full object-contain rounded-3xl z-10 animate-float-3"
         />
       </div>
@@ -191,9 +197,16 @@
 import HomeLogo from '../components/icons/HomeLogo.vue'
 import ShowEye from '@/components/icons/ShowEye.vue'
 import HideEye from '@/components/icons/HideEye.vue'
-import { ref } from 'vue'
+import PsicologiaLogo from '@/components/icons/PsicologiaLogo.vue'
+import CienciasLogo from '@/components/icons/CienciasLogo.vue'
+import JefaturaLogo from '@/components/icons/JefaturaLogo.vue'
+import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink, useRouter, useRoute } from 'vue-router'
+
+// ==================== ROUTER ====================
+const router = useRouter()
+const route = useRoute()
 
 // ==================== STATE ====================
 const usuario = ref('')
@@ -201,7 +214,103 @@ const password = ref('')
 const showPassword = ref(false)
 const errorMessage = ref('')
 const isLoading = ref(false)
-const router = useRouter()
+
+// ==================== CONFIGURACIÓN POR DEPARTAMENTO ====================
+const departamentosConfig = {
+  psicologia: {
+    titulo: 'Departamento de Psicología',
+    descripcion: 'Área de Desarrollo Estudiantil',
+    icon: PsicologiaLogo,
+    bgColor: 'bg-teal-100',
+    iconColor: 'text-teal-600',
+    buttonColor: 'bg-teal-600 hover:bg-teal-700',
+    ringColor: 'teal-500',
+    imagen: '/psicologia.png', // Puedes cambiar la imagen
+    rol: 'psicologia',
+    circles: [
+      { color: 'bg-teal-300', size: 96, top: 10, left: 5 },
+      { color: 'bg-cyan-200', size: 64, top: 20, left: 80 },
+      { color: 'bg-teal-400', size: 128, top: 70, left: 20 },
+      { color: 'bg-gray-100', size: 80, top: 40, left: 95 },
+      { color: 'bg-cyan-300', size: 112, top: 85, left: 70 },
+      { color: 'bg-gray-200', size: 48, top: 25, left: 30 },
+      { color: 'bg-teal-500', size: 72, top: 60, left: 50 },
+      { color: 'bg-cyan-100', size: 56, top: 5, left: 90 },
+      { color: 'bg-gray-300', size: 88, top: 80, left: 40 },
+      { color: 'bg-teal-200', size: 40, top: 90, left: 10 },
+      { color: 'bg-cyan-400', size: 104, top: 15, left: 60 },
+      { color: 'bg-gray-100', size: 68, top: 50, left: 85 },
+    ],
+  },
+  ciencias: {
+    titulo: 'Departamento de Ciencias Básicas',
+    descripcion: 'Coordinación Académica',
+    icon: CienciasLogo,
+    bgColor: 'bg-indigo-100',
+    iconColor: 'text-indigo-600',
+    buttonColor: 'bg-indigo-600 hover:bg-indigo-700',
+    ringColor: 'indigo-500',
+    imagen: '/ciencias.png', // Puedes cambiar la imagen
+    rol: 'ciencias_basicas',
+    circles: [
+      { color: 'bg-indigo-300', size: 96, top: 10, left: 5 },
+      { color: 'bg-purple-200', size: 64, top: 20, left: 80 },
+      { color: 'bg-indigo-400', size: 128, top: 70, left: 20 },
+      { color: 'bg-gray-100', size: 80, top: 40, left: 95 },
+      { color: 'bg-purple-300', size: 112, top: 85, left: 70 },
+      { color: 'bg-gray-200', size: 48, top: 25, left: 30 },
+      { color: 'bg-indigo-500', size: 72, top: 60, left: 50 },
+      { color: 'bg-purple-100', size: 56, top: 5, left: 90 },
+      { color: 'bg-gray-300', size: 88, top: 80, left: 40 },
+      { color: 'bg-indigo-200', size: 40, top: 90, left: 10 },
+      { color: 'bg-purple-400', size: 104, top: 15, left: 60 },
+      { color: 'bg-gray-100', size: 68, top: 50, left: 85 },
+    ],
+  },
+  jefatura: {
+    titulo: 'Jefatura Académica',
+    descripcion: 'Coordinación y Supervisión',
+    icon: JefaturaLogo,
+    bgColor: 'bg-rose-100',
+    iconColor: 'text-rose-600',
+    buttonColor: 'bg-rose-600 hover:bg-rose-700',
+    ringColor: 'rose-500',
+    imagen: '/jefatura.png', // Puedes cambiar la imagen
+    rol: 'jefatura_academica',
+    circles: [
+      { color: 'bg-rose-300', size: 96, top: 10, left: 5 },
+      { color: 'bg-pink-200', size: 64, top: 20, left: 80 },
+      { color: 'bg-rose-400', size: 128, top: 70, left: 20 },
+      { color: 'bg-gray-100', size: 80, top: 40, left: 95 },
+      { color: 'bg-pink-300', size: 112, top: 85, left: 70 },
+      { color: 'bg-gray-200', size: 48, top: 25, left: 30 },
+      { color: 'bg-rose-500', size: 72, top: 60, left: 50 },
+      { color: 'bg-pink-100', size: 56, top: 5, left: 90 },
+      { color: 'bg-gray-300', size: 88, top: 80, left: 40 },
+      { color: 'bg-rose-200', size: 40, top: 90, left: 10 },
+      { color: 'bg-pink-400', size: 104, top: 15, left: 60 },
+      { color: 'bg-gray-100', size: 68, top: 50, left: 85 },
+    ],
+  },
+}
+
+// ==================== COMPUTED ====================
+const departamento = computed(() => route.params.departamento)
+
+const departamentoConfig = computed(() => {
+  return departamentosConfig[departamento.value] || departamentosConfig.psicologia
+})
+
+const circles = computed(() => departamentoConfig.value.circles)
+
+// ==================== VALIDACIÓN ====================
+onMounted(() => {
+  // Validar que el departamento exista
+  if (!departamentosConfig[departamento.value]) {
+    console.error('Departamento no válido:', departamento.value)
+    router.push('/')
+  }
+})
 
 // ==================== LOGIN HANDLER ====================
 const handleSubmit = async () => {
@@ -222,22 +331,22 @@ const handleSubmit = async () => {
     if (response.status === 200 && response.data.access_token) {
       console.log('✅ Inicio de sesión exitoso:', response.data)
 
-      const userRole = response.data.rol
+      // Validar que el rol coincida con el departamento
+      const expectedRol = departamentoConfig.value.rol
+      const actualRol = response.data.rol
 
-      // ==================== VALIDACIÓN: SOLO SUPER_ADMIN ====================
-      if (userRole !== 'super_admin') {
-        errorMessage.value =
-          '⚠️ Este login es solo para Super Administradores. Si eres de un departamento, usa el acceso departamental.'
+      if (actualRol !== expectedRol) {
+        errorMessage.value = `Este usuario no tiene permisos para acceder a ${departamentoConfig.value.titulo}`
         isLoading.value = false
         return
       }
 
       // Guardar Token y ROL
       localStorage.setItem('accessToken', response.data.access_token)
-      localStorage.setItem('userRole', userRole)
+      localStorage.setItem('userRole', actualRol)
 
-      // Redirigir al dashboard de admin
-      router.push('/login_admin/dashboard')
+      // Redirigir a la vista de descargas del departamento
+      router.push('/departamento/descargas')
     }
   } catch (error) {
     console.error('❌ Error en la solicitud:', error)
@@ -250,22 +359,6 @@ const handleSubmit = async () => {
     isLoading.value = false
   }
 }
-
-// ==================== ANIMATED CIRCLES ====================
-const circles = [
-  { color: 'bg-purple-300', size: 96, top: 10, left: 5 },
-  { color: 'bg-rose-200', size: 64, top: 20, left: 80 },
-  { color: 'bg-purple-400', size: 128, top: 70, left: 20 },
-  { color: 'bg-gray-100', size: 80, top: 40, left: 95 },
-  { color: 'bg-rose-300', size: 112, top: 85, left: 70 },
-  { color: 'bg-gray-200', size: 48, top: 25, left: 30 },
-  { color: 'bg-purple-500', size: 72, top: 60, left: 50 },
-  { color: 'bg-rose-100', size: 56, top: 5, left: 90 },
-  { color: 'bg-gray-300', size: 88, top: 80, left: 40 },
-  { color: 'bg-rose-200', size: 40, top: 90, left: 10 },
-  { color: 'bg-purple-400', size: 104, top: 15, left: 60 },
-  { color: 'bg-gray-100', size: 68, top: 50, left: 85 },
-]
 </script>
 
 <style scoped>

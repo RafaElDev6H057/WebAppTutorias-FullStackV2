@@ -41,9 +41,16 @@ const router = createRouter({
       component: () => import('../views/PanelAdminView.vue'),
     },
     {
-      path: '/login_admin/descargas',
-      name: 'descargas-admin',
-      component: () => import('../views/DescargasView.vue'),
+      path: '/login_departamento/:departamento',
+      name: 'LoginDepartamento',
+      component: () => import('../views/LoginDepartamentoView.vue'),
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/departamento/descargas',
+      name: 'DepartamentoDescargas',
+      component: () => import('../views/DepartamentoDescargasView.vue'),
+      meta: { requiresAuth: true, roles: ['psicologia', 'ciencias_basicas', 'jefatura_academica'] },
     },
   ],
 })

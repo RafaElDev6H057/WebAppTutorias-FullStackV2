@@ -1,26 +1,78 @@
 <script setup>
 import { RouterLink } from 'vue-router'
+import { computed } from 'vue'
 
-defineProps({
+const props = defineProps({
   icono: Object,
   titulo: String,
   descripcion: String,
   ruta: String,
+  color: {
+    type: String,
+    default: 'green',
+  },
+  isDepartamento: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+const colorClasses = computed(() => {
+  const colors = {
+    green: {
+      bg: 'bg-green-100',
+      icon: 'text-green-600',
+      gradient: 'from-green-600 to-blue-600',
+      text: 'text-green-600',
+    },
+    blue: {
+      bg: 'bg-blue-100',
+      icon: 'text-blue-600',
+      gradient: 'from-blue-600 to-cyan-600',
+      text: 'text-blue-600',
+    },
+    purple: {
+      bg: 'bg-purple-100',
+      icon: 'text-purple-600',
+      gradient: 'from-purple-600 to-pink-600',
+      text: 'text-purple-600',
+    },
+    teal: {
+      bg: 'bg-teal-100',
+      icon: 'text-teal-600',
+      gradient: 'from-teal-600 to-cyan-600',
+      text: 'text-teal-600',
+    },
+    indigo: {
+      bg: 'bg-indigo-100',
+      icon: 'text-indigo-600',
+      gradient: 'from-indigo-600 to-purple-600',
+      text: 'text-indigo-600',
+    },
+    rose: {
+      bg: 'bg-rose-100',
+      icon: 'text-rose-600',
+      gradient: 'from-rose-600 to-pink-600',
+      text: 'text-rose-600',
+    },
+  }
+  return colors[props.color] || colors.green
 })
 </script>
 
 <template>
   <RouterLink
     :to="ruta"
-    class="group relative overflow-hidden rounded-xl bg-white p-6 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100"
+    class="group relative overflow-hidden rounded-xl bg-white p-6 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 transform hover:-translate-y-1"
   >
     <div
-      class="absolute inset-0 bg-gradient-to-r from-green-600 to-blue-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+      class="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+      :class="`${colorClasses.gradient}`"
     />
 
     <div class="relative space-y-4">
-      <div class="h-14 w-14 rounded-lg bg-green-100 flex items-center justify-center">
-        <component :is="icono" class="h-6 w-6 text-green-600"></component>
+      <div class="h-14 w-14 rounded-lg flex items-center justify-center" :class="colorClasses.bg">
+        <component :is="icono" class="h-6 w-6" :class="colorClasses.icon"></component>
       </div>
 
       <div>
@@ -32,9 +84,10 @@ defineProps({
 
       <div class="pt-2">
         <span
-          class="inline-flex items-center text-sm font-medium text-green-600 group-hover:underline"
+          class="inline-flex items-center text-sm font-medium group-hover:underline"
+          :class="colorClasses.text"
         >
-          Ingresar
+          {{ isDepartamento ? 'Acceder' : 'Ingresar' }}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1"
