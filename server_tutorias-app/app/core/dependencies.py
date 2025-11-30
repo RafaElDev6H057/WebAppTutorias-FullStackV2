@@ -12,7 +12,7 @@ from jose import JWTError, jwt
 from typing import Optional, Union
 
 from app.database import get_session
-from app.models.administrador import Administrador
+from app.models.administrador import Administrador, RolAdministrador # Importamos el Enum de Roles
 from app.models.tutor import Tutor
 from app.models.alumno import Alumno
 from app.schemas.administrador import TokenData
@@ -38,12 +38,16 @@ oauth2_scheme_alumno = OAuth2PasswordBearer(
 )
 
 
-def get_current_admin_user(
+def get_admin_cualquier_rol(
     token: str = Depends(oauth2_scheme_admin),
     db: Session = Depends(get_session)
 ) -> Administrador:
     """
-    Obtiene el administrador autenticado a partir del token JWT.
+    Obtiene CUALQUIER administrador autenticado a partir del token JWT, sin importar su rol.
+    
+    Esta dependencia valida que el token sea correcto y el usuario exista.
+    Se utiliza como base para `get_current_admin_user` y para endpoints que permiten
+    acceso a roles específicos (como Psicología o Ciencias Básicas).
     
     Args:
         token: Token JWT del usuario autenticado.
@@ -51,9 +55,6 @@ def get_current_admin_user(
     
     Returns:
         Instancia del modelo Administrador correspondiente al usuario autenticado.
-    
-    Raises:
-        HTTPException: Si el token es inválido o el usuario no existe.
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -78,6 +79,34 @@ def get_current_admin_user(
         raise credentials_exception
     
     return user
+
+
+def get_current_admin_user(
+    current_admin: Administrador = Depends(get_admin_cualquier_rol)
+) -> Administrador:
+    """
+    Obtiene el administrador autenticado y VERIFICA que sea SUPER_ADMIN.
+    
+    Esta es la dependencia por defecto para proteger los endpoints administrativos existentes.
+    Si el usuario tiene un rol limitado (ej. Psicología), esta función lanzará un error 403.
+    
+    Args:
+        current_admin: El usuario administrador ya validado por get_admin_cualquier_rol.
+    
+    Returns:
+        El administrador si es SUPER_ADMIN.
+    
+    Raises:
+        HTTPException: Si el usuario no tiene permisos de Super Administrador.
+    """
+    # Validamos que el rol sea estrictamente SUPER_ADMIN
+    if current_admin.rol != RolAdministrador.SUPER_ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permisos de Super Administrador para realizar esta acción"
+        )
+    
+    return current_admin
 
 
 def get_current_tutor_user(
@@ -160,7 +189,10 @@ async def get_current_user(
     except HTTPException as tutor_exc:
         if tutor_exc.status_code == 401:
             try:
-                admin = get_current_admin_user(token=token, db=db)
+                # Aquí usamos get_current_admin_user, por lo que requerirá SUPER_ADMIN por defecto.
+                # Si necesitas que un usuario de rol limitado acceda a endpoints compartidos,
+                # deberías cambiar esto a get_admin_cualquier_rol.
+                admin = get_current_admin_user(current_admin=get_admin_cualquier_rol(token, db))
                 return admin
             except HTTPException:
                 raise tutor_exc

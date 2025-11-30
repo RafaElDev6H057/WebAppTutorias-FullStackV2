@@ -8,6 +8,9 @@ y gestión de tokens JWT para administradores.
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 from typing import Optional
 
+# Importamos el Enum de roles
+from app.models.administrador import RolAdministrador
+
 
 class AdministradorBase(BaseModel):
     """
@@ -47,6 +50,9 @@ class AdministradorCreate(AdministradorBase):
     """
     
     contraseña: str = Field(..., min_length=8)
+    
+    # Permitimos definir el rol al crear (opcional, default: super_admin)
+    rol: Optional[RolAdministrador] = RolAdministrador.SUPER_ADMIN
 
 
 class AdministradorUpdate(BaseModel):
@@ -64,16 +70,20 @@ class AdministradorUpdate(BaseModel):
     )
     
     contraseña: Optional[str] = Field(default=None, min_length=8)
+    
+    # Permitimos actualizar el rol
+    rol: Optional[RolAdministrador] = None
 
 
 class AdministradorRead(AdministradorBase):
     """
     Esquema para lectura de datos de administrador.
     
-    Incluye el identificador del administrador.
+    Incluye el identificador del administrador y su rol.
     """
     
     id_admin: int
+    rol: RolAdministrador # Enviamos el rol al frontend
     
     model_config = ConfigDict(from_attributes=True)
 

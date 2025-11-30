@@ -2,7 +2,8 @@
 Endpoints de la API para gestión de Administradores.
 
 Proporciona endpoints para autenticación y operaciones CRUD de administradores.
-Todos los endpoints (excepto login) requieren autenticación de administrador.
+Todos los endpoints (excepto login) requieren autenticación de administrador
+con rol SUPER_ADMIN.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status, Response
@@ -35,14 +36,8 @@ def login_for_access_token(
     """
     Autentica a un administrador y genera un token JWT.
     
-    El administrador debe proporcionar su nombre de usuario y contraseña.
-    Si las credenciales son correctas, se retorna un token de acceso válido.
-    
-    Returns:
-        Token JWT con tiempo de expiración configurado.
-    
-    Raises:
-        HTTPException: Si las credenciales son incorrectas.
+    Cualquier rol de administrador (Super Admin, Psicología, etc.) puede
+    hacer login por aquí.
     """
     admin = admin_service.authenticate_admin(db, form_data.username, form_data.password)
     
@@ -54,6 +49,10 @@ def login_for_access_token(
         )
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    
+    # IMPORTANTE: Ahora el token podría incluir el rol si lo deseamos en el futuro,
+    # pero por ahora con el 'sub' (usuario) es suficiente ya que el backend
+    # busca al usuario en la BD en cada petición.
     access_token = security.create_access_token(
         data={"sub": admin.usuario},
         expires_delta=access_token_expires
@@ -62,23 +61,34 @@ def login_for_access_token(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/", response_model=List[AdministradorRead], summary="Obtener todos los Administradores")
+@router.get(
+    "/", 
+    response_model=List[AdministradorRead], 
+    summary="Obtener todos los Administradores",
+    description="Devuelve la lista de administradores.\n\n**Requiere Rol:** SUPER_ADMIN.",
+    responses={403: {"description": "Permisos insuficientes (Requiere Super Admin)"}}
+)
 def get_all_admins(
     current_admin: Administrador = Depends(get_current_admin_user),
     session: Session = Depends(get_session)
 ):
     """
     Obtiene una lista completa de todos los administradores registrados.
-    
-    Solo accesible por administradores autenticados.
-    
-    Returns:
-        Lista de todos los administradores del sistema.
+    Solo accesible por SUPER_ADMIN.
     """
     return session.exec(select(Administrador)).all()
 
 
-@router.get("/{id_admin}", response_model=AdministradorRead, summary="Obtener Administrador por ID")
+@router.get(
+    "/{id_admin}", 
+    response_model=AdministradorRead, 
+    summary="Obtener Administrador por ID",
+    description="Busca un administrador específico.\n\n**Requiere Rol:** SUPER_ADMIN.",
+    responses={
+        403: {"description": "Permisos insuficientes (Requiere Super Admin)"},
+        404: {"description": "Administrador no encontrado"}
+    }
+)
 def get_admin_by_id(
     id_admin: int,
     current_admin: Administrador = Depends(get_current_admin_user),
@@ -86,11 +96,7 @@ def get_admin_by_id(
 ):
     """
     Obtiene los datos de un administrador específico por su ID.
-    
-    Solo accesible por administradores autenticados.
-    
-    Raises:
-        HTTPException: Si el administrador no existe.
+    Solo accesible por SUPER_ADMIN.
     """
     admin = session.get(Administrador, id_admin)
     
@@ -104,7 +110,12 @@ def get_admin_by_id(
     "/",
     response_model=AdministradorRead,
     status_code=status.HTTP_201_CREATED,
-    summary="Crear un nuevo Administrador"
+    summary="Crear un nuevo Administrador",
+    description="Crea un nuevo administrador (o usuario de departamento).\n\n**Requiere Rol:** SUPER_ADMIN.",
+    responses={
+        403: {"description": "Permisos insuficientes (Requiere Super Admin)"},
+        409: {"description": "El nombre de usuario ya existe"}
+    }
 )
 def create_admin(
     data: AdministradorCreate,
@@ -114,19 +125,22 @@ def create_admin(
     """
     Crea un nuevo administrador en el sistema.
     
-    Solo accesible por administradores autenticados.
-    El nombre de usuario debe ser único.
-    
-    Returns:
-        Datos del administrador creado.
-    
-    Raises:
-        HTTPException: Si el nombre de usuario ya existe.
+    Gracias a que actualizamos el schema AdministradorCreate, aquí
+    puedes enviar el campo "rol" para crear usuarios de Psicología, etc.
     """
     return admin_service.create_admin(db=session, data=data)
 
 
-@router.put("/{id_admin}", response_model=AdministradorRead, summary="Actualizar un Administrador")
+@router.put(
+    "/{id_admin}", 
+    response_model=AdministradorRead, 
+    summary="Actualizar un Administrador",
+    description="Actualiza datos (usuario, contraseña, rol).\n\n**Requiere Rol:** SUPER_ADMIN.",
+    responses={
+        403: {"description": "Permisos insuficientes (Requiere Super Admin)"},
+        404: {"description": "Administrador no encontrado"}
+    }
+)
 def update_admin(
     id_admin: int,
     data: AdministradorUpdate,
@@ -135,11 +149,7 @@ def update_admin(
 ):
     """
     Actualiza los datos de un administrador existente.
-    
-    Solo accesible por administradores autenticados.
-    
-    Raises:
-        HTTPException: Si el administrador no existe.
+    Solo accesible por SUPER_ADMIN.
     """
     admin_to_update = session.get(Administrador, id_admin)
     
@@ -149,7 +159,16 @@ def update_admin(
     return admin_service.update_admin(db=session, admin=admin_to_update, data=data)
 
 
-@router.delete("/{id_admin}", status_code=status.HTTP_204_NO_CONTENT, summary="Eliminar un Administrador")
+@router.delete(
+    "/{id_admin}", 
+    status_code=status.HTTP_204_NO_CONTENT, 
+    summary="Eliminar un Administrador",
+    description="Elimina permanentemente un administrador.\n\n**Requiere Rol:** SUPER_ADMIN.",
+    responses={
+        403: {"description": "Permisos insuficientes (Requiere Super Admin)"},
+        404: {"description": "Administrador no encontrado"}
+    }
+)
 def delete_admin(
     id_admin: int,
     current_admin: Administrador = Depends(get_current_admin_user),
@@ -157,12 +176,7 @@ def delete_admin(
 ):
     """
     Elimina un administrador del sistema.
-    
-    Solo accesible por administradores autenticados.
-    Esta acción es permanente y no puede deshacerse.
-    
-    Raises:
-        HTTPException: Si el administrador no existe.
+    Solo accesible por SUPER_ADMIN.
     """
     admin_to_delete = session.get(Administrador, id_admin)
     
