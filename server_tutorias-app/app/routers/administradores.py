@@ -50,15 +50,19 @@ def login_for_access_token(
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     
-    # IMPORTANTE: Ahora el token podría incluir el rol si lo deseamos en el futuro,
-    # pero por ahora con el 'sub' (usuario) es suficiente ya que el backend
-    # busca al usuario en la BD en cada petición.
     access_token = security.create_access_token(
         data={"sub": admin.usuario},
         expires_delta=access_token_expires
     )
     
-    return {"access_token": access_token, "token_type": "bearer"}
+    # --- CORRECCIÓN AQUÍ ---
+    # Debemos devolver el rol para que el Frontend sepa a dónde redirigir.
+    # Usamos .value para obtener el string 'super_admin', 'psicologia', etc.
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer",
+        "rol": admin.rol.value 
+    }
 
 
 @router.get(
@@ -124,9 +128,6 @@ def create_admin(
 ):
     """
     Crea un nuevo administrador en el sistema.
-    
-    Gracias a que actualizamos el schema AdministradorCreate, aquí
-    puedes enviar el campo "rol" para crear usuarios de Psicología, etc.
     """
     return admin_service.create_admin(db=session, data=data)
 
