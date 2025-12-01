@@ -29,7 +29,7 @@
         <RouterLink
           to="/"
           :class="[
-            'mb-8 text-lg inline-block px-2 py-1 rounded-lg font-bold transition-colors',
+            'mb-8 text-lg inline-block px-2 py-1 rounded-lg font-bold transition-colors text-white',
             departamentoConfig.buttonColor,
           ]"
         >

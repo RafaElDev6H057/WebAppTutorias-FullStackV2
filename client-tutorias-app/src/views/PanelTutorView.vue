@@ -264,10 +264,10 @@
                       </button>
                       <button
                         @click="handleMostrarModalSegundoReporte()"
-                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 inline-flex items-center gap-2"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 inline-flex items-center gap-2"
                       >
                         <svg
-                          class="w-4 h-4 text-orange-600"
+                          class="w-4 h-4 text-blue-600"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -427,7 +427,7 @@
             class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
           >
             <div
-              class="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white"
+              class="relative top-20 mx-auto p-5 border w-11/12 max-w-5xl shadow-lg rounded-md bg-white"
             >
               <div class="p-4 border-b flex justify-end items-center">
                 <button
@@ -451,7 +451,7 @@
                 </button>
               </div>
               <div class="p-4">
-                <SegundoReporteTutoria @cerrar="mostrarModalSegundoReporte = false" />
+                <ReporteIndividual2 @cerrar="mostrarModalSegundoReporte = false" />
               </div>
             </div>
           </div>
@@ -508,9 +508,9 @@ import { useRouter } from 'vue-router'
 import axios from 'axios'
 import TutorService from '@/services/TutorService.js'
 import ReporteIntegralMasivo from '@/components/ReporteIntegralMasivo.vue'
-import SegundoReporteTutoria from '@/components/SegundoReporteTutoria.vue'
 import BaseSearchInput from '@/components/ui/BaseSearchInput.vue'
 import ReporteIndividual1 from '@/components/tutor/ReporteIndividual1.vue'
+import ReporteIndividual2 from '@/components/tutor/ReporteIndividual2.vue'
 import TablaAlumnosTutorados from '@/components/tutor/TablaAlumnosTutorados.vue'
 import ModalCrearTutoria from '@/components/tutor/ModalCrearTutoria.vue'
 import ModalEliminarTutoria from '@/components/tutor/ModalEliminarTutoria.vue'
@@ -561,19 +561,19 @@ const passwordChangeSuccess = ref(false)
 
 // ==================== CONSTANTS ====================
 const circles = [
-  { color: 'bg-orange-500', size: 96, top: 10, left: 5 },    // Naranja principal
-  { color: 'bg-orange-300', size: 64, top: 20, left: 80 },   // Naranja suave
-  { color: 'bg-amber-400', size: 128, top: 70, left: 20 },   // Dorado cálido
-  { color: 'bg-amber-100', size: 80, top: 40, left: 95 },     // Gris muy claro
-  { color: 'bg-orange-600', size: 112, top: 85, left: 70 },  // Naranja intenso
-  { color: 'bg-amber-200', size: 48, top: 25, left: 30 },    // Amarillo crema
-  { color: 'bg-orange-400', size: 72, top: 60, left: 50 },   // Naranja medio
-  { color: 'bg-amber-200', size: 56, top: 5, left: 90 },      // Gris claro
-  { color: 'bg-orange-300', size: 88, top: 80, left: 40 },   // Naranja suave
-  { color: 'bg-amber-300', size: 40, top: 90, left: 10 },    // Dorado suave
-  { color: 'bg-orange-500', size: 104, top: 15, left: 60 },  // Naranja principal
-  { color: 'bg-amber-100', size: 68, top: 50, left: 85 },     // Gris muy claro
-];
+  { color: 'bg-orange-500', size: 96, top: 10, left: 5 }, // Naranja principal
+  { color: 'bg-orange-300', size: 64, top: 20, left: 80 }, // Naranja suave
+  { color: 'bg-amber-400', size: 128, top: 70, left: 20 }, // Dorado cálido
+  { color: 'bg-amber-100', size: 80, top: 40, left: 95 }, // Gris muy claro
+  { color: 'bg-orange-600', size: 112, top: 85, left: 70 }, // Naranja intenso
+  { color: 'bg-amber-200', size: 48, top: 25, left: 30 }, // Amarillo crema
+  { color: 'bg-orange-400', size: 72, top: 60, left: 50 }, // Naranja medio
+  { color: 'bg-amber-200', size: 56, top: 5, left: 90 }, // Gris claro
+  { color: 'bg-orange-300', size: 88, top: 80, left: 40 }, // Naranja suave
+  { color: 'bg-amber-300', size: 40, top: 90, left: 10 }, // Dorado suave
+  { color: 'bg-orange-500', size: 104, top: 15, left: 60 }, // Naranja principal
+  { color: 'bg-amber-100', size: 68, top: 50, left: 85 }, // Gris muy claro
+]
 
 // ==================== COMPUTED ====================
 const students = computed(() => {
