@@ -20,27 +20,29 @@
       ></div>
     </div>
 
-    <!-- Left Side - Login Form -->
-    <div class="w-1/2 flex items-center justify-center p-12 relative z-10">
+    <!-- Login Form - Responsive -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 lg:p-12 relative z-10">
       <div
-        class="w-full max-w-2xl bg-white/10 rounded-3xl p-12 shadow-lg backdrop-blur-md border border-white/20"
+        class="w-full max-w-md lg:max-w-2xl bg-white/10 rounded-3xl p-6 sm:p-8 lg:p-12 shadow-lg backdrop-blur-md border border-white/20"
       >
         <!-- Back Link -->
         <RouterLink
           to="/"
-          class="text-white mb-8 text-lg bg-purple-600 inline-block px-2 py-1 rounded-lg font-bold hover:bg-purple-700 transition-colors"
+          class="text-white mb-6 sm:mb-8 text-base sm:text-lg bg-purple-600 inline-block px-2 py-1 rounded-lg font-bold hover:bg-purple-700 transition-colors"
         >
           <HomeLogo></HomeLogo>
         </RouterLink>
 
         <!-- Form -->
-        <form @submit.prevent="handleSubmit" class="space-y-8">
+        <form @submit.prevent="handleSubmit" class="space-y-6 sm:space-y-8">
           <!-- Título con ícono -->
           <div class="space-y-2">
             <div class="flex items-center gap-3 mb-4">
-              <div class="h-14 w-14 bg-purple-100 rounded-xl flex items-center justify-center">
+              <div
+                class="h-12 w-12 sm:h-14 sm:w-14 bg-purple-100 rounded-xl flex items-center justify-center"
+              >
                 <svg
-                  class="w-7 h-7 text-purple-600"
+                  class="w-6 h-6 sm:w-7 sm:h-7 text-purple-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -54,8 +56,8 @@
                 </svg>
               </div>
               <div>
-                <h1 class="text-3xl font-bold text-slate-800">Administrador</h1>
-                <p class="text-sm text-slate-600">Panel de control del sistema</p>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-800">Administrador</h1>
+                <p class="text-xs sm:text-sm text-slate-600">Panel de control del sistema</p>
               </div>
             </div>
           </div>
@@ -71,15 +73,15 @@
           >
             <div
               v-if="errorMessage"
-              class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-red-800 text-sm font-medium"
+              class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-red-800 text-xs sm:text-sm font-medium"
             >
               {{ errorMessage }}
             </div>
           </Transition>
 
-          <div class="space-y-6">
+          <div class="space-y-4 sm:space-y-6">
             <div class="space-y-2">
-              <label for="usuario" class="block text-lg font-medium text-slate-700">
+              <label for="usuario" class="block text-base sm:text-lg font-medium text-slate-700">
                 Usuario
               </label>
               <input
@@ -87,13 +89,13 @@
                 v-model="usuario"
                 type="text"
                 required
-                class="w-full px-6 py-3 text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-500 transition-all"
+                class="w-full px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-500 transition-all"
                 placeholder="Ingresa tu usuario"
               />
             </div>
 
             <div class="space-y-2">
-              <label for="password" class="block text-lg font-medium text-slate-700">
+              <label for="password" class="block text-base sm:text-lg font-medium text-slate-700">
                 Contraseña
               </label>
               <div class="relative">
@@ -102,13 +104,13 @@
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'"
                   required
-                  class="w-full px-6 py-3 text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-500 transition-all"
+                  class="w-full px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-500 transition-all"
                   placeholder="Ingresa tu contraseña"
                 />
                 <button
                   type="button"
                   @click="showPassword = !showPassword"
-                  class="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500 text-xl hover:text-slate-700 transition-colors"
+                  class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-slate-500 text-lg sm:text-xl hover:text-slate-700 transition-colors"
                 >
                   <span v-if="showPassword">
                     <ShowEye />
@@ -124,7 +126,7 @@
           <button
             type="submit"
             :disabled="isLoading"
-            class="w-full bg-purple-600 text-white rounded-lg px-6 py-3 text-lg font-medium hover:bg-purple-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="w-full bg-purple-600 text-white rounded-lg px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg font-medium hover:bg-purple-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <svg
               v-if="isLoading"
@@ -152,10 +154,10 @@
         </form>
 
         <!-- Info adicional -->
-        <div class="mt-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
+        <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-purple-50 rounded-lg border border-purple-200">
           <div class="flex items-start gap-2">
             <svg
-              class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5"
+              class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0 mt-0.5"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -165,7 +167,7 @@
                 clip-rule="evenodd"
               />
             </svg>
-            <p class="text-sm text-purple-800">
+            <p class="text-xs sm:text-sm text-purple-800">
               Este acceso es exclusivo para el Super Administrador del sistema. Si eres parte de un
               departamento, utiliza el acceso correspondiente desde la página principal.
             </p>
@@ -174,8 +176,8 @@
       </div>
     </div>
 
-    <!-- Right Side - Illustration -->
-    <div class="w-1/2 flex items-center justify-center relative z-10 rounded-3xl">
+    <!-- Right Side - Illustration (Hidden on mobile) -->
+    <div class="hidden lg:flex lg:w-1/2 items-center justify-center relative z-10 rounded-3xl">
       <div class="relative w-4/5 h-4/5">
         <img
           src="/admin2.png"

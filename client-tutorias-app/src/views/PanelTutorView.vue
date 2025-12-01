@@ -817,7 +817,7 @@ const goToPage = (page) => {
 const handleLogout = () => {
   localStorage.removeItem('accessToken')
   localStorage.removeItem('userRole')
-  router.push('/login_tutor')
+  router.push('/')
 }
 
 // ==================== DESCARGA PDF ====================

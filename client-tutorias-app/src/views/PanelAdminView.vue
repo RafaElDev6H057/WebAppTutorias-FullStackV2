@@ -181,7 +181,7 @@ const circles = [
 const handleLogout = () => {
   localStorage.removeItem('accessToken')
   localStorage.removeItem('admin')
-  router.push('/login_admin')
+  router.push('/')
 }
 </script>
 

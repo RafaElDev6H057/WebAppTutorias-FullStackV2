@@ -20,16 +20,16 @@
       ></div>
     </div>
 
-    <!-- Left Side - Login Form -->
-    <div class="w-1/2 flex items-center justify-center p-12 relative z-10">
+    <!-- Login Form - Responsive -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 lg:p-12 relative z-10">
       <div
-        class="w-full max-w-2xl bg-white/10 rounded-3xl p-12 shadow-lg backdrop-blur-md border border-white/20"
+        class="w-full max-w-md lg:max-w-2xl bg-white/10 rounded-3xl p-6 sm:p-8 lg:p-12 shadow-lg backdrop-blur-md border border-white/20"
       >
         <!-- Back Link -->
         <RouterLink
           to="/"
           :class="[
-            'mb-8 text-lg inline-block px-2 py-1 rounded-lg font-bold transition-colors text-white',
+            'mb-6 sm:mb-8 text-base sm:text-lg inline-block px-2 py-1 rounded-lg font-bold transition-colors text-white',
             departamentoConfig.buttonColor,
           ]"
         >
@@ -37,26 +37,28 @@
         </RouterLink>
 
         <!-- Form -->
-        <form @submit.prevent="handleSubmit" class="space-y-8">
+        <form @submit.prevent="handleSubmit" class="space-y-6 sm:space-y-8">
           <!-- Título dinámico con ícono -->
           <div class="space-y-2">
             <div class="flex items-center gap-3">
               <div
                 :class="[
-                  'h-14 w-14 rounded-xl flex items-center justify-center',
+                  'h-12 w-12 sm:h-14 sm:w-14 rounded-xl flex items-center justify-center',
                   departamentoConfig.bgColor,
                 ]"
               >
                 <component
                   :is="departamentoConfig.icon"
-                  :class="['h-7 w-7', departamentoConfig.iconColor]"
+                  :class="['h-6 w-6 sm:h-7 sm:w-7', departamentoConfig.iconColor]"
                 ></component>
               </div>
-              <div>
-                <h1 class="text-3xl font-bold text-slate-800">
+              <div class="flex-1 min-w-0">
+                <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800 truncate">
                   {{ departamentoConfig.titulo }}
                 </h1>
-                <p class="text-sm text-slate-600">{{ departamentoConfig.descripcion }}</p>
+                <p class="text-xs sm:text-sm text-slate-600">
+                  {{ departamentoConfig.descripcion }}
+                </p>
               </div>
             </div>
           </div>
@@ -72,15 +74,15 @@
           >
             <div
               v-if="errorMessage"
-              class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-red-800 text-sm font-medium"
+              class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-red-800 text-xs sm:text-sm font-medium"
             >
               {{ errorMessage }}
             </div>
           </Transition>
 
-          <div class="space-y-6">
+          <div class="space-y-4 sm:space-y-6">
             <div class="space-y-2">
-              <label for="usuario" class="block text-lg font-medium text-slate-700">
+              <label for="usuario" class="block text-base sm:text-lg font-medium text-slate-700">
                 Usuario
               </label>
               <input
@@ -88,14 +90,14 @@
                 v-model="usuario"
                 type="text"
                 required
-                class="w-full px-6 py-3 text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:border-transparent placeholder-gray-500 transition-all"
+                class="w-full px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:border-transparent placeholder-gray-500 transition-all"
                 :class="`focus:ring-${departamentoConfig.ringColor}`"
                 placeholder="Ingresa tu usuario"
               />
             </div>
 
             <div class="space-y-2">
-              <label for="password" class="block text-lg font-medium text-slate-700">
+              <label for="password" class="block text-base sm:text-lg font-medium text-slate-700">
                 Contraseña
               </label>
               <div class="relative">
@@ -104,14 +106,14 @@
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'"
                   required
-                  class="w-full px-6 py-3 text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:border-transparent placeholder-gray-500 transition-all"
+                  class="w-full px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:border-transparent placeholder-gray-500 transition-all"
                   :class="`focus:ring-${departamentoConfig.ringColor}`"
                   placeholder="Ingresa tu contraseña"
                 />
                 <button
                   type="button"
                   @click="showPassword = !showPassword"
-                  class="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500 text-xl hover:text-slate-700 transition-colors"
+                  class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-slate-500 text-lg sm:text-xl hover:text-slate-700 transition-colors"
                 >
                   <span v-if="showPassword">
                     <ShowEye />
@@ -128,7 +130,7 @@
             type="submit"
             :disabled="isLoading"
             :class="[
-              'w-full text-white rounded-lg px-6 py-3 text-lg font-medium transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2',
+              'w-full text-white rounded-lg px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg font-medium transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2',
               departamentoConfig.buttonColor,
             ]"
           >
@@ -158,10 +160,10 @@
         </form>
 
         <!-- Info adicional -->
-        <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200">
           <div class="flex items-start gap-2">
             <svg
-              class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"
+              class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -171,7 +173,7 @@
                 clip-rule="evenodd"
               />
             </svg>
-            <p class="text-sm text-blue-800">
+            <p class="text-xs sm:text-sm text-blue-800">
               Este acceso es exclusivo para el personal del departamento. Si tienes problemas para
               ingresar, contacta al administrador del sistema.
             </p>
@@ -180,8 +182,8 @@
       </div>
     </div>
 
-    <!-- Right Side - Illustration -->
-    <div class="w-1/2 flex items-center justify-center relative z-10 rounded-3xl">
+    <!-- Right Side - Illustration (Hidden on mobile) -->
+    <div class="hidden lg:flex lg:w-1/2 items-center justify-center relative z-10 rounded-3xl">
       <div class="relative w-1/2 h-1/2">
         <img
           :src="departamentoConfig.imagen"
@@ -225,7 +227,7 @@ const departamentosConfig = {
     iconColor: 'text-teal-600',
     buttonColor: 'bg-teal-600 hover:bg-teal-700',
     ringColor: 'teal-500',
-    imagen: '/EscudoITSF.png', // Puedes cambiar la imagen
+    imagen: '/EscudoITSF.png',
     rol: 'psicologia',
     circles: [
       { color: 'bg-teal-300', size: 96, top: 10, left: 5 },
@@ -250,7 +252,7 @@ const departamentosConfig = {
     iconColor: 'text-indigo-600',
     buttonColor: 'bg-indigo-600 hover:bg-indigo-700',
     ringColor: 'indigo-500',
-    imagen: '/EscudoITSF.png', // Puedes cambiar la imagen
+    imagen: '/EscudoITSF.png',
     rol: 'ciencias_basicas',
     circles: [
       { color: 'bg-indigo-300', size: 96, top: 10, left: 5 },
@@ -275,7 +277,7 @@ const departamentosConfig = {
     iconColor: 'text-rose-600',
     buttonColor: 'bg-rose-600 hover:bg-rose-700',
     ringColor: 'rose-500',
-    imagen: '/EscudoITSF.png', // Puedes cambiar la imagen
+    imagen: '/EscudoITSF.png',
     rol: 'jefatura_academica',
     circles: [
       { color: 'bg-rose-300', size: 96, top: 10, left: 5 },

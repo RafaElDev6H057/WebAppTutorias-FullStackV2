@@ -20,32 +20,35 @@
       ></div>
     </div>
 
-    <!-- Navigation Bar -->
+    <!-- Navigation Bar - RESPONSIVE -->
     <nav class="bg-gradient-to-r from-lime-500 to-lime-600 border-b border-lime-700 shadow-lg">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-20">
-          <div class="flex items-center space-x-4">
+        <div class="flex items-center justify-between h-16 lg:h-20">
+          <!-- Left Section: Logo + User Info -->
+          <div class="flex items-center space-x-2 sm:space-x-4 flex-1 min-w-0">
             <div class="flex-shrink-0">
               <img
-                class="h-12 w-12 border-2 border-white rounded-full"
+                class="h-10 w-10 sm:h-12 sm:w-12 border-2 border-white rounded-full"
                 src="/EscudoITSF.png"
                 alt="Escudo ITSF"
               />
             </div>
-            <div>
-              <div class="text-white font-semibold">
+            <div class="min-w-0 flex-1">
+              <div class="text-white font-semibold text-sm sm:text-base truncate">
                 {{
                   alumno
                     ? `${alumno.nombre} ${alumno.apellido_p} ${alumno.apellido_m}`
                     : 'Cargando...'
                 }}
               </div>
-              <div class="text-lime-100 text-sm">
+              <div class="text-lime-100 text-xs sm:text-sm">
                 No. Control: {{ alumno?.num_control || 'Cargando...' }}
               </div>
             </div>
           </div>
-          <div class="flex items-center space-x-4">
+
+          <!-- Desktop Navigation - Hidden on mobile -->
+          <div class="hidden lg:flex items-center space-x-4">
             <span class="text-xl font-bold text-white">Sistema de Tutorías</span>
 
             <!-- Botón de Constancia (Condicional) -->
@@ -110,13 +113,133 @@
               <span>Cerrar Sesión</span>
             </button>
           </div>
+
+          <!-- Mobile Menu Button -->
+          <button
+            @click="mobileMenuOpen = !mobileMenuOpen"
+            class="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-lime-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+          >
+            <svg
+              v-if="!mobileMenuOpen"
+              class="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+            <svg v-else class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
         </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <Transition
+          enter-active-class="transition ease-out duration-200"
+          enter-from-class="opacity-0 -translate-y-2"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition ease-in duration-150"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 -translate-y-2"
+        >
+          <div v-if="mobileMenuOpen" class="lg:hidden pb-4 space-y-2">
+            <!-- Título -->
+            <div class="px-4 py-2 text-white font-bold text-center border-t border-lime-600 pt-4">
+              Sistema de Tutorías
+            </div>
+
+            <!-- Botón de Constancia (Condicional) -->
+            <button
+              v-if="estadoTutorias?.es_elegible"
+              @click="(descargarConstancia(), (mobileMenuOpen = false))"
+              :disabled="isDownloading"
+              class="w-full mx-4 bg-white hover:bg-lime-50 text-lime-700 font-medium px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+              style="max-width: calc(100% - 2rem)"
+            >
+              <svg
+                v-if="isDownloading"
+                class="animate-spin h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <span>{{ isDownloading ? 'Descargando...' : 'Descargar Constancia' }}</span>
+            </button>
+
+            <!-- Botón Cambiar Contraseña -->
+            <button
+              @click="(openChangePasswordModal(), (mobileMenuOpen = false))"
+              class="w-full mx-4 bg-white hover:bg-lime-50 text-lime-700 font-medium px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-all duration-200 shadow-md"
+              style="max-width: calc(100% - 2rem)"
+            >
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                />
+              </svg>
+              <span>Cambiar Contraseña</span>
+            </button>
+
+            <!-- Botón Cerrar Sesión -->
+            <button
+              @click="(handleLogout(), (mobileMenuOpen = false))"
+              class="w-full mx-4 bg-lime-700 hover:bg-lime-800 text-white font-medium px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-all duration-200 shadow-md"
+              style="max-width: calc(100% - 2rem)"
+            >
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              <span>Cerrar Sesión</span>
+            </button>
+          </div>
+        </Transition>
       </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 relative z-10">
-      <h1 class="text-3xl font-bold text-gray-800 mb-8">Mis Tutorías</h1>
+    <main class="max-w-7xl mx-auto py-6 sm:py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8">Mis Tutorías</h1>
 
       <!-- Banner de Advertencia de Contraseña Insegura -->
       <Transition
@@ -163,7 +286,7 @@
       </Transition>
 
       <!-- ==================== AVISOS IMPORTANTES ==================== -->
-      <div class="mb-8">
+      <div class="mb-6 sm:mb-8">
         <AvisosAlumno />
       </div>
 
@@ -307,12 +430,12 @@
       </Transition>
 
       <!-- Cards de Tutorías -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <div
           v-for="tutoria in sortedTutorias"
           :key="tutoria.semestre"
           :class="[
-            'bg-white rounded-lg p-6 border-l-4 shadow-md hover:shadow-xl transition-all duration-300',
+            'bg-white rounded-lg p-4 sm:p-6 border-l-4 shadow-md hover:shadow-xl transition-all duration-300',
             {
               'border-lime-500': tutoria.estado === 'completada',
               'border-amber-500': tutoria.estado === 'en curso',
@@ -321,7 +444,9 @@
           ]"
         >
           <div class="flex justify-between items-start mb-4">
-            <h2 class="text-xl font-semibold text-gray-800">Semestre {{ tutoria.semestre }}</h2>
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800">
+              Semestre {{ tutoria.semestre }}
+            </h2>
             <span
               :class="[
                 'px-3 py-1 text-xs font-semibold rounded-full',
@@ -344,25 +469,31 @@
           <div class="space-y-3">
             <div class="text-gray-600">
               <p class="text-sm font-medium text-gray-500">Tutor</p>
-              <p class="text-gray-800">{{ getTutorName(tutoria) || 'Por asignar' }}</p>
+              <p class="text-gray-800 text-sm sm:text-base">
+                {{ getTutorName(tutoria) || 'Por asignar' }}
+              </p>
             </div>
             <div class="text-gray-600">
               <p class="text-sm font-medium text-gray-500">Periodo</p>
-              <p class="text-gray-800">{{ tutoria.periodo || 'Pendiente' }}</p>
+              <p class="text-gray-800 text-sm sm:text-base">{{ tutoria.periodo || 'Pendiente' }}</p>
             </div>
             <div class="text-gray-600">
               <p class="text-sm font-medium text-gray-500">Día</p>
-              <p class="text-gray-800">{{ capitalize(tutoria) || 'Pendiente' }}</p>
+              <p class="text-gray-800 text-sm sm:text-base">
+                {{ capitalize(tutoria) || 'Pendiente' }}
+              </p>
             </div>
             <div class="text-gray-600">
               <p class="text-sm font-medium text-gray-500">Hora</p>
-              <p class="text-gray-800">{{ formatoHora(tutoria) || 'Pendiente' }}</p>
+              <p class="text-gray-800 text-sm sm:text-base">
+                {{ formatoHora(tutoria) || 'Pendiente' }}
+              </p>
             </div>
           </div>
           <button
             v-if="showSolicitarButton(tutoria)"
             @click="solicitarTutoria(tutoria.semestre)"
-            class="w-full mt-4 bg-lime-500 hover:bg-lime-600 text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg"
+            class="w-full mt-4 bg-lime-500 hover:bg-lime-600 text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg text-sm sm:text-base"
           >
             <span>Solicitar Tutoría</span>
             <svg
@@ -383,6 +514,7 @@
     </main>
 
     <!-- ==================== MODAL CAMBIAR CONTRASEÑA ==================== -->
+    <!-- (El resto del código del modal permanece igual) -->
     <Transition
       enter-active-class="transition ease-out duration-300"
       enter-from-class="opacity-0 scale-95"
@@ -747,7 +879,7 @@
     <!-- Modal de confirmación de tutoría -->
     <div
       v-if="mostrarModal"
-      class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50"
+      class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4"
     >
       <div class="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
         <h3 class="text-xl font-bold text-gray-900 mb-4">Solicitud de Tutoría</h3>
@@ -782,6 +914,7 @@ const isDownloading = ref(false)
 const successMessage = ref(null)
 const errorMessage = ref(null)
 const router = useRouter()
+const mobileMenuOpen = ref(false) // ✅ NUEVO: Estado del menú móvil
 
 // ==================== STATE - CAMBIO DE CONTRASEÑA ====================
 const showChangePasswordModal = ref(false)
@@ -798,6 +931,9 @@ const passwordForm = ref({
   newPassword: '',
   confirmPassword: '',
 })
+
+// ==================== (El resto del código JavaScript permanece igual) ====================
+// ... (todas las funciones fetchAlumnoData, fetchEstadoTutorias, etc.)
 
 // ==================== API CALLS - ALUMNO ====================
 const fetchAlumnoData = async () => {
@@ -974,7 +1110,6 @@ const handleChangePassword = async () => {
     const token = localStorage.getItem('accessToken')
 
     if (alumno.value.requires_password_change) {
-      // Primera vez - usar POST /api/alumnos/set-password
       const response = await axios.post('http://localhost:8000/api/alumnos/set-password', {
         num_control: passwordForm.value.num_control,
         contraseña_actual: passwordForm.value.currentPassword,
@@ -990,7 +1125,6 @@ const handleChangePassword = async () => {
         }, 2000)
       }
     } else {
-      // Cambios posteriores - usar PUT /api/alumnos/change-password
       const response = await axios.put(
         'http://localhost:8000/api/alumnos/change-password',
         {
@@ -1070,7 +1204,7 @@ const showSolicitarButton = (tutoria) => {
 const handleLogout = () => {
   localStorage.removeItem('accessToken')
   localStorage.removeItem('alumno')
-  router.push('/login_alumno')
+  router.push('/')
 }
 
 const solicitarTutoria = (semestre) => {
