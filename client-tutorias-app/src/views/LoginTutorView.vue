@@ -26,19 +26,55 @@
         <!-- Back Link -->
         <RouterLink
           to="/"
-          class="text-white mb-8 text-lg bg-orange-500 inline-block px-2 py-1 rounded-lg font-bold"
+          class="text-white mb-8 text-lg bg-orange-500 inline-block px-2 py-1 rounded-lg font-bold hover:bg-orange-600 transition-colors"
         >
           <HomeLogo></HomeLogo>
         </RouterLink>
 
         <!-- Form -->
         <form @submit.prevent="handleSubmit" class="space-y-8">
-          <h1 class="text-4xl font-bold text-gray-800 mb-10">INICIAR SESIÓN</h1>
+          <!-- Título con ícono -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="h-14 w-14 bg-orange-100 rounded-xl flex items-center justify-center">
+                <svg
+                  class="w-7 h-7 text-orange-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h1 class="text-3xl font-bold text-gray-800">Tutor</h1>
+                <p class="text-sm text-gray-600">Gestión de tutorías</p>
+              </div>
+            </div>
+          </div>
 
           <!-- Mostrar mensaje de error -->
-          <p v-if="errorMessage" class="text-red-500 text-sm font-medium">
-            {{ errorMessage }}
-          </p>
+          <Transition
+            enter-active-class="transition ease-out duration-200"
+            enter-from-class="opacity-0 translate-y-1"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition ease-in duration-150"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0"
+          >
+            <div
+              v-if="errorMessage"
+              class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-red-800 text-sm font-medium"
+            >
+              {{ errorMessage }}
+            </div>
+          </Transition>
+
           <div class="space-y-6">
             <div class="space-y-2">
               <label for="correo" class="block text-lg font-medium text-gray-700"> Correo </label>
@@ -47,7 +83,7 @@
                 v-model="correo"
                 type="email"
                 required
-                class="w-full px-6 py-3 text-lg rounded-lg bg-white border-0 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-coral-400"
+                class="w-full px-6 py-3 text-lg rounded-lg bg-white border-0 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-orange-400 transition-all"
                 placeholder="Correo electrónico"
               />
             </div>
@@ -62,13 +98,13 @@
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'"
                   required
-                  class="w-full px-6 py-3 text-lg rounded-lg bg-white border-0 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-coral-400"
+                  class="w-full px-6 py-3 text-lg rounded-lg bg-white border-0 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-orange-400 transition-all"
                   placeholder="Contraseña"
                 />
                 <button
                   type="button"
                   @click="showPassword = !showPassword"
-                  class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-xl"
+                  class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-xl hover:text-gray-700 transition-colors"
                 >
                   <span v-if="showPassword">
                     <ShowEye />
@@ -83,26 +119,63 @@
 
           <button
             type="submit"
-            class="w-full bg-orange-500 text-white rounded-lg px-6 py-3 text-lg font-medium hover:bg-navy-700 transition-colors"
+            :disabled="isLoading"
+            class="w-full bg-orange-500 text-white rounded-lg px-6 py-3 text-lg font-medium hover:bg-orange-600 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            ENTRAR
+            <svg
+              v-if="isLoading"
+              class="animate-spin h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            {{ isLoading ? 'Iniciando sesión...' : 'ENTRAR' }}
           </button>
         </form>
+
+        <!-- Info adicional -->
+        <div class="mt-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
+          <div class="flex items-start gap-2">
+            <svg
+              class="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <p class="text-sm text-orange-800">
+              Acceso exclusivo para tutores. Utiliza tu correo institucional para ingresar al
+              sistema.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Right Side - Illustration -->
     <div class="w-1/2 flex items-center justify-center relative z-10">
       <div class="relative w-4/5 h-4/5">
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-coral-400 to-coral-600 rounded-full opacity-75 blur-2xl"
-        ></div>
-        <div
-          class="absolute inset-4 bg-gradient-to-tr from-navy-400 to-coral-300 rounded-full opacity-75 blur-xl"
-        ></div>
         <img
           src="/tutores.png"
-          alt="Ilustración de administrador trabajando"
+          alt="Ilustración de tutor"
           class="absolute inset-0 w-full h-full object-contain rounded-3xl z-10 animate-float-3"
         />
       </div>
@@ -115,76 +188,70 @@ import { ref } from 'vue'
 import HomeLogo from '../components/icons/HomeLogo.vue'
 import ShowEye from '@/components/icons/ShowEye.vue'
 import HideEye from '@/components/icons/HideEye.vue'
-import { useRouter } from 'vue-router' // Para redirigir al dashboard
-import axios from 'axios' // Importa Axios para realizar la solicitud HTTP
+import { RouterLink, useRouter } from 'vue-router'
+import axios from 'axios'
 
+// ==================== STATE ====================
 const correo = ref('')
 const password = ref('')
 const showPassword = ref(false)
-
-// Estado para manejar errores
 const errorMessage = ref('')
-
-// Router para manejar redirección
+const isLoading = ref(false)
 const router = useRouter()
 
+// ==================== LOGIN HANDLER ====================
 const handleSubmit = async () => {
+  isLoading.value = true
+  errorMessage.value = ''
+
   try {
-    // 1. Preparamos los datos en el formato 'form-data'
     const formData = new URLSearchParams()
-    formData.append('username', correo.value) // El endpoint probablemente espera 'username'
+    formData.append('username', correo.value)
     formData.append('password', password.value)
 
-    // 2. Hacemos la petición POST
     const response = await axios.post('http://localhost:8000/api/tutores/login', formData, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     })
 
-    // 3. Si el login es exitoso, la respuesta contendrá el token
     if (response.status === 200 && response.data.access_token) {
-      console.log('Inicio de sesión exitoso:', response.data)
+      console.log('✅ Inicio de sesión exitoso:', response.data)
 
-      // 4. Guardamos el TOKEN en localStorage, no los datos del usuario
+      // Guardar token y rol
       localStorage.setItem('accessToken', response.data.access_token)
-
-      // (Opcional) Si necesitas diferenciar el rol
       localStorage.setItem('userRole', 'tutor')
 
-      // (Opcional) Si el backend devuelve datos del tutor, puedes guardarlos
-      // if (response.data.tutor) {
-      //   localStorage.setItem('tutorData', JSON.stringify(response.data.tutor))
-      // }
-
-      router.push('/login_tutor/dashboard')
+      // Redirigir al dashboard
+      router.push('/tutor/dashboard')
     }
   } catch (error) {
-    console.error('Error en la solicitud:', error)
+    console.error('❌ Error en la solicitud:', error)
     if (error.response && error.response.data && error.response.data.detail) {
       errorMessage.value = error.response.data.detail
     } else {
       errorMessage.value = 'Error de conexión o credenciales incorrectas.'
     }
+  } finally {
+    isLoading.value = false
   }
 }
 
-// Definimos colores personalizados para los círculos
+// ==================== ANIMATED CIRCLES ====================
 const circles = [
-  { color: 'bg-orange-500', size: 96, top: 10, left: 5 },    // Naranja principal
-  { color: 'bg-orange-300', size: 64, top: 20, left: 80 },   // Naranja suave
-  { color: 'bg-amber-400', size: 128, top: 70, left: 20 },   // Dorado cálido
-  { color: 'bg-amber-100', size: 80, top: 40, left: 95 },     // Gris muy claro
-  { color: 'bg-orange-600', size: 112, top: 85, left: 70 },  // Naranja intenso
-  { color: 'bg-amber-200', size: 48, top: 25, left: 30 },    // Amarillo crema
-  { color: 'bg-orange-400', size: 72, top: 60, left: 50 },   // Naranja medio
-  { color: 'bg-amber-200', size: 56, top: 5, left: 90 },      // Gris claro
-  { color: 'bg-orange-300', size: 88, top: 80, left: 40 },   // Naranja suave
-  { color: 'bg-amber-300', size: 40, top: 90, left: 10 },    // Dorado suave
-  { color: 'bg-orange-500', size: 104, top: 15, left: 60 },  // Naranja principal
-  { color: 'bg-amber-100', size: 68, top: 50, left: 85 },     // Gris muy claro
-];
-
+  { color: 'bg-orange-500', size: 96, top: 10, left: 5 },
+  { color: 'bg-orange-300', size: 64, top: 20, left: 80 },
+  { color: 'bg-amber-400', size: 128, top: 70, left: 20 },
+  { color: 'bg-amber-100', size: 80, top: 40, left: 95 },
+  { color: 'bg-orange-600', size: 112, top: 85, left: 70 },
+  { color: 'bg-amber-200', size: 48, top: 25, left: 30 },
+  { color: 'bg-orange-400', size: 72, top: 60, left: 50 },
+  { color: 'bg-amber-200', size: 56, top: 5, left: 90 },
+  { color: 'bg-orange-300', size: 88, top: 80, left: 40 },
+  { color: 'bg-amber-300', size: 40, top: 90, left: 10 },
+  { color: 'bg-orange-500', size: 104, top: 15, left: 60 },
+  { color: 'bg-amber-100', size: 68, top: 50, left: 85 },
+]
 </script>
 
 <style scoped>
@@ -228,45 +295,5 @@ const circles = [
 
 .animate-float-3 {
   animation: float-3 5s ease-in-out infinite;
-}
-
-/* Colores personalizados */
-.bg-coral-300 {
-  background-color: #ffa07a;
-}
-.bg-coral-400 {
-  background-color: #ff7f50;
-}
-.bg-coral-500 {
-  background-color: #ff6347;
-}
-.bg-coral-600 {
-  background-color: #ff4500;
-}
-
-.bg-navy-300 {
-  background-color: #4a5568;
-}
-.bg-navy-400 {
-  background-color: #2d3748;
-}
-.bg-navy-500 {
-  background-color: #1a202c;
-}
-.bg-navy-600 {
-  background-color: #171923;
-}
-.bg-navy-700 {
-  background-color: #0f131a;
-}
-
-.bg-brown-200 {
-  background-color: #bc8f8f;
-}
-.bg-brown-300 {
-  background-color: #a0522d;
-}
-.bg-brown-400 {
-  background-color: #8b4513;
 }
 </style>

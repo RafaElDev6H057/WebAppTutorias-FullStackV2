@@ -26,17 +26,17 @@ const router = createRouter({
       component: () => import('../views/LoginTutorView.vue'),
     },
     {
-      path: '/login_alumno/dashboard',
+      path: '/alumno/dashboard',
       name: 'panel_alumno',
       component: () => import('../views/PanelAlumnoView.vue'),
     },
     {
-      path: '/login_tutor/dashboard',
+      path: '/tutor/dashboard',
       name: 'panel_tutor',
       component: () => import('../views/PanelTutorView.vue'),
     },
     {
-      path: '/login_admin/dashboard',
+      path: '/admin/dashboard',
       name: 'panel_admin',
       component: () => import('../views/PanelAdminView.vue'),
     },

@@ -237,7 +237,7 @@ const handleSubmit = async () => {
       localStorage.setItem('userRole', userRole)
 
       // Redirigir al dashboard de admin
-      router.push('/login_admin/dashboard')
+      router.push('/admin/dashboard')
     }
   } catch (error) {
     console.error('❌ Error en la solicitud:', error)

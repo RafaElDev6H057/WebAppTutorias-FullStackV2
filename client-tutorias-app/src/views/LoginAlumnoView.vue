@@ -26,19 +26,54 @@
         <!-- Back Link -->
         <RouterLink
           to="/"
-          class="text-white mb-8 text-lg bg-lime-600 inline-block px-2 py-1 rounded-lg font-bold"
+          class="text-white mb-8 text-lg bg-lime-600 inline-block px-2 py-1 rounded-lg font-bold hover:bg-lime-700 transition-colors"
         >
           <HomeLogo></HomeLogo>
         </RouterLink>
 
         <!-- Form -->
         <form @submit.prevent="handleSubmit" class="space-y-8">
-          <h1 class="text-4xl font-bold text-gray-800 mb-10">INICIAR SESIÓN</h1>
+          <!-- Título con ícono -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="h-14 w-14 bg-lime-100 rounded-xl flex items-center justify-center">
+                <svg
+                  class="w-7 h-7 text-lime-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h1 class="text-3xl font-bold text-gray-800">Alumno</h1>
+                <p class="text-sm text-gray-600">Acceso a tutorías</p>
+              </div>
+            </div>
+          </div>
 
           <!-- Mostrar mensaje de error -->
-          <p v-if="errorMessage" class="text-red-500 text-sm font-medium">
-            {{ errorMessage }}
-          </p>
+          <Transition
+            enter-active-class="transition ease-out duration-200"
+            enter-from-class="opacity-0 translate-y-1"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition ease-in duration-150"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0"
+          >
+            <div
+              v-if="errorMessage"
+              class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-red-800 text-sm font-medium"
+            >
+              {{ errorMessage }}
+            </div>
+          </Transition>
 
           <div class="space-y-6">
             <div class="space-y-2">
@@ -50,7 +85,7 @@
                 v-model="usuario"
                 type="text"
                 required
-                class="w-full px-6 py-3 text-lg rounded-lg bg-white border-0 text-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-purple-500"
+                class="w-full px-6 py-3 text-lg rounded-lg bg-white border-0 text-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-lime-500 transition-all"
                 placeholder="Número de Control"
               />
             </div>
@@ -65,13 +100,13 @@
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'"
                   required
-                  class="w-full px-6 py-3 text-lg rounded-lg bg-white border-0 text-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-purple-500"
+                  class="w-full px-6 py-3 text-lg rounded-lg bg-white border-0 text-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-lime-500 transition-all"
                   placeholder="Contraseña"
                 />
                 <button
                   type="button"
                   @click="showPassword = !showPassword"
-                  class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl"
+                  class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl hover:text-gray-600 transition-colors"
                 >
                   <span v-if="showPassword">
                     <ShowEye />
@@ -86,21 +121,63 @@
 
           <button
             type="submit"
-            class="w-full bg-lime-600 text-white rounded-lg px-6 py-3 text-lg font-medium hover:bg-lime-700 transition-colors"
+            :disabled="isLoading"
+            class="w-full bg-lime-600 text-white rounded-lg px-6 py-3 text-lg font-medium hover:bg-lime-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            ENTRAR
+            <svg
+              v-if="isLoading"
+              class="animate-spin h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            {{ isLoading ? 'Iniciando sesión...' : 'ENTRAR' }}
           </button>
         </form>
+
+        <!-- Info adicional -->
+        <div class="mt-6 p-4 bg-lime-50 rounded-lg border border-lime-200">
+          <div class="flex items-start gap-2">
+            <svg
+              class="w-5 h-5 text-lime-600 flex-shrink-0 mt-0.5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <p class="text-sm text-lime-800">
+              Acceso exclusivo para alumnos. Utiliza tu número de control y contraseña para ingresar
+              al sistema de tutorías.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Right Side - Illustration -->
     <div class="w-1/2 flex items-center justify-center relative z-10">
       <div class="relative w-4/5 h-4/5">
-        
         <img
           src="/alumno2.png"
-          alt="Ilustración de tutor trabajando"
+          alt="Ilustración de alumno"
           class="absolute inset-0 w-full h-full object-contain rounded-3xl z-10 animate-float-1"
         />
       </div>
@@ -113,84 +190,56 @@ import HomeLogo from '@/components/icons/HomeLogo.vue'
 import ShowEye from '@/components/icons/ShowEye.vue'
 import HideEye from '@/components/icons/HideEye.vue'
 import { ref } from 'vue'
-import axios from 'axios' // Importa Axios para realizar la solicitud HTTP
-import { useRouter } from 'vue-router' // Para redirigir al dashboard
+import axios from 'axios'
+import { RouterLink, useRouter } from 'vue-router'
 
-// Estados del formulario
+// ==================== STATE ====================
 const usuario = ref('')
 const password = ref('')
 const showPassword = ref(false)
-
-// Estado para manejar errores
 const errorMessage = ref('')
-
-// Router para manejar redirección
+const isLoading = ref(false)
 const router = useRouter()
 
-// Lógica del inicio de sesión
+// ==================== LOGIN HANDLER ====================
 const handleSubmit = async () => {
+  isLoading.value = true
+  errorMessage.value = ''
+
   try {
-    // 1. Preparamos los datos en el formato 'form-data'
     const formData = new URLSearchParams()
     formData.append('username', usuario.value)
     formData.append('password', password.value)
 
-    // 2. Hacemos la petición POST
     const response = await axios.post('http://localhost:8000/api/alumnos/login', formData, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     })
 
-    // 3. Si el login es exitoso, la respuesta contendrá el token
     if (response.status === 200 && response.data.access_token) {
-      console.log('Inicio de sesión exitoso:', response.data)
+      console.log('✅ Inicio de sesión exitoso:', response.data)
 
-      // 4. Guardamos el TOKEN en localStorage, no los datos del usuario
+      // Guardar token y rol
       localStorage.setItem('accessToken', response.data.access_token)
-
-      // (Opcional) Puedes guardar otros datos si los necesitas, pero el token es lo crucial
       localStorage.setItem('userRole', 'alumno')
 
-      router.push('/login_alumno/dashboard')
+      // Redirigir al dashboard
+      router.push('/alumno/dashboard')
     }
   } catch (error) {
-    console.error('Error en la solicitud:', error)
+    console.error('❌ Error en la solicitud:', error)
     if (error.response && error.response.data && error.response.data.detail) {
       errorMessage.value = error.response.data.detail
     } else {
       errorMessage.value = 'Error de conexión o credenciales incorrectas.'
     }
+  } finally {
+    isLoading.value = false
   }
 }
-// const handleSubmit = async () => {
-//   try {
-//     // Llama al endpoint de login en el backend
 
-//     const response = await axios.post('http://localhost:8000/api/alumnos/login', {
-//       num_control: usuario.value,
-//       contraseña: password.value,
-//     })
-
-//     // Verifica si la respuesta fue exitosa
-//     if (response.status === 200) {
-//       // console.log('Inicio de sesión exitoso:', response.data)
-
-//       // Opcional: guarda el token o datos del usuario en el almacenamiento local
-//       localStorage.setItem('alumno', JSON.stringify(response.data))
-
-//       // Redirige al dashboard
-//       router.push('/login_alumno/dashboard')
-//     } else {
-//       // Maneja errores como credenciales inválidas
-//       errorMessage.value = response.data.message || 'Credenciales incorrectas'
-//     }
-//   } catch (error) {
-//     // console.error('Error en la solicitud:', error.response.data.message)
-//     errorMessage.value = error.response.data.message || 'Credenciales incorrectas'
-//   }
-// }
-
+// ==================== ANIMATED CIRCLES ====================
 const circles = [
   { color: 'bg-lime-300', size: 96, top: 10, left: 5 },
   { color: 'bg-lime-200', size: 64, top: 20, left: 80 },
@@ -204,8 +253,6 @@ const circles = [
   { color: 'bg-lime-300', size: 40, top: 90, left: 10 },
   { color: 'bg-lime-500', size: 104, top: 15, left: 60 },
   { color: 'bg-lime-200', size: 68, top: 50, left: 85 },
-
-  // 🔹 Nuevos círculos agregados
   { color: 'bg-lime-300', size: 52, top: 5, left: 15 },
   { color: 'bg-lime-400', size: 60, top: 10, left: 50 },
   { color: 'bg-lime-500', size: 100, top: 55, left: 10 },
@@ -214,14 +261,7 @@ const circles = [
   { color: 'bg-lime-100', size: 44, top: 35, left: 60 },
   { color: 'bg-lime-200', size: 84, top: 25, left: 10 },
   { color: 'bg-lime-400', size: 50, top: 45, left: 75 },
-];
-
-
-
-
-
-
-
+]
 </script>
 
 <style scoped>
