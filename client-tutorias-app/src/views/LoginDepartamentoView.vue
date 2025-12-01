@@ -182,11 +182,11 @@
 
     <!-- Right Side - Illustration -->
     <div class="w-1/2 flex items-center justify-center relative z-10 rounded-3xl">
-      <div class="relative w-4/5 h-4/5">
+      <div class="relative w-1/2 h-1/2">
         <img
           :src="departamentoConfig.imagen"
           :alt="`Ilustración de ${departamentoConfig.titulo}`"
-          class="absolute inset-0 w-full h-full object-contain rounded-3xl z-10 animate-float-3"
+          class="absolute inset-0 w-full h-full object-contain rounded-3xl z-10"
         />
       </div>
     </div>
@@ -225,7 +225,7 @@ const departamentosConfig = {
     iconColor: 'text-teal-600',
     buttonColor: 'bg-teal-600 hover:bg-teal-700',
     ringColor: 'teal-500',
-    imagen: '/psicologia.png', // Puedes cambiar la imagen
+    imagen: '/EscudoITSF.png', // Puedes cambiar la imagen
     rol: 'psicologia',
     circles: [
       { color: 'bg-teal-300', size: 96, top: 10, left: 5 },
@@ -250,7 +250,7 @@ const departamentosConfig = {
     iconColor: 'text-indigo-600',
     buttonColor: 'bg-indigo-600 hover:bg-indigo-700',
     ringColor: 'indigo-500',
-    imagen: '/ciencias.png', // Puedes cambiar la imagen
+    imagen: '/EscudoITSF.png', // Puedes cambiar la imagen
     rol: 'ciencias_basicas',
     circles: [
       { color: 'bg-indigo-300', size: 96, top: 10, left: 5 },
@@ -275,7 +275,7 @@ const departamentosConfig = {
     iconColor: 'text-rose-600',
     buttonColor: 'bg-rose-600 hover:bg-rose-700',
     ringColor: 'rose-500',
-    imagen: '/jefatura.png', // Puedes cambiar la imagen
+    imagen: '/EscudoITSF.png', // Puedes cambiar la imagen
     rol: 'jefatura_academica',
     circles: [
       { color: 'bg-rose-300', size: 96, top: 10, left: 5 },

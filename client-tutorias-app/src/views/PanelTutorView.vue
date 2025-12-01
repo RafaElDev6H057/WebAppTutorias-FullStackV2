@@ -634,7 +634,7 @@ const fetchAssignedStudents = async (page) => {
     return
   }
 
-  loading.value = true
+  // loading.value = true
   error.value = null
 
   try {
