@@ -72,7 +72,7 @@ def login_tutor(
         expires_delta=access_token_expires
     )
     
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "rol": "tutor"}
 
 
 @router.get("/me", response_model=TutorRead, summary="Obtener datos del Tutor autenticado")

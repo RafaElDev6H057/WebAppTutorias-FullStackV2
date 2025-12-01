@@ -80,7 +80,7 @@ def login(
         expires_delta=access_token_expires
     )
     
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "rol": "alumno"}
 
 
 @router.post("/set-password", summary="Establecer contraseña permanente para Alumno")
