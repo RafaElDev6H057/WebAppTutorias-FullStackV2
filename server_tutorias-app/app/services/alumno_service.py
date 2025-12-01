@@ -24,13 +24,6 @@ from app.core.security import get_password_hash, verify_password
 def get_alumno_by_num_control(db: Session, num_control: str) -> Alumno | None:
     """
     Busca un alumno por su número de control único.
-    
-    Args:
-        db: Sesión de base de datos.
-        num_control: Número de control del alumno a buscar.
-    
-    Returns:
-        Instancia de Alumno si existe, None en caso contrario.
     """
     return db.exec(select(Alumno).where(Alumno.num_control == num_control)).first()
 
@@ -38,16 +31,6 @@ def get_alumno_by_num_control(db: Session, num_control: str) -> Alumno | None:
 def create_alumno(db: Session, data: AlumnoCreate) -> Alumno:
     """
     Crea un nuevo alumno en el sistema.
-    
-    Args:
-        db: Sesión de base de datos.
-        data: Datos del alumno a crear.
-    
-    Returns:
-        Instancia del alumno creado.
-    
-    Raises:
-        HTTPException: Si el número de control ya está registrado.
     """
     db_alumno = get_alumno_by_num_control(db, data.num_control)
     
@@ -77,16 +60,6 @@ def create_alumno(db: Session, data: AlumnoCreate) -> Alumno:
 def update_alumno(db: Session, alumno: Alumno, data: AlumnoUpdate) -> Alumno:
     """
     Actualiza los datos de un alumno existente.
-    
-    Si se proporciona una nueva contraseña, esta será hasheada antes de guardarse.
-    
-    Args:
-        db: Sesión de base de datos.
-        alumno: Instancia del alumno a actualizar.
-        data: Datos actualizados del alumno.
-    
-    Returns:
-        Instancia del alumno actualizado.
     """
     update_data = data.model_dump(exclude_unset=True)
     
@@ -94,7 +67,11 @@ def update_alumno(db: Session, alumno: Alumno, data: AlumnoUpdate) -> Alumno:
         new_password = update_data["contraseña"]
         
         if new_password:
+            # --- CORRECCIÓN CRÍTICA ---
+            # Si el Admin cambia la contraseña, la hasheamos Y desactivamos la bandera
+            # de cambio obligatorio, asumiendo que el Admin estableció una contraseña válida.
             update_data["contraseña"] = get_password_hash(new_password)
+            update_data["requires_password_change"] = False 
         else:
             del update_data["contraseña"]
     
@@ -111,30 +88,6 @@ def update_alumno(db: Session, alumno: Alumno, data: AlumnoUpdate) -> Alumno:
 def process_and_load_excel(db: Session, file: UploadFile) -> int:
     """
     Procesa y carga alumnos desde un archivo Excel.
-    
-    Este proceso elimina todos los alumnos existentes y los reemplaza
-    con los datos del archivo. Los alumnos son creados con contraseñas
-    temporales basadas en su número de control.
-    
-    Formato esperado del Excel:
-        - numero_control: Número de control del alumno
-        - nombre: Nombre(s)
-        - apellido_paterno: Apellido paterno
-        - apellido_materno: Apellido materno (opcional)
-        - carrera: Nombre de la carrera
-        - semestre: Semestre actual
-        - estatus: Estado del alumno
-        - email: Correo electrónico
-    
-    Args:
-        db: Sesión de base de datos.
-        file: Archivo Excel cargado.
-    
-    Returns:
-        Número de alumnos cargados exitosamente.
-    
-    Raises:
-        HTTPException: Si hay errores de validación o procesamiento.
     """
     try:
         column_map = {
@@ -181,6 +134,7 @@ def process_and_load_excel(db: Session, file: UploadFile) -> int:
             if 'estado' not in row_data and 'estatus' in row_data:
                 row_data['estado'] = row_data.pop('estatus')
             
+            # Contraseña temporal en texto plano (flag requires_password_change=True por defecto en modelo)
             row_data["contraseña"] = f'{row_data["num_control"]}itsf'
             alumnos_a_crear.append(Alumno(**row_data))
         
@@ -208,20 +162,6 @@ def process_and_load_excel(db: Session, file: UploadFile) -> int:
 def set_permanent_password(db: Session, data: AlumnoSetPassword) -> dict:
     """
     Establece una contraseña permanente para un alumno con contraseña temporal.
-    
-    El alumno debe proporcionar su contraseña temporal actual para
-    poder establecer una nueva contraseña permanente.
-    
-    Args:
-        db: Sesión de base de datos.
-        data: Datos de establecimiento de contraseña (num_control, contraseña actual y nueva).
-    
-    Returns:
-        Diccionario con mensaje de confirmación.
-    
-    Raises:
-        HTTPException: Si el alumno no existe, la contraseña actual es incorrecta
-                    o el alumno ya tiene contraseña permanente.
     """
     alumno = get_alumno_by_num_control(db, data.num_control)
     
@@ -234,7 +174,15 @@ def set_permanent_password(db: Session, data: AlumnoSetPassword) -> dict:
             detail="Este alumno ya tiene contraseña permanente."
         )
     
-    if data.contraseña_actual != alumno.contraseña:
+    # Validación Robusta: Intentamos comparar texto plano O verificar hash
+    # Esto cubre el caso donde un Admin reseteó la pass pero la flag quedó True (casos viejos)
+    is_valid = False
+    if data.contraseña_actual == alumno.contraseña: # Caso Excel (Texto plano)
+        is_valid = True
+    elif verify_password(data.contraseña_actual, alumno.contraseña): # Caso Admin Reset (Hash)
+        is_valid = True
+        
+    if not is_valid:
         raise HTTPException(status_code=401, detail="La contraseña actual es incorrecta.")
     
     hashed_password = get_password_hash(data.nueva_contraseña)
@@ -249,19 +197,7 @@ def set_permanent_password(db: Session, data: AlumnoSetPassword) -> dict:
 
 def change_password(db: Session, alumno: Alumno, data: AlumnoUpdatePassword) -> dict:
     """
-    Cambia la contraseña de un alumno autenticado que ya tiene contraseña permanente.
-    
-    Args:
-        db: Sesión de base de datos.
-        alumno: Instancia del alumno autenticado.
-        data: Datos de cambio de contraseña (contraseña actual y nueva).
-    
-    Returns:
-        Diccionario con mensaje de confirmación.
-    
-    Raises:
-        HTTPException: Si el alumno aún requiere establecer contraseña inicial
-                    o la contraseña actual es incorrecta.
+    Cambia la contraseña de un alumno autenticado.
     """
     if alumno.requires_password_change:
         raise HTTPException(
@@ -284,16 +220,6 @@ def change_password(db: Session, alumno: Alumno, data: AlumnoUpdatePassword) -> 
 def get_alumno_tutoria_status(db: Session, id_alumno: int) -> AlumnoTutoriaStatus:
     """
     Obtiene el estado de progreso de tutorías de un alumno.
-    
-    Calcula el número de tutorías completadas y determina si el alumno
-    es elegible para obtener su constancia de tutorías.
-    
-    Args:
-        db: Sesión de base de datos.
-        id_alumno: Identificador del alumno.
-    
-    Returns:
-        Estado de tutorías del alumno con contador y elegibilidad.
     """
     query = select(func.count(Tutoria.id_tutoria)).where(  # type: ignore
         Tutoria.alumno_id == id_alumno,

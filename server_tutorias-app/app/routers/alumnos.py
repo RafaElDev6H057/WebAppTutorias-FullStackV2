@@ -50,8 +50,9 @@ def login(
     """
     Autentica a un alumno y genera un token JWT.
     
-    Acepta tanto contraseñas temporales (sin hashear) como permanentes (hasheadas).
-    El alumno debe usar su número de control como username.
+    Soporta Login Híbrido:
+    1. Intenta validar contraseña como Hash (seguro).
+    2. Si falla y el alumno requiere cambio, intenta validar como texto plano (temporal).
     """
     alumno = alumno_service.get_alumno_by_num_control(session, form_data.username)
     
@@ -63,10 +64,22 @@ def login(
     
     is_password_correct = False
     
-    if alumno.requires_password_change:
-        is_password_correct = (form_data.password == alumno.contraseña)
-    else:
-        is_password_correct = security.verify_password(form_data.password, alumno.contraseña)
+    # --- VALIDACIÓN ROBUSTA ---
+    
+    # 1. Intento Prioritario: Verificar Hash (Lo estándar y seguro)
+    # Esto cubre: Alumnos activos y Alumnos cuya contraseña reseteó el Admin
+    try:
+        if security.verify_password(form_data.password, alumno.contraseña):
+            is_password_correct = True
+    except Exception:
+        # verify_password puede fallar si la BD tiene texto plano que no parece hash (caso Excel)
+        pass 
+        
+    # 2. Intento Secundario: Texto Plano (Solo si tiene la bandera activa)
+    # Esto cubre: Alumnos recién importados de Excel
+    if not is_password_correct and alumno.requires_password_change:
+        if form_data.password == alumno.contraseña:
+            is_password_correct = True
     
     if not is_password_correct:
         raise HTTPException(
@@ -80,6 +93,7 @@ def login(
         expires_delta=access_token_expires
     )
     
+    # Devolvemos el rol explícito 'alumno'
     return {"access_token": access_token, "token_type": "bearer", "rol": "alumno"}
 
 
@@ -87,9 +101,6 @@ def login(
 def set_password(data: AlumnoSetPassword, session: Session = Depends(get_session)):
     """
     Permite a un alumno establecer su contraseña permanente.
-    
-    El alumno debe proporcionar su contraseña temporal para validar su identidad
-    antes de establecer una nueva contraseña permanente. No requiere autenticación.
     """
     return alumno_service.set_permanent_password(db=session, data=data)
 
@@ -102,9 +113,6 @@ def change_password(
 ):
     """
     Permite a un alumno autenticado cambiar su contraseña permanente.
-    
-    Requiere proporcionar la contraseña actual para validación.
-    Solo disponible para alumnos que ya establecieron su contraseña permanente.
     """
     return alumno_service.change_password(db=session, alumno=current_alumno, data=data)
 
@@ -118,18 +126,6 @@ async def handle_generate_constancia_pdf(
     current_alumno: Alumno = Depends(get_current_alumno_user),
     session: Session = Depends(get_session)
 ):
-    """
-    Genera y descarga la constancia de tutorías del alumno autenticado en formato PDF.
-    
-    El alumno debe haber completado al menos el número mínimo de tutorías requeridas
-    para ser elegible. El PDF incluye información del alumno y registro de tutorías.
-    
-    Returns:
-        Stream de bytes del archivo PDF generado.
-    
-    Raises:
-        HTTPException: Si el alumno no es elegible o hay error en la generación.
-    """
     try:
         pdf_stream: io.BytesIO = pdf_generator_service.generate_constancia_pdf(
             db=session,
@@ -169,20 +165,6 @@ def get_alumnos(
     size: int = Query(10, gt=0, le=100),
     search: Optional[str] = Query(None, min_length=3)
 ):
-    """
-    Obtiene una lista paginada de alumnos con búsqueda opcional.
-    
-    Accesible para administradores y tutores. Permite buscar por nombre,
-    apellidos o número de control.
-    
-    Args:
-        page: Número de página (inicia en 1).
-        size: Cantidad de registros por página (máximo 100).
-        search: Término de búsqueda opcional (mínimo 3 caracteres).
-    
-    Returns:
-        Página de alumnos con total de registros.
-    """
     query = select(Alumno)
     
     if search:
@@ -207,14 +189,6 @@ def get_alumnos(
 
 @router.get("/me", response_model=AlumnoRead, summary="Obtener datos del Alumno autenticado")
 def read_current_alumno(current_alumno: Alumno = Depends(get_current_alumno_user)):
-    """
-    Obtiene el perfil completo del alumno autenticado.
-    
-    Requiere token de autenticación de alumno.
-    
-    Returns:
-        Datos completos del perfil del alumno.
-    """
     return current_alumno
 
 
@@ -227,15 +201,6 @@ def get_tutoria_status(
     current_alumno: Alumno = Depends(get_current_alumno_user),
     session: Session = Depends(get_session)
 ):
-    """
-    Obtiene el progreso de tutorías del alumno autenticado.
-    
-    Retorna el número de tutorías completadas y si el alumno es elegible
-    para obtener su constancia de tutorías.
-    
-    Returns:
-        Estado de tutorías con contador y elegibilidad.
-    """
     return alumno_service.get_alumno_tutoria_status(
         db=session,
         id_alumno=current_alumno.id_alumno # type: ignore
@@ -248,16 +213,6 @@ def upload_alumnos_from_excel(
     session: Session = Depends(get_session),
     current_admin: Administrador = Depends(get_current_admin_user)
 ):
-    """
-    Carga masiva de alumnos desde un archivo Excel.
-    
-    Reemplaza todos los alumnos existentes con los datos del archivo.
-    Los alumnos son creados con contraseñas temporales.
-    Solo accesible por administradores.
-    
-    Returns:
-        Mensaje de confirmación con número de alumnos cargados.
-    """
     alumnos_cargados = alumno_service.process_and_load_excel(db=session, file=file)
     
     return {
@@ -272,14 +227,6 @@ def get_alumno(
     session: Session = Depends(get_session),
     current_admin: Administrador = Depends(get_current_admin_user)
 ):
-    """
-    Obtiene los datos de un alumno específico por su ID.
-    
-    Solo accesible por administradores.
-    
-    Raises:
-        HTTPException: Si el alumno no existe.
-    """
     alumno = session.get(Alumno, id_alumno)
     
     if not alumno:
@@ -299,15 +246,6 @@ def create_alumno(
     session: Session = Depends(get_session),
     current_admin: Administrador = Depends(get_current_admin_user)
 ):
-    """
-    Crea un nuevo alumno manualmente.
-    
-    El alumno es creado con contraseña permanente (no temporal).
-    Solo accesible por administradores.
-    
-    Returns:
-        Datos del alumno creado.
-    """
     return alumno_service.create_alumno(db=session, data=data)
 
 
@@ -321,10 +259,8 @@ def update_alumno(
     """
     Actualiza los datos de un alumno existente.
     
-    Solo accesible por administradores.
-    
-    Raises:
-        HTTPException: Si el alumno no existe.
+    Si el Admin proporciona una nueva contraseña, esta será hasheada
+    y el alumno podrá loguearse con ella inmediatamente.
     """
     alumno = session.get(Alumno, id_alumno)
     
@@ -340,15 +276,6 @@ def delete_alumno(
     session: Session = Depends(get_session),
     current_admin: Administrador = Depends(get_current_admin_user)
 ):
-    """
-    Elimina un alumno del sistema.
-    
-    Solo accesible por administradores.
-    Esta acción es permanente y no puede deshacerse.
-    
-    Raises:
-        HTTPException: Si el alumno no existe.
-    """
     alumno = session.get(Alumno, id_alumno)
     
     if not alumno:

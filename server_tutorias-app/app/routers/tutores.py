@@ -40,8 +40,9 @@ def login_tutor(
     """
     Autentica a un tutor y genera un token JWT.
     
-    Acepta tanto contraseñas temporales (sin hashear) como permanentes (hasheadas).
-    El tutor debe usar su correo electrónico como username.
+    Soporta Login Híbrido:
+    1. Intenta validar contraseña como Hash (seguro).
+    2. Si falla y el tutor requiere cambio, intenta validar como texto plano (temporal).
     """
     tutor = tutor_service.get_tutor_by_email(session, form_data.username)
     
@@ -54,10 +55,22 @@ def login_tutor(
     
     is_password_correct = False
     
-    if tutor.requires_password_change:
-        is_password_correct = (form_data.password == tutor.contraseña)
-    else:
-        is_password_correct = security.verify_password(form_data.password, tutor.contraseña)
+    # --- VALIDACIÓN ROBUSTA (Idéntica a la corrección de Alumnos) ---
+    
+    # 1. Intento Prioritario: Verificar Hash
+    # Esto cubre tutores normales y aquellos a los que el Admin reseteó la contraseña
+    try:
+        if security.verify_password(form_data.password, tutor.contraseña):
+            is_password_correct = True
+    except Exception:
+        # Si la contraseña en BD es texto plano que no parece hash, verify podría fallar
+        pass
+    
+    # 2. Intento Secundario: Texto Plano (Solo si tiene la bandera activa)
+    # Esto cubre tutores recién creados por carga masiva o manual sin hash
+    if not is_password_correct and tutor.requires_password_change:
+        if form_data.password == tutor.contraseña:
+            is_password_correct = True
     
     if not is_password_correct:
         raise HTTPException(
@@ -79,11 +92,6 @@ def login_tutor(
 def read_current_tutor(current_tutor: Tutor = Depends(get_current_tutor_user)):
     """
     Obtiene el perfil completo del tutor autenticado.
-    
-    Requiere token de autenticación de tutor en la cabecera Authorization.
-    
-    Returns:
-        Datos completos del perfil del tutor.
     """
     return current_tutor
 
@@ -92,9 +100,6 @@ def read_current_tutor(current_tutor: Tutor = Depends(get_current_tutor_user)):
 def set_password(data: TutorSetPassword, session: Session = Depends(get_session)):
     """
     Permite a un tutor establecer su contraseña permanente.
-    
-    El tutor debe proporcionar su contraseña temporal para validar su identidad
-    antes de establecer una nueva contraseña permanente. No requiere autenticación.
     """
     return tutor_service.set_permanent_password(db=session, data=data)
 
@@ -107,9 +112,6 @@ def change_tutor_password(
 ):
     """
     Permite a un tutor autenticado cambiar su contraseña permanente.
-    
-    Requiere proporcionar la contraseña actual para validación.
-    Solo disponible para tutores que ya establecieron su contraseña permanente.
     """
     return tutor_service.change_password(db=session, tutor=current_tutor, data=data)
 
@@ -124,17 +126,6 @@ def get_tutores(
 ):
     """
     Obtiene una lista paginada de tutores con búsqueda opcional.
-    
-    Accesible solo para administradores. Permite buscar por nombre,
-    apellidos o correo electrónico.
-    
-    Args:
-        page: Número de página (inicia en 1).
-        size: Cantidad de registros por página (máximo 100).
-        search: Término de búsqueda opcional (mínimo 3 caracteres).
-    
-    Returns:
-        Página de tutores con total de registros.
     """
     query = select(Tutor)
     
@@ -166,11 +157,6 @@ def get_tutor(
 ):
     """
     Obtiene los datos de un tutor específico por su ID.
-    
-    Solo accesible por administradores.
-    
-    Raises:
-        HTTPException: Si el tutor no existe.
     """
     tutor = session.get(Tutor, id_tutor)
     
@@ -193,12 +179,6 @@ def create_tutor(
 ):
     """
     Crea un nuevo tutor manualmente.
-    
-    El tutor es creado con contraseña permanente (no temporal).
-    Solo accesible por administradores.
-    
-    Returns:
-        Datos del tutor creado.
     """
     return tutor_service.create_tutor(db=session, data=data)
 
@@ -213,10 +193,8 @@ def update_tutor(
     """
     Actualiza los datos de un tutor existente.
     
-    Solo accesible por administradores.
-    
-    Raises:
-        HTTPException: Si el tutor no existe.
+    Si el Admin proporciona una nueva contraseña, el servicio
+    se encargará de hashearla correctamente y gestionar la bandera de seguridad.
     """
     tutor = session.get(Tutor, id_tutor)
     
@@ -234,12 +212,6 @@ def delete_tutor(
 ):
     """
     Elimina un tutor del sistema.
-    
-    Solo accesible por administradores.
-    Esta acción es permanente y no puede deshacerse.
-    
-    Raises:
-        HTTPException: Si el tutor no existe.
     """
     tutor = session.get(Tutor, id_tutor)
     
