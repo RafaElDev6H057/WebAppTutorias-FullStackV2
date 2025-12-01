@@ -1,7 +1,7 @@
 <template>
-  <!-- ==================== CONTAINER PRINCIPAL ==================== -->
   <div class="min-h-screen bg-gradient-to-br from-blue-50 to-white relative overflow-hidden">
-    <!-- ==================== ANIMATED CIRCLES (FONDO) ==================== -->
+
+    <!-- CÍRCULOS ANIMADOS -->
     <div class="absolute inset-0 pointer-events-none overflow-hidden">
       <div
         v-for="(circle, index) in circles"
@@ -21,8 +21,8 @@
       ></div>
     </div>
 
-    <!-- ==================== BARRA DE NAVEGACIÓN ==================== -->
-    <nav class="bg-purple-600 shadow-lg relative z-10">
+    <!-- NAVBAR -->
+    <nav class="bg-[#0A3B76] shadow-lg relative z-10">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
           <div class="flex items-center">
@@ -33,9 +33,12 @@
             />
             <div class="ml-4">
               <div class="text-lg font-medium text-white">Administrador</div>
-              <div class="text-sm text-purple-200">Instituto Tecnológico Superior de Fresnillo</div>
+              <div class="text-sm text-[#ABACAE]">
+                Instituto Tecnológico Superior de Fresnillo
+              </div>
             </div>
           </div>
+
           <div class="flex items-center">
             <button
               @click="handleLogout"
@@ -56,12 +59,12 @@
       </div>
     </nav>
 
-    <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
+    <!-- CONTENIDO -->
     <main class="max-w-[1400px] mx-auto py-6 sm:px-6 lg:px-8 relative z-10">
       <div class="px-4 py-6 sm:px-0">
         <h1 class="text-3xl font-bold text-gray-900 mb-6">Panel de Administración</h1>
 
-        <!-- ==================== PESTAÑAS ==================== -->
+        <!-- PESTAÑAS -->
         <div class="mb-8">
           <nav class="flex space-x-2 border-b border-gray-200" aria-label="Tabs">
             <button
@@ -69,51 +72,55 @@
               :class="[
                 'px-4 py-3 font-medium text-sm rounded-t-lg transition-colors duration-200',
                 activeTab === 'students'
-                  ? 'bg-purple-100 text-purple-700 border-b-2 border-purple-600'
+                  ? 'bg-blue-50 text-[#0A3B76] border-b-2 border-[#0A3B76]'
                   : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50',
               ]"
             >
               👨‍🎓 Estudiantes
             </button>
+
             <button
               @click="activeTab = 'tutors'"
               :class="[
                 'px-4 py-3 font-medium text-sm rounded-t-lg transition-colors duration-200',
                 activeTab === 'tutors'
-                  ? 'bg-purple-100 text-purple-700 border-b-2 border-purple-600'
+                  ? 'bg-blue-50 text-[#0A3B76] border-b-2 border-[#0A3B76]'
                   : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50',
               ]"
             >
               👨‍🏫 Tutores
             </button>
+
             <button
               @click="activeTab = 'avisos'"
               :class="[
                 'px-4 py-3 font-medium text-sm rounded-t-lg transition-colors duration-200',
                 activeTab === 'avisos'
-                  ? 'bg-purple-100 text-purple-700 border-b-2 border-purple-600'
+                  ? 'bg-blue-50 text-[#0A3B76] border-b-2 border-[#0A3B76]'
                   : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50',
               ]"
             >
               📢 Avisos
             </button>
+
             <button
               @click="activeTab = 'etapas'"
               :class="[
                 'px-4 py-3 font-medium text-sm rounded-t-lg transition-colors duration-200',
                 activeTab === 'etapas'
-                  ? 'bg-purple-100 text-purple-700 border-b-2 border-purple-600'
+                  ? 'bg-blue-50 text-[#0A3B76] border-b-2 border-[#0A3B76]'
                   : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50',
               ]"
             >
               ⚙️ Etapas
             </button>
+
             <button
               @click="activeTab = 'plantillas'"
               :class="[
                 'px-4 py-3 font-medium text-sm rounded-t-lg transition-colors duration-200',
                 activeTab === 'plantillas'
-                  ? 'bg-purple-100 text-purple-700 border-b-2 border-purple-600'
+                  ? 'bg-blue-50 text-[#0A3B76] border-b-2 border-[#0A3B76]'
                   : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50',
               ]"
             >
@@ -122,32 +129,15 @@
           </nav>
         </div>
 
-        <!-- ==================== PANEL DE ESTUDIANTES ==================== -->
-        <div v-if="activeTab === 'students'">
-          <GestionAlumnos />
-        </div>
-
-        <!-- ==================== PANEL DE TUTORES ==================== -->
-        <div v-if="activeTab === 'tutors'">
-          <GestionTutores />
-        </div>
-
-        <!-- ==================== PANEL DE AVISOS ==================== -->
-        <div v-if="activeTab === 'avisos'">
-          <GestionAvisos />
-        </div>
-
-        <!-- ==================== PANEL DE ETAPAS ==================== -->
-        <div v-if="activeTab === 'etapas'">
-          <ConfiguracionEtapas />
-        </div>
-
-        <!-- ==================== PANEL DE PLANTILLAS ==================== -->
-        <div v-if="activeTab === 'plantillas'">
-          <GestionPlantillas />
-        </div>
+        <!-- PANELES -->
+        <div v-if="activeTab === 'students'"><GestionAlumnos /></div>
+        <div v-if="activeTab === 'tutors'"><GestionTutores /></div>
+        <div v-if="activeTab === 'avisos'"><GestionAvisos /></div>
+        <div v-if="activeTab === 'etapas'"><ConfiguracionEtapas /></div>
+        <div v-if="activeTab === 'plantillas'"><GestionPlantillas /></div>
       </div>
     </main>
+
   </div>
 </template>
 
@@ -155,29 +145,24 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-// ==================== IMPORTS - COMPONENTS ====================
 import GestionAlumnos from '@/components/admin/GestionAlumnos.vue'
 import GestionTutores from '@/components/admin/GestionTutores.vue'
 import GestionAvisos from '@/components/admin/GestionAvisos.vue'
 import ConfiguracionEtapas from '@/components/admin/ConfiguracionEtapas.vue'
 import GestionPlantillas from '@/components/admin/GestionPlantillas.vue'
 
-// ==================== ROUTER ====================
 const router = useRouter()
-
-// ==================== STATE - TABS ====================
 const activeTab = ref('students')
 
-// ==================== STATE - ANIMATED CIRCLES ====================
+// Círculos actualizados a azul institucional
 const circles = [
-  { color: 'bg-purple-500', size: 120, top: 5, left: 5 },
-  { color: 'bg-purple-400', size: 80, top: 20, left: 80 },
-  { color: 'bg-purple-600', size: 150, top: 70, left: 20 },
-  { color: 'bg-purple-300', size: 100, top: 40, left: 95 },
-  { color: 'bg-purple-700', size: 130, top: 85, left: 70 },
+  { color: 'bg-[#0A3B76]', size: 120, top: 5, left: 5 },
+  { color: 'bg-[#0A3B76]/80', size: 80, top: 20, left: 80 },
+  { color: 'bg-[#0A3B76]/60', size: 150, top: 70, left: 20 },
+  { color: 'bg-[#0A3B76]/50', size: 100, top: 40, left: 95 },
+  { color: 'bg-[#0A3B76]/70', size: 130, top: 85, left: 70 },
 ]
 
-// ==================== EVENT HANDLERS ====================
 const handleLogout = () => {
   localStorage.removeItem('accessToken')
   localStorage.removeItem('admin')
@@ -187,44 +172,21 @@ const handleLogout = () => {
 
 <style scoped>
 @keyframes float-1 {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-20px) rotate(5deg);
-  }
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
 }
 
 @keyframes float-2 {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-30px) rotate(-5deg);
-  }
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(-5deg); }
 }
 
 @keyframes float-3 {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-25px) rotate(3deg);
-  }
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-25px) rotate(3deg); }
 }
 
-.animate-float-1 {
-  animation: float-1 6s ease-in-out infinite;
-}
-
-.animate-float-2 {
-  animation: float-2 8s ease-in-out infinite;
-}
-
-.animate-float-3 {
-  animation: float-3 7s ease-in-out infinite;
-}
+.animate-float-1 { animation: float-1 6s ease-in-out infinite; }
+.animate-float-2 { animation: float-2 8s ease-in-out infinite; }
+.animate-float-3 { animation: float-3 7s ease-in-out infinite; }
 </style>

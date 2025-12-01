@@ -28,7 +28,7 @@
         <!-- Back Link -->
         <RouterLink
           to="/"
-          class="text-white mb-6 sm:mb-8 text-base sm:text-lg bg-purple-600 inline-block px-2 py-1 rounded-lg font-bold hover:bg-purple-700 transition-colors"
+          class="text-white mb-6 sm:mb-8 text-base sm:text-lg bg-[#0A3B76] inline-block px-2 py-1 rounded-lg font-bold hover:bg-[#082f5c] transition-colors"
         >
           <HomeLogo></HomeLogo>
         </RouterLink>
@@ -39,10 +39,10 @@
           <div class="space-y-2">
             <div class="flex items-center gap-3 mb-4">
               <div
-                class="h-12 w-12 sm:h-14 sm:w-14 bg-purple-100 rounded-xl flex items-center justify-center"
+                class="h-12 w-12 sm:h-14 sm:w-14 bg-[#ABACAE] rounded-xl flex items-center justify-center"
               >
                 <svg
-                  class="w-6 h-6 sm:w-7 sm:h-7 text-purple-600"
+                  class="w-6 h-6 sm:w-7 sm:h-7 text-[#0A3B76]"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -89,7 +89,7 @@
                 v-model="usuario"
                 type="text"
                 required
-                class="w-full px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-500 transition-all"
+                class="w-full px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76] placeholder-gray-500 transition-all"
                 placeholder="Ingresa tu usuario"
               />
             </div>
@@ -104,7 +104,7 @@
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'"
                   required
-                  class="w-full px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-500 transition-all"
+                  class="w-full px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76] placeholder-gray-500 transition-all"
                   placeholder="Ingresa tu contraseña"
                 />
                 <button
@@ -126,7 +126,7 @@
           <button
             type="submit"
             :disabled="isLoading"
-            class="w-full bg-purple-600 text-white rounded-lg px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg font-medium hover:bg-purple-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="w-full bg-[#0A3B76] text-white rounded-lg px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg font-medium hover:bg-[#082f5c] transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <svg
               v-if="isLoading"
@@ -154,10 +154,10 @@
         </form>
 
         <!-- Info adicional -->
-        <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-purple-50 rounded-lg border border-purple-200">
+        <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-[#ABACAE] rounded-lg border border-[#0A3B76]">
           <div class="flex items-start gap-2">
             <svg
-              class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0 mt-0.5"
+              class="w-4 h-4 sm:w-5 sm:h-5 text-[#0A3B76] flex-shrink-0 mt-0.5"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -167,7 +167,7 @@
                 clip-rule="evenodd"
               />
             </svg>
-            <p class="text-xs sm:text-sm text-purple-800">
+            <p class="text-xs sm:text-sm text-[#0A3B76]">
               Este acceso es exclusivo para el Super Administrador del sistema. Si eres parte de un
               departamento, utiliza el acceso correspondiente desde la página principal.
             </p>
@@ -188,6 +188,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup>
 import HomeLogo from '../components/icons/HomeLogo.vue'
@@ -255,18 +256,18 @@ const handleSubmit = async () => {
 
 // ==================== ANIMATED CIRCLES ====================
 const circles = [
-  { color: 'bg-purple-300', size: 96, top: 10, left: 5 },
-  { color: 'bg-rose-200', size: 64, top: 20, left: 80 },
-  { color: 'bg-purple-400', size: 128, top: 70, left: 20 },
-  { color: 'bg-gray-100', size: 80, top: 40, left: 95 },
-  { color: 'bg-rose-300', size: 112, top: 85, left: 70 },
-  { color: 'bg-gray-200', size: 48, top: 25, left: 30 },
-  { color: 'bg-purple-500', size: 72, top: 60, left: 50 },
-  { color: 'bg-rose-100', size: 56, top: 5, left: 90 },
-  { color: 'bg-gray-300', size: 88, top: 80, left: 40 },
-  { color: 'bg-rose-200', size: 40, top: 90, left: 10 },
-  { color: 'bg-purple-400', size: 104, top: 15, left: 60 },
-  { color: 'bg-gray-100', size: 68, top: 50, left: 85 },
+  { color: 'bg-[#ABACAE]', size: 96, top: 10, left: 5 },
+  { color: 'bg-[#ABACAE]', size: 64, top: 20, left: 80 },
+  { color: 'bg-[#0A3B76]', size: 128, top: 70, left: 20 },
+  { color: 'bg-[#ABACAE]', size: 80, top: 40, left: 95 },
+  { color: 'bg-[#ABACAE]', size: 112, top: 85, left: 70 },
+  { color: 'bg-[#ABACAE]', size: 48, top: 25, left: 30 },
+  { color: 'bg-[#0A3B76]', size: 72, top: 60, left: 50 },
+  { color: 'bg-[#ABACAE]', size: 56, top: 5, left: 90 },
+  { color: 'bg-[#ABACAE]', size: 88, top: 80, left: 40 },
+  { color: 'bg-[#ABACAE]', size: 40, top: 90, left: 10 },
+  { color: 'bg-[#0A3B76]', size: 104, top: 15, left: 60 },
+  { color: 'bg-[#ABACAE]', size: 68, top: 50, left: 85 },
 ]
 </script>
 
