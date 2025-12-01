@@ -2,7 +2,7 @@
 Servicio de generación de documentos PDF para el sistema de tutorías.
 
 Proporciona funciones para generar PDFs de reportes integrales, constancias
-de tutoría y reportes de proyectos (Reporte1), utilizando plantillas PDF base
+de tutoría y reportes de proyectos (Reporte1 y Reporte2), utilizando plantillas PDF base
 y coordenadas predefinidas para posicionamiento de datos.
 """
 
@@ -23,7 +23,9 @@ from app.models.tutoria import Tutoria, EstadoTutoria
 from app.models.alumno import Alumno
 from app.models.reporte_integral import ReporteIntegral
 from app.models.reporte1 import Reporte1
-from app.services import reporte1_service
+from app.models.reporte2 import Reporte2
+# Importamos ambos servicios de reportes
+from app.services import reporte1_service, reporte2_service
 
 from app.core.pdf_coords.coords_pagina1 import coords as coords_p1, REF_W as P1_REF_W, REF_H as P1_REF_H
 from app.core.pdf_coords.coords_pagina2 import coords as coords_p2, REF_W as P2_REF_W, REF_H as P2_REF_H
@@ -33,6 +35,8 @@ from app.core.pdf_coords.coords_reporte_g1 import coords as coords_r1, REF_W as 
 TEMPLATE_PDF_PATH = "app/pdf_templates/formato.pdf"
 TEMPLATE_CONSTANCIA_PATH = "app/pdf_templates/formato_constancia.pdf"
 TEMPLATE_REPORTE1_PATH = "app/pdf_templates/formato_reporte_g1_new.pdf"
+# Usamos la misma plantilla para el Reporte 2 ya que el formato institucional es idéntico
+TEMPLATE_REPORTE2_PATH = "app/pdf_templates/formato_reporte_g1_new.pdf"
 
 
 def _draw_page_overlay(
@@ -46,21 +50,6 @@ def _draw_page_overlay(
 ) -> PdfReader:
     """
     Crea un overlay PDF con datos renderizados en coordenadas específicas.
-    
-    Dibuja los datos de alumnos en un canvas transparente usando las coordenadas
-    proporcionadas, escalando según las dimensiones de la página base.
-    
-    Args:
-        data_to_draw: Lista de diccionarios con datos de alumnos a renderizar.
-        coords_definition: Diccionario de coordenadas (x, y) para cada campo.
-        is_first_page: Si es True, dibuja campos extra (tutor, periodo, etc.).
-        base_page_width: Ancho de la página base en puntos.
-        base_page_height: Alto de la página base en puntos.
-        ref_width: Ancho de referencia usado al calcular coordenadas.
-        ref_height: Alto de referencia usado al calcular coordenadas.
-    
-    Returns:
-        PdfReader con el overlay generado.
     """
     scale_x = base_page_width / ref_width
     scale_y = base_page_height / ref_height
@@ -101,22 +90,6 @@ def _draw_page_overlay(
 def generate_integral_report_pdf(db: Session, id_tutor: int, periodo: str) -> io.BytesIO:
     """
     Genera el PDF del Reporte Integral para un tutor y periodo específicos.
-    
-    Consulta la base de datos para obtener todas las tutorías del tutor en el periodo,
-    combina los datos con los reportes integrales asociados, y genera un PDF multipágina
-    con 11 alumnos en la primera página y 10 en las siguientes.
-    
-    Args:
-        db: Sesión de base de datos.
-        id_tutor: ID del tutor cuyos reportes se van a generar.
-        periodo: Periodo académico (ej. "Enero-Junio 2025").
-    
-    Returns:
-        Stream de bytes con el PDF generado.
-    
-    Raises:
-        HTTPException: Si el tutor no existe, no hay tutorías para el periodo,
-                    o hay error en la generación del PDF.
     """
     tutor = db.get(Tutor, id_tutor)
     if not tutor:
@@ -238,21 +211,6 @@ def generate_integral_report_pdf(db: Session, id_tutor: int, periodo: str) -> io
 def generate_constancia_pdf(db: Session, id_alumno: int) -> io.BytesIO:
     """
     Genera el PDF de Constancia de Tutorías para un alumno específico.
-    
-    Verifica que el alumno haya completado al menos una tutoría antes de generar
-    la constancia. El documento incluye el nombre completo del alumno en formato
-    horizontal (landscape).
-    
-    Args:
-        db: Sesión de base de datos.
-        id_alumno: ID del alumno para quien se genera la constancia.
-    
-    Returns:
-        Stream de bytes con el PDF generado.
-    
-    Raises:
-        HTTPException: Si el alumno no existe, no tiene tutorías completadas,
-                    o hay error en la generación del PDF.
     """
     alumno = db.get(Alumno, id_alumno)
     if not alumno:
@@ -335,18 +293,6 @@ def _dividir_texto_por_ancho(
 ) -> List[str]:
     """
     Divide texto en líneas que caben dentro de un ancho máximo.
-    
-    Respeta saltos de línea manuales y divide por palabras para evitar
-    cortes en medio de palabras.
-    
-    Args:
-        can: Canvas de reportlab con fuente configurada.
-        texto: Texto a dividir.
-        max_ancho: Ancho máximo permitido en puntos.
-        max_lineas: Número máximo de líneas a retornar.
-    
-    Returns:
-        Lista de líneas de texto que caben en el ancho especificado.
     """
     lineas = []
     texto = texto or ""
@@ -388,20 +334,6 @@ def _draw_multiline_text(
 ):
     """
     Dibuja texto multilínea en coordenadas escaladas.
-    
-    Divide automáticamente el texto en líneas y lo renderiza de arriba
-    hacia abajo, respetando el ancho máximo y el número de líneas permitido.
-    
-    Args:
-        can: Canvas de reportlab.
-        coord: Tupla (x, y) con coordenadas iniciales en milímetros.
-        texto: Texto a dibujar.
-        max_ancho_mm: Ancho máximo del texto en milímetros.
-        max_lineas: Número máximo de líneas a dibujar.
-        line_height_mm: Espaciado entre líneas en milímetros.
-        scale_x: Factor de escala horizontal.
-        scale_y: Factor de escala vertical.
-        line_height_scale: Factor de escala para el espaciado de líneas.
     """
     x_start_mm, y_start_mm = coord
     x_start_pts = x_start_mm * scale_x
@@ -420,20 +352,6 @@ def _draw_multiline_text(
 def generate_reporte1_pdf(db: Session, reporte_id: int) -> io.BytesIO:
     """
     Genera el PDF del Reporte1 (Avance de Proyecto) para un reporte específico.
-    
-    Consulta los datos del reporte desde la base de datos y genera un PDF de una página
-    con información detallada del proyecto incluyendo objetivos, metas, actividades,
-    conclusiones y porcentaje de avance marcado visualmente.
-    
-    Args:
-        db: Sesión de base de datos.
-        reporte_id: ID del Reporte1 a generar.
-    
-    Returns:
-        Stream de bytes con el PDF generado.
-    
-    Raises:
-        HTTPException: Si el reporte no existe o hay error en la generación del PDF.
     """
     reporte = reporte1_service.get_reporte1_por_id(db, reporte_id)
     
@@ -552,4 +470,149 @@ def generate_reporte1_pdf(db: Session, reporte_id: int) -> io.BytesIO:
         raise HTTPException(
             status_code=500,
             detail=f"Ocurrió un error al generar el Reporte 1: {str(e)}"
+        )
+
+
+def generate_reporte2_pdf(db: Session, reporte_id: int) -> io.BytesIO:
+    """
+    Genera el PDF del Reporte2 (Final) para un reporte específico.
+    
+    Utiliza la misma lógica y plantilla que el Reporte 1, pero
+    obteniendo los datos desde la tabla de Reporte2 (Final).
+    
+    Args:
+        db: Sesión de base de datos.
+        reporte_id: ID del Reporte2 a generar.
+    
+    Returns:
+        Stream de bytes con el PDF generado.
+    
+    Raises:
+        HTTPException: Si el reporte no existe o hay error en la generación del PDF.
+    """
+    # 1. Obtenemos el Reporte 2 usando su servicio
+    reporte = reporte2_service.get_reporte2_por_id(db, reporte_id)
+    
+    # 2. Preparamos los datos (Misma estructura que Reporte 1)
+    datos_pdf = {
+        "profesor": reporte.nombre_tutor,
+        "periodo": reporte.periodo,
+        "proyecto": reporte.nombre_proyecto,
+        "objetivo": reporte.objetivo,
+        "descripcion": reporte.descripcion,
+        "metas": reporte.metas,
+        "actividades": reporte.actividades,
+        "documentos": reporte.documentos_anexados or "",
+        "conclusiones": reporte.conclusiones,
+        "observaciones": reporte.observaciones,
+        "firma_profesor": reporte.nombre_tutor,
+        "firma_jefe": "",
+    }
+    
+    try:
+        # 3. Reutilizamos la misma plantilla del Reporte 1 (o Reporte 2 si la variable es distinta)
+        reader = PdfReader(TEMPLATE_REPORTE2_PATH)
+        writer = PdfWriter()
+        
+        base_page = reader.pages[0]
+        base_w = float(base_page.mediabox.width)
+        base_h = float(base_page.mediabox.height)
+        
+        packet = io.BytesIO()
+        can = canvas.Canvas(packet, pagesize=(base_w, base_h))
+        
+        scale_x = base_w / R1_REF_W
+        scale_y = base_h / R1_REF_H
+        
+        can.setFont("Helvetica", 10)
+        
+        # 4. Dibujar campos simples (Nombre, Periodo, Firmas)
+        campos_simples = ["profesor", "periodo", "proyecto", "firma_profesor", "firma_jefe"]
+        for campo in campos_simples:
+            if campo in coords_r1["campos"]:
+                x_mm, y_mm = coords_r1["campos"][campo]
+                texto = datos_pdf.get(campo, "")
+                can.drawString(x_mm * scale_x, y_mm * scale_y, texto)
+        
+        line_height_mm = 4 * mm
+        
+        # 5. Dibujar campos multilínea (Objetivos, Metas, Actividades...)
+        
+        _draw_multiline_text(
+            can, coords_r1["campos"]["objetivo"], datos_pdf["objetivo"],
+            max_ancho_mm=55*mm, max_lineas=10, line_height_mm=line_height_mm,
+            scale_x=scale_x, scale_y=scale_y, line_height_scale=scale_y
+        )
+        
+        _draw_multiline_text(
+            can, coords_r1["campos"]["descripcion"], datos_pdf["descripcion"],
+            max_ancho_mm=55*mm, max_lineas=10, line_height_mm=line_height_mm,
+            scale_x=scale_x, scale_y=scale_y, line_height_scale=scale_y
+        )
+        
+        _draw_multiline_text(
+            can, coords_r1["campos"]["metas"], datos_pdf["metas"],
+            max_ancho_mm=55*mm, max_lineas=10, line_height_mm=line_height_mm,
+            scale_x=scale_x, scale_y=scale_y, line_height_scale=scale_y
+        )
+        
+        _draw_multiline_text(
+            can, coords_r1["campos"]["actividades"], datos_pdf["actividades"],
+            max_ancho_mm=170*mm, max_lineas=6, line_height_mm=line_height_mm,
+            scale_x=scale_x, scale_y=scale_y, line_height_scale=scale_y
+        )
+        
+        _draw_multiline_text(
+            can, coords_r1["campos"]["documentos"], datos_pdf["documentos"],
+            max_ancho_mm=170*mm, max_lineas=3, line_height_mm=line_height_mm,
+            scale_x=scale_x, scale_y=scale_y, line_height_scale=scale_y
+        )
+        
+        _draw_multiline_text(
+            can, coords_r1["campos"]["conclusiones"], datos_pdf["conclusiones"],
+            max_ancho_mm=170*mm, max_lineas=3, line_height_mm=line_height_mm,
+            scale_x=scale_x, scale_y=scale_y, line_height_scale=scale_y
+        )
+        
+        _draw_multiline_text(
+            can, coords_r1["campos"]["observaciones"], datos_pdf["observaciones"],
+            max_ancho_mm=170*mm, max_lineas=3, line_height_mm=line_height_mm,
+            scale_x=scale_x, scale_y=scale_y, line_height_scale=scale_y
+        )
+        
+        # 6. Dibujar el círculo de porcentaje
+        porcentaje_str = str(int(reporte.porcentaje_avance))
+        if porcentaje_str in coords_r1["porcentajes"]:
+            x_mm, y_mm = coords_r1["porcentajes"][porcentaje_str]
+            can.setFont("Helvetica-Bold", 40)
+            can.drawCentredString(x_mm * scale_x, y_mm * scale_y, "O")
+        
+        # 7. Finalizar y Guardar PDF
+        can.save()
+        packet.seek(0)
+        
+        overlay_reader = PdfReader(packet)
+        base_page.merge_page(overlay_reader.pages[0])
+        writer.add_page(base_page)
+        
+        output_pdf_stream = io.BytesIO()
+        writer.write(output_pdf_stream)
+        writer.close()
+        overlay_reader.stream.close()
+        
+        if hasattr(reader, 'stream') and not reader.stream.closed:
+            reader.stream.close()
+        
+        output_pdf_stream.seek(0)
+        return output_pdf_stream
+    
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=500,
+            detail=f"No se encontró la plantilla de reporte: {TEMPLATE_REPORTE2_PATH}"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Ocurrió un error al generar el Reporte 2: {str(e)}"
         )
