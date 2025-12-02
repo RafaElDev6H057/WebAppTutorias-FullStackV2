@@ -21,7 +21,7 @@
     </div>
 
     <!-- Navigation Bar - RESPONSIVE -->
-    <nav class="bg-gradient-to-r from-lime-500 to-lime-600 border-b border-lime-700 shadow-lg">
+    <nav class="bg-gradient-to-r from-[#0A3B76] to-[#092F5C] border-b border-[#0A3B76] shadow-lg">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16 lg:h-20">
           <!-- Left Section: Logo + User Info -->
@@ -56,7 +56,7 @@
               v-if="estadoTutorias?.es_elegible"
               @click="descargarConstancia"
               :disabled="isDownloading"
-              class="bg-white hover:bg-lime-50 text-lime-700 font-medium px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+              class="bg-white hover:bg-[#0A3B76]/10 text-[#0A3B76] font-medium px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
             >
               <svg
                 v-if="isDownloading"
@@ -93,7 +93,7 @@
             <!-- Botón Cambiar Contraseña -->
             <button
               @click="openChangePasswordModal"
-              class="bg-white hover:bg-lime-50 text-lime-700 font-medium px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg"
+              class="bg-white hover:bg-[#0A3B76]/90 text-[#0A3B76] font-medium px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg"
             >
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -108,7 +108,7 @@
 
             <button
               @click="handleLogout"
-              class="bg-lime-700 hover:bg-lime-800 text-white font-medium px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg"
+              class="bg-red-700 hover:bg-red-800 text-white font-medium px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg"
             >
               <span>Cerrar Sesión</span>
             </button>
@@ -238,280 +238,237 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto py-6 sm:py-12 px-4 sm:px-6 lg:px-8 relative z-10">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8">Mis Tutorías</h1>
+<main class="max-w-7xl mx-auto py-6 sm:py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+  <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8">Mis Tutorías</h1>
 
-      <!-- Banner de Advertencia de Contraseña Insegura -->
-      <Transition
-        enter-active-class="transition ease-out duration-300"
-        enter-from-class="opacity-0 translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition ease-in duration-200"
-        leave-from-class="opacity-100"
-        leave-to-class="opacity-0"
-      >
-        <div
-          v-if="alumno?.requires_password_change"
-          class="mb-6 p-4 bg-amber-50 border-l-4 border-amber-500 rounded-md shadow-sm"
+  <!-- Banner de Advertencia de Contraseña Insegura -->
+  <Transition
+    enter-active-class="transition ease-out duration-300"
+    enter-from-class="opacity-0 translate-y-2"
+    enter-to-class="opacity-100 translate-y-0"
+    leave-active-class="transition ease-in duration-200"
+    leave-from-class="opacity-100"
+    leave-to-class="opacity-0"
+  >
+    <div
+      v-if="alumno?.requires_password_change"
+      class="mb-6 p-4 bg-gray-50 border-l-4 border-gray-500 rounded-md shadow-sm"
+    >
+      <div class="flex items-start">
+        <svg
+          class="w-6 h-6 text-gray-600 mr-3 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <div class="flex items-start">
-            <svg
-              class="w-6 h-6 text-amber-600 mr-3 flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
-            <div class="flex-1">
-              <h3 class="text-sm font-medium text-amber-800">Contraseña Insegura</h3>
-              <p class="mt-1 text-sm text-amber-700">
-                Tu contraseña actual no está protegida adecuadamente. Por seguridad, te recomendamos
-                cambiarla lo antes posible.
-              </p>
-              <button
-                @click="openChangePasswordModal"
-                class="mt-3 text-sm font-medium text-amber-700 hover:text-amber-900 underline"
-              >
-                Cambiar contraseña ahora →
-              </button>
-            </div>
-          </div>
-        </div>
-      </Transition>
-
-      <!-- ==================== AVISOS IMPORTANTES ==================== -->
-      <div class="mb-6 sm:mb-8">
-        <AvisosAlumno />
-      </div>
-
-      <!-- Mensaje de Constancia no disponible -->
-      <Transition
-        enter-active-class="transition ease-out duration-300"
-        enter-from-class="opacity-0 translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition ease-in duration-200"
-        leave-from-class="opacity-100"
-        leave-to-class="opacity-0"
-      >
-        <div
-          v-if="estadoTutorias && !estadoTutorias.es_elegible"
-          class="mb-6 bg-lime-50 border-l-4 border-lime-500 p-4 rounded-md shadow-sm"
-        >
-          <div class="flex items-start">
-            <svg
-              class="w-6 h-6 text-lime-600 mr-3 flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
-            <div class="flex-1">
-              <h3 class="text-sm font-bold text-lime-800 mb-1">📄 Constancia no disponible</h3>
-              <p class="text-sm text-lime-700">
-                Debes completar tus <strong>4 tutorías</strong> para poder descargar tu constancia
-                de acreditación.
-              </p>
-              <div class="mt-2 flex items-center">
-                <div class="flex-1 bg-gray-200 rounded-full h-2 mr-3">
-                  <div
-                    class="bg-gradient-to-r from-lime-400 to-lime-600 h-2 rounded-full transition-all duration-500"
-                    :style="{
-                      width: `${(estadoTutorias.tutorias_completadas / 4) * 100}%`,
-                    }"
-                  ></div>
-                </div>
-                <span class="text-xs font-bold text-lime-700">
-                  {{ estadoTutorias.tutorias_completadas }} / 4 completadas
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Transition>
-
-      <!-- Mensaje de éxito -->
-      <Transition
-        enter-active-class="transition ease-out duration-300"
-        enter-from-class="opacity-0 translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition ease-in duration-200"
-        leave-from-class="opacity-100"
-        leave-to-class="opacity-0"
-      >
-        <div
-          v-if="successMessage"
-          class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-md shadow-sm"
-        >
-          <div class="flex items-start">
-            <svg
-              class="w-6 h-6 text-green-600 mr-3 flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <div class="flex-1">
-              <p class="text-sm font-medium text-green-800">{{ successMessage }}</p>
-            </div>
-            <button @click="successMessage = null" class="text-green-600 hover:text-green-800">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </Transition>
-
-      <!-- Mensaje de error -->
-      <Transition
-        enter-active-class="transition ease-out duration-300"
-        enter-from-class="opacity-0 translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition ease-in duration-200"
-        leave-from-class="opacity-100"
-        leave-to-class="opacity-0"
-      >
-        <div
-          v-if="errorMessage"
-          class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-md shadow-sm"
-        >
-          <div class="flex items-start">
-            <svg
-              class="w-6 h-6 text-red-600 mr-3 flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <div class="flex-1">
-              <p class="text-sm font-medium text-red-800">{{ errorMessage }}</p>
-            </div>
-            <button @click="errorMessage = null" class="text-red-600 hover:text-red-800">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </Transition>
-
-      <!-- Cards de Tutorías -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div
-          v-for="tutoria in sortedTutorias"
-          :key="tutoria.semestre"
-          :class="[
-            'bg-white rounded-lg p-4 sm:p-6 border-l-4 shadow-md hover:shadow-xl transition-all duration-300',
-            {
-              'border-lime-500': tutoria.estado === 'completada',
-              'border-amber-500': tutoria.estado === 'en curso',
-              'border-red-500': tutoria.estado === 'pendiente',
-            },
-          ]"
-        >
-          <div class="flex justify-between items-start mb-4">
-            <h2 class="text-lg sm:text-xl font-semibold text-gray-800">
-              Semestre {{ tutoria.semestre }}
-            </h2>
-            <span
-              :class="[
-                'px-3 py-1 text-xs font-semibold rounded-full',
-                {
-                  'bg-lime-100 text-lime-700': tutoria.estado === 'completada',
-                  'bg-amber-100 text-amber-700': tutoria.estado === 'en curso',
-                  'bg-red-100 text-red-700': tutoria.estado === 'pendiente',
-                },
-              ]"
-            >
-              {{
-                tutoria.estado === 'completada'
-                  ? 'Acreditado'
-                  : tutoria.estado === 'en curso'
-                    ? 'En curso'
-                    : 'Pendiente'
-              }}
-            </span>
-          </div>
-          <div class="space-y-3">
-            <div class="text-gray-600">
-              <p class="text-sm font-medium text-gray-500">Tutor</p>
-              <p class="text-gray-800 text-sm sm:text-base">
-                {{ getTutorName(tutoria) || 'Por asignar' }}
-              </p>
-            </div>
-            <div class="text-gray-600">
-              <p class="text-sm font-medium text-gray-500">Periodo</p>
-              <p class="text-gray-800 text-sm sm:text-base">{{ tutoria.periodo || 'Pendiente' }}</p>
-            </div>
-            <div class="text-gray-600">
-              <p class="text-sm font-medium text-gray-500">Día</p>
-              <p class="text-gray-800 text-sm sm:text-base">
-                {{ capitalize(tutoria) || 'Pendiente' }}
-              </p>
-            </div>
-            <div class="text-gray-600">
-              <p class="text-sm font-medium text-gray-500">Hora</p>
-              <p class="text-gray-800 text-sm sm:text-base">
-                {{ formatoHora(tutoria) || 'Pendiente' }}
-              </p>
-            </div>
-          </div>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+        <div class="flex-1">
+          <h3 class="text-sm font-medium text-gray-800">Contraseña Insegura</h3>
+          <p class="mt-1 text-sm text-gray-700">
+            Tu contraseña actual no está protegida adecuadamente. Por seguridad, te recomendamos
+            cambiarla lo antes posible.
+          </p>
           <button
-            v-if="showSolicitarButton(tutoria)"
-            @click="solicitarTutoria(tutoria.semestre)"
-            class="w-full mt-4 bg-lime-500 hover:bg-lime-600 text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg text-sm sm:text-base"
+            @click="openChangePasswordModal"
+            class="mt-3 text-sm font-medium text-gray-700 hover:text-gray-900 underline"
           >
-            <span>Solicitar Tutoría</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                clip-rule="evenodd"
-              />
-            </svg>
+            Cambiar contraseña ahora →
           </button>
         </div>
       </div>
-    </main>
+    </div>
+  </Transition>
+
+  <!-- ==================== AVISOS IMPORTANTES ==================== -->
+  <div class="mb-6 sm:mb-8">
+    <AvisosAlumno />
+  </div>
+
+  <!-- Mensaje de Constancia no disponible -->
+  <Transition
+    enter-active-class="transition ease-out duration-300"
+    enter-from-class="opacity-0 translate-y-2"
+    enter-to-class="opacity-100 translate-y-0"
+    leave-active-class="transition ease-in duration-200"
+    leave-from-class="opacity-100"
+    leave-to-class="opacity-0"
+  >
+    <div
+      v-if="estadoTutorias && !estadoTutorias.es_elegible"
+      class="mb-6 bg-gray-50 border-l-4 border-gray-500 p-4 rounded-md shadow-sm"
+    >
+      <div class="flex items-start">
+        <svg
+          class="w-6 h-6 text-gray-600 mr-3 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+        <div class="flex-1">
+          <h3 class="text-sm font-bold text-[#0A3B76] mb-1">📄 Constancia no disponible</h3>
+          <p class="text-sm text-[#092F5C]">
+            Debes completar tus <strong>4 tutorías</strong> para poder descargar tu constancia
+            de acreditación.
+          </p>
+          <div class="mt-2 flex items-center">
+            <div class="flex-1 bg-gray-200 rounded-full h-2 mr-3">
+              <div
+                class="bg-gradient-to-r from-[#0A3B76] to-[#092F5C] h-2 rounded-full transition-all duration-500"
+                :style="{
+                  width: `${(estadoTutorias.tutorias_completadas / 4) * 100}%`,
+                }"
+              ></div>
+            </div>
+            <span class="text-xs font-bold text-[#092F5C]">
+              {{ estadoTutorias.tutorias_completadas }} / 4 completadas
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Transition>
+
+  <!-- Mensaje de éxito -->
+  <Transition
+    enter-active-class="transition ease-out duration-300"
+    enter-from-class="opacity-0 translate-y-2"
+    enter-to-class="opacity-100 translate-y-0"
+    leave-active-class="transition ease-in duration-200"
+    leave-from-class="opacity-100"
+    leave-to-class="opacity-0"
+  >
+    <div
+      v-if="successMessage"
+      class="mb-6 bg-gray-50 border-l-4 border-[#0A3B76] p-4 rounded-md shadow-sm"
+    >
+      <div class="flex items-start">
+        <svg
+          class="w-6 h-6 text-[#0A3B76] mr-3 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <div class="flex-1">
+          <p class="text-sm font-medium text-[#092F5C]">{{ successMessage }}</p>
+        </div>
+        <button @click="successMessage = null" class="text-[#0A3B76] hover:text-[#092F5C]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </Transition>
+
+  <!-- Cards de Tutorías -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    <div
+      v-for="tutoria in sortedTutorias"
+      :key="tutoria.semestre"
+      :class="[
+        'bg-white rounded-lg p-4 sm:p-6 border-l-4 shadow-md hover:shadow-xl transition-all duration-300',
+        {
+          'border-[#0A3B76]': tutoria.estado === 'completada',
+          'border-gray-500': tutoria.estado === 'en curso',
+          'border-red-500': tutoria.estado === 'pendiente',
+        },
+      ]"
+    >
+      <div class="flex justify-between items-start mb-4">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-800">
+          Semestre {{ tutoria.semestre }}
+        </h2>
+        <span
+          :class="[
+            'px-3 py-1 text-xs font-semibold rounded-full',
+            {
+              'bg-[#0A3B76] text-white': tutoria.estado === 'completada',
+              'bg-gray-200 text-gray-800': tutoria.estado === 'en curso',
+              'bg-red-100 text-red-700': tutoria.estado === 'pendiente',
+            },
+          ]"
+        >
+          {{
+            tutoria.estado === 'completada'
+              ? 'Acreditado'
+              : tutoria.estado === 'en curso'
+                ? 'En curso'
+                : 'Pendiente'
+          }}
+        </span>
+      </div>
+      <div class="space-y-3">
+        <div class="text-gray-600">
+          <p class="text-sm font-medium text-gray-500">Tutor</p>
+          <p class="text-gray-800 text-sm sm:text-base">
+            {{ getTutorName(tutoria) || 'Por asignar' }}
+          </p>
+        </div>
+        <div class="text-gray-600">
+          <p class="text-sm font-medium text-gray-500">Periodo</p>
+          <p class="text-gray-800 text-sm sm:text-base">{{ tutoria.periodo || 'Pendiente' }}</p>
+        </div>
+        <div class="text-gray-600">
+          <p class="text-sm font-medium text-gray-500">Día</p>
+          <p class="text-gray-800 text-sm sm:text-base">
+            {{ capitalize(tutoria) || 'Pendiente' }}
+          </p>
+        </div>
+        <div class="text-gray-600">
+          <p class="text-sm font-medium text-gray-500">Hora</p>
+          <p class="text-gray-800 text-sm sm:text-base">
+            {{ formatoHora(tutoria) || 'Pendiente' }}
+          </p>
+        </div>
+      </div>
+      <button
+        v-if="showSolicitarButton(tutoria)"
+        @click="solicitarTutoria(tutoria.semestre)"
+        class="w-full mt-4 bg-[#0A3B76] hover:bg-[#092F5C] text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg text-sm sm:text-base"
+      >
+        <span>Solicitar Tutoría</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</main>
+
 
     <!-- ==================== MODAL CAMBIAR CONTRASEÑA ==================== -->
     <!-- (El resto del código del modal permanece igual) -->
@@ -529,7 +486,7 @@
       >
         <div class="relative w-full max-w-md bg-white rounded-lg shadow-2xl border border-gray-200">
           <div
-            class="bg-gradient-to-r from-lime-500 to-lime-600 px-6 py-4 rounded-t-lg flex justify-between items-center"
+            class="bg-[#0A3B76] px-6 py-4 rounded-t-lg flex justify-between items-center"
           >
             <h2 class="text-xl font-semibold text-white flex items-center gap-2">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -837,14 +794,14 @@
                   type="button"
                   @click="closeChangePasswordModal"
                   :disabled="isChangingPassword"
-                  class="flex-1 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-lime-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  class="flex-1 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#0A3B76] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   :disabled="isChangingPassword"
-                  class="flex-1 px-4 py-2 bg-gradient-to-r from-lime-500 to-lime-600 hover:from-lime-600 hover:to-lime-700 border border-transparent rounded-md text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-lime-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex justify-center items-center"
+                  class="flex-1 px-4 py-2 bg-[#0A3B76] hover:from-[#092F5C] hover:to-[#8C8D8F] border border-transparent rounded-md text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-[#0A3B76] disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex justify-center items-center"
                 >
                   <svg
                     v-if="isChangingPassword"

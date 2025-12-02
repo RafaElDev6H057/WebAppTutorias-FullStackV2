@@ -154,7 +154,7 @@
         </form>
 
         <!-- Info adicional -->
-        <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-[#ABACAE] rounded-lg border border-[#0A3B76]">
+        <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-[#ABACAE]/20 rounded-lg border border-[#ABACAE]">
           <div class="flex items-start gap-2">
             <svg
               class="w-4 h-4 sm:w-5 sm:h-5 text-[#0A3B76] flex-shrink-0 mt-0.5"
