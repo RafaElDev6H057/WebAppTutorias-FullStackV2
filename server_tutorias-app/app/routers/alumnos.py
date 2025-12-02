@@ -30,7 +30,7 @@ from app.schemas.administrador import Token
 from app.services import alumno_service
 from app.services import pdf_generator_service
 from app.core import security
-from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
+from app.core.config import settings
 from app.core.dependencies import (
     get_current_admin_user,
     get_current_alumno_user,
@@ -87,7 +87,7 @@ def login(
             detail="Número de control o contraseña incorrectos"
         )
     
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = security.create_access_token(
         data={"sub": str(alumno.id_alumno), "role": "alumno"},
         expires_delta=access_token_expires

@@ -26,7 +26,7 @@ from app.schemas.administrador import Token
 from app.services import tutor_service
 from app.core import security
 from app.core.dependencies import get_current_admin_user, get_current_tutor_user
-from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
+from app.core.config import settings
 from app.models.administrador import Administrador
 
 router = APIRouter(prefix="/tutores", tags=["Tutores"])
@@ -79,7 +79,7 @@ def login_tutor(
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = security.create_access_token(
         data={"sub": str(tutor.id_tutor), "role": "tutor"},
         expires_delta=access_token_expires

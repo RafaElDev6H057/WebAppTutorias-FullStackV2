@@ -19,7 +19,7 @@ from app.schemas.administrador import TokenData
 from app.schemas.tutor import TutorTokenData
 from app.schemas.alumno import AlumnoTokenData
 from app.services import admin_service
-from app.core.config import SECRET_KEY, ALGORITHM
+from app.core.config import settings
 
 
 oauth2_scheme_admin = OAuth2PasswordBearer(
@@ -63,7 +63,7 @@ def get_admin_cualquier_rol(
     )
     
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         usuario: Optional[str] = payload.get("sub")
         
         if usuario is None:
@@ -133,7 +133,7 @@ def get_current_tutor_user(
     )
     
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         role: Optional[str] = payload.get("role")
         
         if role is None or role != "tutor":
@@ -229,7 +229,7 @@ def get_current_alumno_user(
     )
     
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         role: Optional[str] = payload.get("role")
         
         if role != "alumno":

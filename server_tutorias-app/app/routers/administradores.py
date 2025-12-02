@@ -22,7 +22,7 @@ from app.schemas.administrador import (
 )
 from app.services import admin_service
 from app.core import security
-from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
+from app.core.config import settings
 from app.core.dependencies import get_current_admin_user
 
 router = APIRouter(prefix="/administradores", tags=["Administradores"])
@@ -48,7 +48,7 @@ def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     
     access_token = security.create_access_token(
         data={"sub": admin.usuario},
