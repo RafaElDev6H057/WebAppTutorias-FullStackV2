@@ -1,29 +1,61 @@
 """
 Configuración de base de datos y gestión de sesiones SQLModel.
 
-Configura el motor de base de datos SQLite y proporciona funciones
-para inicialización de tablas y generación de sesiones para dependencias.
+Adaptado para soportar entorno Híbrido:
+- Desarrollo Local: SQLite
+- Producción (Render/Supabase): PostgreSQL con NullPool
 """
 
 from sqlmodel import SQLModel, create_engine, Session
+from sqlalchemy.pool import NullPool
+from app.core.config import settings
 
-DATABASE_URL = "sqlite:///./database.db"
+# 1. Definir argumentos de conexión base
+connect_args = {}
+poolclass = None
+database_url = settings.DATABASE_URL
 
-engine = create_engine(
-    DATABASE_URL,
-    echo=True,
-    connect_args={"check_same_thread": False}
-)
+# 2. Configuración dinámica según el tipo de base de datos
+if "sqlite" in database_url:
+    # Configuración para SQLite (Desarrollo Local)
+    # check_same_thread es necesario solo para SQLite en FastAPI
+    connect_args = {"check_same_thread": False}
+    print(f"🗄️ Modo Base de Datos: SQLite (Local)")
+
+elif "postgresql" in database_url:
+    # Configuración para PostgreSQL (Producción / Supabase)
+    # NullPool desactiva el pooling de SQLAlchemy, dejando que Supabase
+    # (o PgBouncer) gestione las conexiones, evitando errores de "connection closed".
+    poolclass = NullPool
+    connect_args = {
+        "connect_timeout": 15, # Tiempo de espera un poco más holgado
+    }
+    print(f"🚀 Modo Base de Datos: PostgreSQL (Producción)")
+
+# 3. Crear el Engine
+# Usamos argumentos dinámicos (**options) para limpiar el código
+engine_options = {
+    "echo": settings.DB_ECHO, # Controlado desde .env (True en dev, False en prod)
+    "connect_args": connect_args
+}
+
+if poolclass:
+    engine_options["poolclass"] = poolclass
+
+engine = create_engine(database_url, **engine_options)
 
 
 def create_db_and_tables():
     """
     Crea todas las tablas definidas en los modelos SQLModel.
     
-    Esta función debe ser llamada al inicio de la aplicación
-    para garantizar que todas las tablas existen en la base de datos.
+    Esta función debe ser llamada al inicio de la aplicación.
+    En producción, es recomendable usar Alembic para migraciones,
+    pero esto funciona para inicializar estructuras básicas.
     """
+    print("📦 Verificando/Creando tablas en la base de datos...")
     SQLModel.metadata.create_all(engine)
+    print("✅ Tablas listas.")
 
 
 def get_session():
