@@ -3,7 +3,7 @@
     <div class="flex-1 flex flex-col max-h-screen">
       <!-- Header con más color -->
       <div
-        class="bg-gradient-to-r from-[#ff5242] via-orange-400 to-orange-500 shadow-2xl p-6 text-white flex-shrink-0"
+        class="bg-[#0A3B76] shadow-2xl p-6 text-white flex-shrink-0"
       >
         <div class="flex justify-between items-center">
           <div>
@@ -117,7 +117,7 @@
             v-else
             @click="guardarTodo"
             :disabled="isSaving || alumnosFiltrados.length === 0"
-            class="px-6 py-2.5 bg-gradient-to-r from-[#ff5242] to-[#ff3d2a] text-white rounded-lg font-bold hover:from-[#ff3d2a] hover:to-[#e62a1a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ff6b5b] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl transform hover:scale-105 inline-flex items-center"
+            class="px-6 py-2.5 bg-[#0A3B76] text-white rounded-lg font-bold hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A3B76] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl transform hover:scale-105 inline-flex items-center"
           >
             <svg
               v-if="isSaving"
@@ -309,11 +309,11 @@
         <div class="h-full overflow-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead
-              class="bg-gradient-to-r from-[#ff5242] to-orange-500 sticky top-0 z-20 shadow-md"
+              class="bg-[#0A3B76] sticky top-0 z-20 shadow-md"
             >
               <tr>
                 <th
-                  class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider sticky left-0 bg-gradient-to-r from-[#ff5242] to-orange-500 z-30 border-r border-[#ff8576] min-w-[200px]"
+                  class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider sticky left-0 bg-[#0A3B76] z-30 border-r border-gray-300 min-w-[200px]"
                 >
                   Alumno
                 </th>
@@ -363,7 +363,7 @@
                   Estado
                 </th>
                 <th
-                  class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-gradient-to-r from-[#ff5242] to-orange-500 z-30 border-l border-[#ff8576] min-w-[180px]"
+                  class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-[#0A3B76] z-30 border-l border-gray-300 min-w-[180px]"
                 >
                   Acciones
                 </th>
@@ -678,18 +678,19 @@
 
                   <!-- Si NO está guardado (pendiente) -->
                   <button
-                    v-else-if="alumno.estado === 'pendiente'"
-                    @click="guardarAlumno(alumno)"
-                    :disabled="alumno.estado === 'guardando' || tieneErrores(alumno)"
-                    :class="[
-                      'px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all text-xs font-bold shadow-md transform hover:scale-105',
-                      tieneErrores(alumno)
-                        ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-[#ff5242] to-[#ff3d2a] text-white hover:from-[#ff3d2a] hover:to-[#e62a1a] focus:ring-[#ff6b5b]',
-                    ]"
-                  >
-                    {{ tieneErrores(alumno) ? 'Errores' : 'Guardar' }}
-                  </button>
+  v-else-if="alumno.estado === 'pendiente'"
+  @click="guardarAlumno(alumno)"
+  :disabled="alumno.estado === 'guardando' || tieneErrores(alumno)"
+  :class="[
+    'px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all text-xs font-bold shadow-md transform hover:scale-105',
+    tieneErrores(alumno)
+      ? 'bg-gray-400 text-gray-700 cursor-not-allowed'   // Gris institucional
+      : 'bg-[#0A3B76] text-white hover:bg-blue-800 focus:ring-[#0A3B76]', // Azul institucional
+  ]"
+>
+  {{ tieneErrores(alumno) ? 'Errores' : 'Guardar' }}
+</button>
+
 
                   <!-- Si está GUARDADO - Botones Ver/Editar/Eliminar -->
                   <div v-else-if="alumno.estado === 'guardado'" class="flex gap-2 justify-center">

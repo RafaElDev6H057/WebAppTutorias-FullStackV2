@@ -298,7 +298,7 @@
             <button
               type="submit"
               :disabled="isChangingPassword"
-              class="flex-1 px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex justify-center items-center"
+              class="flex-1 px-4 py-2 bg-[#0A3B76] border border-transparent rounded-md text-sm font-medium text-white hover:bg-[#092F5C] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A3B76] disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex justify-center items-center"
             >
               <svg
                 v-if="isChangingPassword"

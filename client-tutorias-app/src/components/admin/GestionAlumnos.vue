@@ -124,7 +124,7 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="px-2 py-1 text-xs leading-5 font-semibold rounded-full flex justify-center" :class="
-                  student.estado === 'A' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  student.estado === 'A' ? 'z-10 bg-[#0A3B76]/10 border-[#0A3B76] text-[#0A3B76]' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                 ">
                 {{ student.estado }}
               </span>
@@ -219,191 +219,185 @@
 
           <div
             class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-            <div class="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4">
+            <div class="bg-gradient-to-r from-[#0A3B76] to-[#082D57] px-6 py-4">
               <h3 class="text-lg leading-6 font-medium text-white" id="modal-title">
                 {{ modalMode === 'add' ? 'Añadir' : 'Editar' }} Estudiante
               </h3>
             </div>
 
             <div class="bg-white px-6 pt-5 pb-4">
-              <form @submit.prevent="submitForm" class="space-y-6">
-                <!-- Nombres -->
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
-                  <div>
-                    <label for="nombre" class="block text-sm font-medium text-gray-700">
-                      Nombre <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" id="nombre" v-model="formData.nombre"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-                      :class="{ 'border-red-500': errors.nombre }" />
-                    <p v-if="errors.nombre" class="mt-2 text-sm text-red-600">
-                      {{ errors.nombre[0] }}
-                    </p>
-                  </div>
+  <form @submit.prevent="submitForm" class="space-y-6">
+    <!-- Nombres -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+      <div>
+        <label for="nombre" class="block text-sm font-medium text-gray-700">
+          Nombre <span class="text-red-500">*</span>
+        </label>
+        <input type="text" id="nombre" v-model="formData.nombre"
+          class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
+          :class="{ 'border-red-500': errors.nombre }" />
+        <p v-if="errors.nombre" class="mt-2 text-sm text-red-600">
+          {{ errors.nombre[0] }}
+        </p>
+      </div>
 
-                  <div>
-                    <label for="apellido_p" class="block text-sm font-medium text-gray-700">
-                      Apellido Paterno <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" id="apellido_p" v-model="formData.apellido_p"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-                      :class="{ 'border-red-500': errors.apellido_p }" />
-                    <p v-if="errors.apellido_p" class="mt-2 text-sm text-red-600">
-                      {{ errors.apellido_p[0] }}
-                    </p>
-                  </div>
+      <div>
+        <label for="apellido_p" class="block text-sm font-medium text-gray-700">
+          Apellido Paterno <span class="text-red-500">*</span>
+        </label>
+        <input type="text" id="apellido_p" v-model="formData.apellido_p"
+          class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
+          :class="{ 'border-red-500': errors.apellido_p }" />
+        <p v-if="errors.apellido_p" class="mt-2 text-sm text-red-600">
+          {{ errors.apellido_p[0] }}
+        </p>
+      </div>
 
-                  <div>
-                    <label for="apellido_m" class="block text-sm font-medium text-gray-700">
-                      Apellido Materno
-                    </label>
-                    <input type="text" id="apellido_m" v-model="formData.apellido_m"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" />
-                  </div>
-                </div>
+      <div>
+        <label for="apellido_m" class="block text-sm font-medium text-gray-700">
+          Apellido Materno
+        </label>
+        <input type="text" id="apellido_m" v-model="formData.apellido_m"
+          class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm" />
+      </div>
+    </div>
 
-                <!-- Número de Control y Contraseña -->
-                <div class="grid grid-cols-2 gap-6">
-                  <div>
-                    <label for="num_control" class="block text-sm font-medium text-gray-700">
-                      Número de Control <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" id="num_control" v-model="formData.num_control"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-                      :class="{ 'border-red-500': errors.num_control }" />
-                    <p v-if="errors.num_control" class="mt-2 text-sm text-red-600">
-                      {{ errors.num_control[0] }}
-                    </p>
-                  </div>
+    <!-- Número de Control y Contraseña -->
+    <div class="grid grid-cols-2 gap-6">
+      <div>
+        <label for="num_control" class="block text-sm font-medium text-gray-700">
+          Número de Control <span class="text-red-500">*</span>
+        </label>
+        <input type="text" id="num_control" v-model="formData.num_control"
+          class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
+          :class="{ 'border-red-500': errors.num_control }" />
+        <p v-if="errors.num_control" class="mt-2 text-sm text-red-600">
+          {{ errors.num_control[0] }}
+        </p>
+      </div>
 
-                  <div>
-                    <label for="contraseña" class="block text-sm font-medium text-gray-700">
-                      Contraseña <span class="text-red-500">*</span>
-                    </label>
-                    <div class="relative">
-                      <input id="contraseña" v-model="formData.contraseña" :type="showPassword ? 'text' : 'password'"
-                        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-                        :class="{ 'border-red-500': errors.contraseña }" />
-                      <button type="button" @click="showPassword = !showPassword"
-                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                        <ShowEye v-if="showPassword" />
-                        <HideEye v-else />
-                      </button>
-                    </div>
-                    <p v-if="errors.contraseña" class="mt-2 text-sm text-red-600">
-                      {{ errors.contraseña[0] }}
-                    </p>
-                  </div>
-                </div>
+      <div>
+        <label for="contraseña" class="block text-sm font-medium text-gray-700">
+          Contraseña <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input id="contraseña" v-model="formData.contraseña" :type="showPassword ? 'text' : 'password'"
+            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
+            :class="{ 'border-red-500': errors.contraseña }" />
+          <button type="button" @click="showPassword = !showPassword"
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+            <ShowEye v-if="showPassword" />
+            <HideEye v-else />
+          </button>
+        </div>
+        <p v-if="errors.contraseña" class="mt-2 text-sm text-red-600">
+          {{ errors.contraseña[0] }}
+        </p>
+      </div>
+    </div>
 
-                <!-- Correo y Teléfono -->
-                <div class="grid grid-cols-2 gap-6">
-                  <div>
-                    <label for="correo" class="block text-sm font-medium text-gray-700">
-                      Correo <span class="text-red-500">*</span>
-                    </label>
-                    <input type="email" id="correo" v-model="formData.correo"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-                      :class="{ 'border-red-500': errors.correo }" />
-                    <p v-if="errors.correo" class="mt-2 text-sm text-red-600">
-                      {{ errors.correo[0] }}
-                    </p>
-                  </div>
+    <!-- Correo y Teléfono -->
+    <div class="grid grid-cols-2 gap-6">
+      <div>
+        <label for="correo" class="block text-sm font-medium text-gray-700">
+          Correo <span class="text-red-500">*</span>
+        </label>
+        <input type="email" id="correo" v-model="formData.correo"
+          class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
+          :class="{ 'border-red-500': errors.correo }" />
+        <p v-if="errors.correo" class="mt-2 text-sm text-red-600">
+          {{ errors.correo[0] }}
+        </p>
+      </div>
 
-                  <div>
-                    <label for="telefono" class="block text-sm font-medium text-gray-700">
-                      Teléfono
-                    </label>
-                    <input type="text" id="telefono" v-model="formData.telefono"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" />
-                  </div>
-                </div>
+      <div>
+        <label for="telefono" class="block text-sm font-medium text-gray-700">
+          Teléfono
+        </label>
+        <input type="text" id="telefono" v-model="formData.telefono"
+          class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm" />
+      </div>
+    </div>
 
-                <!-- Carrera -->
-                <div>
-                  <label for="carrera" class="block text-sm font-medium text-gray-700">
-                    Carrera <span class="text-red-500">*</span>
-                  </label>
-                  <select id="carrera" v-model="formData.carrera"
-                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-                    :class="{ 'border-red-500': errors.carrera }">
-                    <option value="">Selecciona una carrera</option>
-                    <option value="Ingeniería en Semiconductores">
-                      Ingeniería en Semiconductores
-                    </option>
-                    <option value="Ingeniería en Logística">Ingeniería en Logística</option>
-                    <option value="Ingeniería en Informática">Ingeniería en Informática</option>
-                    <option value="Ingeniería en Electrónica">Ingeniería en Electrónica</option>
-                    <option value="Ingeniería en Sistemas Computacionales">
-                      Ingeniería en Sistemas Computacionales
-                    </option>
-                    <option value="Ingeniería Ambiental">Ingeniería Ambiental</option>
-                    <option value="Ingeniería Industrial">Ingeniería Industrial</option>
-                    <option value="Ingeniería en Gestión Empresarial">
-                      Ingeniería en Gestión Empresarial
-                    </option>
-                    <option value="Ingeniería en Minera">Ingeniería en Minera</option>
-                    <option value="Arquitectura">Arquitectura</option>
-                  </select>
-                  <p v-if="errors.carrera" class="mt-2 text-sm text-red-600">
-                    {{ errors.carrera[0] }}
-                  </p>
-                </div>
+    <!-- Carrera -->
+    <div>
+      <label for="carrera" class="block text-sm font-medium text-gray-700">
+        Carrera <span class="text-red-500">*</span>
+      </label>
+      <select id="carrera" v-model="formData.carrera"
+        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
+        :class="{ 'border-red-500': errors.carrera }">
+        <option value="">Selecciona una carrera</option>
+        <option value="Ingeniería en Semiconductores">Ingeniería en Semiconductores</option>
+        <option value="Ingeniería en Logística">Ingeniería en Logística</option>
+        <option value="Ingeniería en Informática">Ingeniería en Informática</option>
+        <option value="Ingeniería en Electrónica">Ingeniería en Electrónica</option>
+        <option value="Ingeniería en Sistemas Computacionales">Ingeniería en Sistemas Computacionales</option>
+        <option value="Ingeniería Ambiental">Ingeniería Ambiental</option>
+        <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+        <option value="Ingeniería en Gestión Empresarial">Ingeniería en Gestión Empresarial</option>
+        <option value="Ingeniería en Minera">Ingeniería en Minera</option>
+        <option value="Arquitectura">Arquitectura</option>
+      </select>
+      <p v-if="errors.carrera" class="mt-2 text-sm text-red-600">
+        {{ errors.carrera[0] }}
+      </p>
+    </div>
 
-                <!-- Semestre y Estado -->
-                <div class="grid grid-cols-2 gap-6">
-                  <div>
-                    <label for="semestre" class="block text-sm font-medium text-gray-700">
-                      Semestre <span class="text-red-500">*</span>
-                    </label>
-                    <select id="semestre" v-model="formData.semestre_actual"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-                      :class="{ 'border-red-500': errors.semestre_actual }">
-                      <option value="">Selecciona un semestre</option>
-                      <option value="1">1° Semestre</option>
-                      <option value="2">2° Semestre</option>
-                      <option value="3">3° Semestre</option>
-                      <option value="4">4° Semestre</option>
-                      <option value="5">5° Semestre</option>
-                      <option value="6">6° Semestre</option>
-                      <option value="7">7° Semestre</option>
-                      <option value="8">8° Semestre</option>
-                      <option value="9">9° Semestre</option>
-                    </select>
-                    <p v-if="errors.semestre_actual" class="mt-2 text-sm text-red-600">
-                      {{ errors.semestre_actual[0] }}
-                    </p>
-                  </div>
+    <!-- Semestre y Estado -->
+    <div class="grid grid-cols-2 gap-6">
+      <div>
+        <label for="semestre" class="block text-sm font-medium text-gray-700">
+          Semestre <span class="text-red-500">*</span>
+        </label>
+        <select id="semestre" v-model="formData.semestre_actual"
+          class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
+          :class="{ 'border-red-500': errors.semestre_actual }">
+          <option value="">Selecciona un semestre</option>
+          <option value="1">1° Semestre</option>
+          <option value="2">2° Semestre</option>
+          <option value="3">3° Semestre</option>
+          <option value="4">4° Semestre</option>
+          <option value="5">5° Semestre</option>
+          <option value="6">6° Semestre</option>
+          <option value="7">7° Semestre</option>
+          <option value="8">8° Semestre</option>
+          <option value="9">9° Semestre</option>
+        </select>
+        <p v-if="errors.semestre_actual" class="mt-2 text-sm text-red-600">
+          {{ errors.semestre_actual[0] }}
+        </p>
+      </div>
 
-                  <div>
-                    <label for="estado" class="block text-sm font-medium text-gray-700">
-                      Estado <span class="text-red-500">*</span>
-                    </label>
-                    <select id="estado" v-model="formData.estado"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-                      :class="{ 'border-red-500': errors.estado }">
-                      <option value="A">Activo</option>
-                      <option value="I">Inactivo</option>
-                    </select>
-                    <p v-if="errors.estado" class="mt-2 text-sm text-red-600">
-                      {{ errors.estado[0] }}
-                    </p>
-                  </div>
-                </div>
+      <div>
+        <label for="estado" class="block text-sm font-medium text-gray-700">
+          Estado <span class="text-red-500">*</span>
+        </label>
+        <select id="estado" v-model="formData.estado"
+          class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
+          :class="{ 'border-red-500': errors.estado }">
+          <option value="A">Activo</option>
+          <option value="I">Inactivo</option>
+        </select>
+        <p v-if="errors.estado" class="mt-2 text-sm text-red-600">
+          {{ errors.estado[0] }}
+        </p>
+      </div>
+    </div>
 
-                <!-- Botones -->
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3 rounded-b-lg -mx-6 -mb-4">
-                  <button type="submit"
-                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm">
-                    {{ modalMode === 'add' ? 'Añadir' : 'Guardar cambios' }}
-                  </button>
-                  <button @click="closeModal" type="button"
-                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                    Cancelar
-                  </button>
-                </div>
-              </form>
-            </div>
+    <!-- Botones -->
+    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3 rounded-b-lg -mx-6 -mb-4">
+      <button type="submit"
+        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#0A3B76] text-white text-base font-medium hover:bg-[#082D57] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A3B76] sm:ml-3 sm:w-auto sm:text-sm">
+        {{ modalMode === 'add' ? 'Añadir' : 'Guardar cambios' }}
+      </button>
+      <button @click="closeModal" type="button"
+        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A3B76] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</div>
           </div>
         </div>
       </div>
@@ -452,7 +446,7 @@
                 Eliminar
               </button>
               <button @click="cancelDelete" type="button"
-                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A3B76] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                 Cancelar
               </button>
             </div>

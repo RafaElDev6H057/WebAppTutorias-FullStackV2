@@ -3,7 +3,7 @@
     <!-- ==================== VISTA: SUB-PANEL (Lista de Reportes) ==================== -->
     <div v-if="vistaActual === 'lista'">
       <!-- Header -->
-      <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4 rounded-t-lg">
+      <div class="bg-[#0A3B76] px-6 py-4 rounded-t-lg">
         <h2 class="text-2xl font-bold text-white">Reporte Individual 1</h2>
         <p class="text-orange-100 text-sm mt-1">Gestiona tus reportes generales</p>
       </div>
@@ -124,7 +124,7 @@
         <div class="mb-6">
           <button
             @click="crearNuevoReporte"
-            class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+            class="w-full sm:w-auto px-6 py-3 bg-[#ABACAE] hover:bg-[#999A9C] text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -281,7 +281,7 @@
     <!-- ==================== VISTA: FORMULARIO (Crear/Editar) ==================== -->
     <div v-else-if="vistaActual === 'formulario'">
       <!-- Header -->
-      <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4 rounded-t-lg">
+      <div class="bg-[#0A3B76] px-6 py-4 rounded-t-lg">
         <div class="flex items-center justify-between">
           <div>
             <h2 class="text-2xl font-bold text-white">
@@ -332,7 +332,7 @@
           <select
             v-model="formulario.periodo"
             required
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] bg-white"
           >
             <option value="" disabled selected>Selecciona un periodo</option>
             <option v-for="periodo in periodosDisponibles" :key="periodo" :value="periodo">
@@ -352,7 +352,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.nombre_proyecto"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
             :class="{ 'border-red-500': isLimiteExcedido('nombre_proyecto') }"
             placeholder="Nombre del proyecto"
           ></textarea>
@@ -374,29 +374,30 @@
 
         <!-- Porcentaje de Avance -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Porcentaje de Avance (%) <span class="text-red-500">*</span>
-          </label>
-          <div class="flex items-center gap-3">
-            <input
-              v-model.number="formulario.porcentaje_avance"
-              type="range"
-              min="10"
-              max="100"
-              step="10"
-              class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-500"
-            />
-            <input
-              v-model.number="formulario.porcentaje_avance"
-              type="number"
-              min="10"
-              step="10"
-              max="100"
-              required
-              class="w-20 px-3 py-2 border border-gray-300 rounded-md text-center focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-            />
-          </div>
-        </div>
+  <label class="block text-sm font-medium text-gray-700 mb-1">
+    Porcentaje de Avance (%) <span class="text-red-500">*</span>
+  </label>
+  <div class="flex items-center gap-3">
+    <input
+      v-model.number="formulario.porcentaje_avance"
+      type="range"
+      min="10"
+      max="100"
+      step="10"
+      class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#0A3B76]"
+    />
+    <input
+      v-model.number="formulario.porcentaje_avance"
+      type="number"
+      min="10"
+      step="10"
+      max="100"
+      required
+      class="w-20 px-3 py-2 border border-gray-300 rounded-md text-center focus:outline-none focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76]"
+    />
+  </div>
+</div>
+
 
         <!-- Objetivo -->
         <div>
@@ -408,7 +409,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.objetivo"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
             :class="{ 'border-red-500': isLimiteExcedido('objetivo') }"
             placeholder="Describe el objetivo del proyecto"
           ></textarea>
@@ -436,7 +437,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.descripcion"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
             :class="{ 'border-red-500': isLimiteExcedido('descripcion') }"
             placeholder="Descripción del proyecto"
           ></textarea>
@@ -464,7 +465,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.metas"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
             :class="{ 'border-red-500': isLimiteExcedido('metas') }"
             placeholder="Metas a alcanzar"
           ></textarea>
@@ -492,7 +493,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.actividades"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
             :class="{ 'border-red-500': isLimiteExcedido('actividades') }"
             placeholder="Actividades realizadas"
           ></textarea>
@@ -520,7 +521,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.documentos_anexados"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
             :class="{ 'border-red-500': isLimiteExcedido('documentos_anexados') }"
             placeholder="Lista de documentos anexados"
           ></textarea>
@@ -551,7 +552,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.conclusiones"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
             :class="{ 'border-red-500': isLimiteExcedido('conclusiones') }"
             placeholder="Conclusiones del proyecto"
           ></textarea>
@@ -581,7 +582,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.observaciones"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
             :class="{ 'border-red-500': isLimiteExcedido('observaciones') }"
             placeholder="Observaciones adicionales (opcional)"
           ></textarea>
@@ -613,7 +614,7 @@
           <button
             type="submit"
             :disabled="isGuardando"
-            class="flex-1 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-md font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="flex-1 px-4 py-2 bg-[#0A3B76] hover:bg-[#092F5C] text-white rounded-md font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <svg
               v-if="isGuardando"

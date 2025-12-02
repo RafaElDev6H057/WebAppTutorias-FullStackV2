@@ -1,24 +1,25 @@
 <template>
   <div class="space-y-6">
     <!-- Pestañas -->
-    <div class="border-b border-gray-200">
-      <nav class="-mb-px flex space-x-8">
-        <a
-          v-for="tab in tabs"
-          :key="tab.id"
-          href="#"
-          @click.prevent="currentTab = tab.id"
-          :class="[
-            currentTab === tab.id
-              ? 'border-coral-500 text-coral-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-            'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm',
-          ]"
-        >
-          {{ tab.name }}
-        </a>
-      </nav>
-    </div>
+    <div class="border-b border-[#ABACAE]">
+  <nav class="-mb-px flex space-x-8">
+    <a
+      v-for="tab in tabs"
+      :key="tab.id"
+      href="#"
+      @click.prevent="currentTab = tab.id"
+      :class="[
+        currentTab === tab.id
+          ? 'border-[#0A3B76] text-[#0A3B76]'
+          : 'border-transparent text-gray-600 hover:text-[#0A3B76] hover:border-[#ABACAE]',
+        'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm',
+      ]"
+    >
+      {{ tab.name }}
+    </a>
+  </nav>
+</div>
+
 
     <!-- Tabla de estudiantes -->
     <div class="flex flex-col">
@@ -108,42 +109,46 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span
-                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                      :class="
-                        student.status === 'A'
-                          ? 'bg-orange-500/20 text-orange-400'
-                          : 'bg-green-500/20 text-green-400'
-                      "
-                    >
-                      {{ student.status }}
-                    </span>
+  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+  :class="
+    student.status === 'A'
+      ? 'bg-[#0A3B76]/20 text-[#0A3B76]'
+      : 'bg-[#0A3B76]/40 text-[#0A3B76]/70'
+  "
+>
+  {{ student.status }}
+</span>
+
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {{ student.tutorialPeriod }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <a
-                      href="#"
-                      @click.prevent="$emit('view-details', student)"
-                      class="text-coral-600 hover:text-coral-900 mx-4"
-                    >
-                      Ver detalles
-                    </a>
+  href="#"
+  @click.prevent="$emit('view-details', student)"
+  class="text-[#0A3B76] hover:text-[#082C54] mx-4"
+>
+  Ver detalles
+</a>
+
                     <button
-                      @click="$emit('delete-tutoria', student)"
-                      class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-150 ease-in-out inline-flex items-center gap-2 ml-2"
-                      title="Eliminar tutoría"
-                    >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
-                      Eliminar
-                    </button>
+  @click="$emit('delete-tutoria', student)"
+  class="px-4 py-2 text-white rounded-md transition duration-150 ease-in-out inline-flex items-center gap-2 ml-2"
+  style="background-color: #ABACAE; hover:bg-gray-400;"
+  title="Eliminar tutoría"
+>
+  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+    />
+  </svg>
+  Eliminar
+</button>
+
                   </td>
                 </tr>
               </tbody>
@@ -239,20 +244,21 @@
                 />
               </svg>
             </button>
-            <button
-              v-for="page in totalPages"
-              :key="page"
-              @click="$emit('go-to-page', page)"
-              :disabled="loading"
-              :class="[
-                currentPage === page
-                  ? 'z-10 bg-coral-50 border-coral-500 text-coral-600'
-                  : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50',
-                'relative inline-flex items-center px-4 py-2 border text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed',
-              ]"
-            >
-              {{ page }}
-            </button>
+           <button
+  v-for="page in totalPages"
+  :key="page"
+  @click="$emit('go-to-page', page)"
+  :disabled="loading"
+  :class="[
+    currentPage === page
+      ? 'z-10 bg-[#0A3B76]/10 border-[#0A3B76] text-[#0A3B76]'
+      : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50',
+    'relative inline-flex items-center px-4 py-2 border text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed',
+  ]"
+>
+  {{ page }}
+</button>
+
             <button
               @click="$emit('next-page')"
               :disabled="currentPage === totalPages || loading"
