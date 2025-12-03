@@ -19,7 +19,7 @@
       @input="$emit('update:modelValue', $event.target.value)"
       type="text"
       :placeholder="placeholder"
-      class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 block w-full"
+      class="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76] block w-full text-sm transition-colors duration-200 bg-white placeholder-gray-400"
     />
   </div>
 </template>

@@ -1,9 +1,9 @@
 <template>
-  <div class="space-y-8">
+  <div class="space-y-6">
     <!-- ==================== GESTIÓN DE PLANTILLA - REPORTE INTEGRAL ==================== -->
-    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div class="mb-6">
-        <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
           <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -28,8 +28,20 @@
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
       >
-        <div v-if="successMessage" class="mb-4 p-3 bg-green-50 border-l-4 border-green-500 rounded">
-          <p class="text-sm text-green-800 font-medium">{{ successMessage }}</p>
+        <div
+          v-if="successMessage"
+          class="mb-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg shadow-sm"
+        >
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <p class="text-sm text-green-800 font-medium">{{ successMessage }}</p>
+          </div>
         </div>
       </Transition>
 
@@ -41,24 +53,29 @@
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
       >
-        <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded">
-          <p class="text-sm text-red-800 font-medium">{{ errorMessage }}</p>
+        <div
+          v-if="errorMessage"
+          class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg shadow-sm"
+        >
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <p class="text-sm text-red-800 font-medium">{{ errorMessage }}</p>
+          </div>
         </div>
       </Transition>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- ==================== SUBIR NUEVA PLANTILLA ==================== -->
-        <div
-          class="p-6 bg-gradient-to-br from-blue-50 to-white rounded-lg border-2 border-blue-200"
-        >
+        <div class="p-6 bg-blue-50 rounded-lg border-2 border-blue-200 shadow-sm">
           <div class="flex items-center gap-3 mb-4">
-            <div class="p-3 bg-blue-100 rounded-full">
-              <svg
-                class="w-6 h-6 text-blue-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+            <div class="p-3 bg-blue-500 rounded-lg shadow-md">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -77,12 +94,12 @@
           <div class="mb-4">
             <label
               for="file-upload"
-              class="flex flex-col items-center justify-center w-full h-32 px-4 transition bg-white border-2 border-blue-300 border-dashed rounded-lg appearance-none cursor-pointer hover:border-blue-400 focus:outline-none"
+              class="flex flex-col items-center justify-center w-full h-40 px-4 transition bg-white border-2 border-blue-300 border-dashed rounded-lg appearance-none cursor-pointer hover:border-blue-500 hover:bg-blue-50 focus:outline-none"
               :class="isUploading ? 'opacity-50 cursor-not-allowed' : ''"
             >
               <div class="flex flex-col items-center justify-center pt-5 pb-6">
                 <svg
-                  class="w-8 h-8 mb-2 text-blue-500"
+                  class="w-12 h-12 mb-3 text-blue-500"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -94,8 +111,9 @@
                     d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                   />
                 </svg>
-                <p class="mb-2 text-sm text-gray-700">
-                  <span class="font-semibold">Click para seleccionar</span> o arrastra el archivo
+                <p class="mb-2 text-sm text-gray-700 font-medium">
+                  <span class="font-bold text-blue-600">Click para seleccionar</span> o arrastra el
+                  archivo
                 </p>
                 <p class="text-xs text-gray-500">Solo archivos PDF (MAX. 10MB)</p>
               </div>
@@ -121,31 +139,35 @@
           >
             <div
               v-if="selectedFile"
-              class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between"
+              class="mb-4 p-4 bg-white border-2 border-blue-300 rounded-lg flex items-center justify-between shadow-sm"
             >
-              <div class="flex items-center gap-2">
-                <svg
-                  class="w-5 h-5 text-blue-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
+              <div class="flex items-center gap-3">
+                <div class="p-2 bg-blue-100 rounded-lg">
+                  <svg
+                    class="w-6 h-6 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                </div>
                 <div>
-                  <p class="text-sm font-medium text-blue-900">{{ selectedFile.name }}</p>
-                  <p class="text-xs text-blue-700">{{ formatFileSize(selectedFile.size) }}</p>
+                  <p class="text-sm font-bold text-gray-900">{{ selectedFile.name }}</p>
+                  <p class="text-xs text-gray-600 font-medium">
+                    {{ formatFileSize(selectedFile.size) }}
+                  </p>
                 </div>
               </div>
               <button
                 @click="clearFile"
                 :disabled="isUploading"
-                class="text-blue-600 hover:text-blue-800 disabled:opacity-50"
+                class="text-red-600 hover:text-red-800 disabled:opacity-50 p-2 hover:bg-red-50 rounded-lg transition-colors"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -177,19 +199,13 @@
               fill="none"
               viewBox="0 0 24 24"
             >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
+              ircle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+              />
               <path
                 class="opacity-75"
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
+              />
             </svg>
             <svg v-else class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -204,17 +220,10 @@
         </div>
 
         <!-- ==================== RESETEAR PLANTILLA ==================== -->
-        <div
-          class="p-6 bg-gradient-to-br from-orange-50 to-white rounded-lg border-2 border-orange-200"
-        >
+        <div class="p-6 bg-orange-50 rounded-lg border-2 border-orange-200 shadow-sm">
           <div class="flex items-center gap-3 mb-4">
-            <div class="p-3 bg-orange-100 rounded-full">
-              <svg
-                class="w-6 h-6 text-orange-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+            <div class="p-3 bg-orange-500 rounded-lg shadow-md">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -229,10 +238,10 @@
             </div>
           </div>
 
-          <div class="mb-4 p-4 bg-orange-50 rounded-lg border border-orange-200">
+          <div class="mb-4 p-4 bg-orange-100 rounded-lg border-2 border-orange-300">
             <div class="flex items-start gap-3">
               <svg
-                class="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5"
+                class="w-6 h-6 text-orange-600 flex-shrink-0 mt-0.5"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -243,19 +252,19 @@
                 />
               </svg>
               <div class="flex-1">
-                <p class="text-sm text-orange-800 font-medium">⚠️ Advertencia</p>
-                <p class="text-xs text-orange-700 mt-1">
+                <p class="text-sm text-orange-900 font-bold mb-1">Advertencia Importante</p>
+                <p class="text-sm text-orange-800 leading-relaxed">
                   Esta acción reemplazará la plantilla actual con la plantilla original del sistema.
-                  Esta acción no se puede deshacer.
+                  Esta operación no se puede deshacer.
                 </p>
               </div>
             </div>
           </div>
 
-          <div class="space-y-3">
-            <div class="flex items-start gap-2">
+          <div class="space-y-3 mb-6">
+            <div class="flex items-start gap-2 bg-white p-3 rounded-lg border border-orange-200">
               <svg
-                class="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5"
+                class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -267,11 +276,11 @@
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <p class="text-sm text-gray-700">Se restaurará el formato original</p>
+              <p class="text-sm text-gray-700 font-medium">Se restaurará el formato original</p>
             </div>
-            <div class="flex items-start gap-2">
+            <div class="flex items-start gap-2 bg-white p-3 rounded-lg border border-orange-200">
               <svg
-                class="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5"
+                class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -283,14 +292,14 @@
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <p class="text-sm text-gray-700">Todos los campos estarán disponibles</p>
+              <p class="text-sm text-gray-700 font-medium">Todos los campos estarán disponibles</p>
             </div>
           </div>
 
           <button
             @click="confirmReset"
             :disabled="isResetting"
-            class="w-full mt-6 px-4 py-3 rounded-lg font-bold text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed transition-all inline-flex justify-center items-center shadow-md hover:shadow-lg"
+            class="w-full px-4 py-3 rounded-lg font-bold text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed transition-all inline-flex justify-center items-center shadow-md hover:shadow-lg"
             :class="
               isResetting
                 ? 'bg-gray-400'
@@ -304,19 +313,13 @@
               fill="none"
               viewBox="0 0 24 24"
             >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
+              ircle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+              />
               <path
                 class="opacity-75"
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
+              />
             </svg>
             <svg v-else class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path

@@ -2,17 +2,25 @@
   <!-- ==================== PANEL DE ESTUDIANTES ==================== -->
   <div class="space-y-6">
     <!-- Header con botones de acción -->
-    <div class="flex justify-between items-center">
-      <div>
-        <h2 class="text-3xl font-bold text-gray-900">Gestión de Estudiantes</h2>
-        <p class="text-sm text-gray-600 mt-1">Administra los estudiantes del sistema</p>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900">Gestión de Estudiantes</h2>
+          <p class="text-sm text-gray-600 mt-1">
+            Administra los estudiantes registrados en el sistema
+          </p>
+        </div>
       </div>
-      <div class="flex items-center gap-3">
-        <BaseSearchInput v-model="searchQuery" placeholder="Buscar Estudiante..." />
+
+      <!-- Barra de acciones -->
+      <div class="flex items-center gap-3 flex-wrap">
+        <div class="flex-1 min-w-[250px]">
+          <BaseSearchInput v-model="searchQuery" placeholder="Buscar estudiante..." />
+        </div>
 
         <button
           @click="showModalExcel = true"
-          class="bg-[#0A3B76] hover:bg-[#082E5C] text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out flex items-center gap-2"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -27,7 +35,7 @@
 
         <button
           @click="openModal('add')"
-          class="bg-[#ABACAE] hover:bg-[#9293A4] text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out flex items-center gap-2"
+          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -39,12 +47,10 @@
           </svg>
           Añadir Estudiante
         </button>
-
-        <AssignmentUploader />
       </div>
     </div>
 
-    <!-- Mensaje de éxito/error de carga -->
+    <!-- Mensaje de éxito de carga -->
     <Transition
       enter-active-class="transition ease-out duration-200"
       enter-from-class="opacity-0 translate-y-1"
@@ -53,35 +59,22 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div v-if="uploadMessage" class="bg-green-50 border-l-4 border-green-500 p-4 rounded-md">
-        <p class="text-sm text-green-800 font-medium">{{ uploadMessage }}</p>
+      <div
+        v-if="uploadMessage"
+        class="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg shadow-sm"
+      >
+        <div class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <p class="text-sm text-green-800 font-medium">{{ uploadMessage }}</p>
+        </div>
       </div>
     </Transition>
-
-    <!-- Estado de carga -->
-    <!-- <div v-if="loading" class="flex justify-center items-center py-12">
-      <svg
-        class="animate-spin h-8 w-8 text-purple-600"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        ></path>
-      </svg>
-      <span class="ml-3 text-gray-600">Cargando estudiantes...</span>
-    </div> -->
 
     <!-- Mensaje de error -->
     <Transition
@@ -92,50 +85,63 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div v-if="error" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-        <p class="text-sm text-red-800 font-medium">{{ error }}</p>
+      <div v-if="error" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg shadow-sm">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <p class="text-sm text-red-800 font-medium">{{ error }}</p>
+        </div>
       </div>
     </Transition>
 
     <!-- Tabla de estudiantes -->
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+    <div class="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
       <table v-if="students.length > 0" class="min-w-full divide-y divide-gray-200 table-fixed">
         <thead class="bg-gray-50">
           <tr>
             <th
-              class="w-3/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              class="w-3/12 px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
             >
               Nombre Completo
             </th>
             <th
-              class="w-2/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
+              class="w-2/12 px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider whitespace-nowrap"
             >
               Número de Control
             </th>
             <th
-              class="w-1/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              class="w-1/12 px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
             >
               Semestre
             </th>
             <th
-              class="w-3/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              class="w-3/12 px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
             >
               Carrera
             </th>
             <th
-              class="w-1/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              class="w-1/12 px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
             >
               Estado
             </th>
             <th
-              class="w-2/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              class="w-2/12 px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
             >
               Acciones
             </th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="student in students" :key="student.id_alumno" class="hover:bg-gray-50">
+          <tr
+            v-for="student in students"
+            :key="student.id_alumno"
+            class="hover:bg-gray-50 transition-colors duration-150"
+          >
             <td class="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis">
               <div class="text-sm font-medium text-gray-900">
                 {{
@@ -146,38 +152,38 @@
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ student.num_control }}</div>
+              <div class="text-sm text-gray-700">{{ student.num_control }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ student.semestre_actual }}° Semestre</div>
+              <div class="text-sm text-gray-700">{{ student.semestre_actual }}°</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis">
-              <div class="text-sm text-gray-900">{{ student.carrera }}</div>
+              <div class="text-sm text-gray-700">{{ student.carrera }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span
-                class="px-2 py-1 text-xs leading-5 font-semibold rounded-full flex justify-center"
+                class="px-3 py-1 text-xs leading-5 font-semibold rounded-full"
                 :class="
                   student.estado === 'A'
-                    ? 'z-10 bg-[#0A3B76]/10 border-[#0A3B76] text-[#0A3B76]'
-                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                    ? 'bg-green-100 text-green-800 border border-green-200'
+                    : 'bg-gray-100 text-gray-600 border border-gray-200'
                 "
               >
-                {{ student.estado }}
+                {{ student.estado === 'A' ? 'Activo' : 'Inactivo' }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <div class="flex items-center gap-2">
                 <button
                   @click="editItem(student)"
-                  class="text-white hover:bg-indigo-900 px-3 py-2 bg-indigo-600 rounded-lg transition-colors duration-200"
+                  class="text-white hover:bg-amber-600 px-3 py-2 bg-amber-500 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
                   title="Editar"
                 >
                   <EditIcon />
                 </button>
                 <button
                   @click="deleteItem(student)"
-                  class="text-white hover:bg-red-900 px-3 py-2 rounded-lg bg-red-600 transition-colors duration-200"
+                  class="text-white hover:bg-red-700 px-3 py-2 rounded-lg bg-red-600 transition-all duration-200 shadow-sm hover:shadow-md"
                   title="Eliminar"
                 >
                   <DeleteIcon />
@@ -189,9 +195,12 @@
       </table>
 
       <!-- Sin estudiantes -->
-      <div v-if="!loading && students.length === 0" class="text-center py-12 text-gray-500">
+      <div
+        v-if="!loading && students.length === 0"
+        class="text-center py-16 px-4 bg-gray-50 rounded-lg"
+      >
         <svg
-          class="w-16 h-16 mx-auto mb-4 text-gray-400"
+          class="w-20 h-20 mx-auto mb-4 text-gray-300"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -199,43 +208,59 @@
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
-            stroke-width="2"
+            stroke-width="1.5"
             d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
           />
         </svg>
-        <p class="text-lg font-medium">No hay estudiantes registrados</p>
-        <p class="text-sm mt-1">Comienza agregando estudiantes al sistema</p>
+        <p class="text-lg font-medium text-gray-900 mb-1">No hay estudiantes registrados</p>
+        <p class="text-sm text-gray-500">Comienza agregando estudiantes al sistema</p>
+        <button
+          @click="openModal('add')"
+          class="mt-4 inline-flex items-center gap-2 text-[#0A3B76] hover:text-[#083060] font-medium text-sm"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          Añadir primer estudiante
+        </button>
       </div>
     </div>
 
     <!-- Paginación Estudiantes -->
     <div
       v-if="students.length > 0"
-      class="bg-white rounded-lg px-4 py-3 flex items-center justify-between border-t border-gray-200 shadow-sm"
+      class="bg-white rounded-lg px-6 py-4 flex items-center justify-between border border-gray-200 shadow-sm"
     >
-      <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+      <div class="flex-1 flex items-center justify-between">
         <div>
           <p class="text-sm text-gray-700">
             Mostrando
-            <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
+            <span class="font-medium text-gray-900">{{
+              (currentPage - 1) * itemsPerPage + 1
+            }}</span>
             a
-            <span class="font-medium">{{
+            <span class="font-medium text-gray-900">{{
               Math.min(currentPage * itemsPerPage, totalStudents)
             }}</span>
             de
-            <span class="font-medium">{{ totalStudents }}</span>
+            <span class="font-medium text-gray-900">{{ totalStudents }}</span>
             resultados
           </p>
         </div>
         <div>
           <nav
-            class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+            class="relative z-0 inline-flex rounded-lg shadow-sm -space-x-px"
             aria-label="Pagination"
           >
             <button
               @click="prevPage"
               :disabled="currentPage === 1"
-              class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="relative inline-flex items-center px-4 py-2 rounded-l-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
               <svg
                 class="h-5 w-5"
@@ -249,11 +274,11 @@
                   clip-rule="evenodd"
                 />
               </svg>
-              <span>Anterior</span>
+              <span class="ml-1">Anterior</span>
             </button>
 
             <span
-              class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
+              class="relative inline-flex items-center px-6 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
             >
               Página {{ currentPage }} de {{ totalPages }}
             </span>
@@ -261,9 +286,9 @@
             <button
               @click="nextPage"
               :disabled="currentPage >= totalPages"
-              class="relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="relative inline-flex items-center px-4 py-2 rounded-r-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
-              <span>Siguiente</span>
+              <span class="mr-1">Siguiente</span>
               <svg
                 class="h-5 w-5"
                 xmlns="http://www.w3.org/2000/svg"
@@ -302,7 +327,7 @@
           class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
         >
           <div
-            class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+            class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"
             @click="closeModal"
           ></div>
 
@@ -313,57 +338,74 @@
           <div
             class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
           >
-            <div class="bg-gradient-to-r from-[#0A3B76] to-[#082D57] px-6 py-4">
-              <h3 class="text-lg leading-6 font-medium text-white" id="modal-title">
-                {{ modalMode === 'add' ? 'Añadir' : 'Editar' }} Estudiante
-              </h3>
+            <!-- Header -->
+            <div class="bg-[#0A3B76] px-6 py-4 border-b-2 border-[#083060]">
+              <div class="flex items-center gap-3">
+                <svg
+                  class="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+                <h3 class="text-xl leading-6 font-bold text-white" id="modal-title">
+                  {{ modalMode === 'add' ? 'Añadir Nuevo Estudiante' : 'Editar Estudiante' }}
+                </h3>
+              </div>
             </div>
 
+            <!-- Body -->
             <div class="bg-white px-6 pt-5 pb-4">
               <form @submit.prevent="submitForm" class="space-y-6">
                 <!-- Nombres -->
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
                   <div>
-                    <label for="nombre" class="block text-sm font-medium text-gray-700">
+                    <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">
                       Nombre <span class="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       id="nombre"
                       v-model="formData.nombre"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
-                      :class="{ 'border-red-500': errors.nombre }"
+                      class="block w-full py-2.5 px-3 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm transition-colors duration-200"
+                      :class="{ 'border-red-500 focus:ring-red-500': errors.nombre }"
                     />
-                    <p v-if="errors.nombre" class="mt-2 text-sm text-red-600">
+                    <p v-if="errors.nombre" class="mt-1 text-sm text-red-600">
                       {{ errors.nombre[0] }}
                     </p>
                   </div>
 
                   <div>
-                    <label for="apellido_p" class="block text-sm font-medium text-gray-700">
+                    <label for="apellido_p" class="block text-sm font-medium text-gray-700 mb-1">
                       Apellido Paterno <span class="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       id="apellido_p"
                       v-model="formData.apellido_p"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
-                      :class="{ 'border-red-500': errors.apellido_p }"
+                      class="block w-full py-2.5 px-3 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm transition-colors duration-200"
+                      :class="{ 'border-red-500 focus:ring-red-500': errors.apellido_p }"
                     />
-                    <p v-if="errors.apellido_p" class="mt-2 text-sm text-red-600">
+                    <p v-if="errors.apellido_p" class="mt-1 text-sm text-red-600">
                       {{ errors.apellido_p[0] }}
                     </p>
                   </div>
 
                   <div>
-                    <label for="apellido_m" class="block text-sm font-medium text-gray-700">
+                    <label for="apellido_m" class="block text-sm font-medium text-gray-700 mb-1">
                       Apellido Materno
                     </label>
                     <input
                       type="text"
                       id="apellido_m"
                       v-model="formData.apellido_m"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
+                      class="block w-full py-2.5 px-3 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm transition-colors duration-200"
                     />
                   </div>
                 </div>
@@ -371,23 +413,23 @@
                 <!-- Número de Control y Contraseña -->
                 <div class="grid grid-cols-2 gap-6">
                   <div>
-                    <label for="num_control" class="block text-sm font-medium text-gray-700">
+                    <label for="num_control" class="block text-sm font-medium text-gray-700 mb-1">
                       Número de Control <span class="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       id="num_control"
                       v-model="formData.num_control"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
-                      :class="{ 'border-red-500': errors.num_control }"
+                      class="block w-full py-2.5 px-3 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm transition-colors duration-200"
+                      :class="{ 'border-red-500 focus:ring-red-500': errors.num_control }"
                     />
-                    <p v-if="errors.num_control" class="mt-2 text-sm text-red-600">
+                    <p v-if="errors.num_control" class="mt-1 text-sm text-red-600">
                       {{ errors.num_control[0] }}
                     </p>
                   </div>
 
                   <div>
-                    <label for="contraseña" class="block text-sm font-medium text-gray-700">
+                    <label for="contraseña" class="block text-sm font-medium text-gray-700 mb-1">
                       Contraseña <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
@@ -395,19 +437,19 @@
                         id="contraseña"
                         v-model="formData.contraseña"
                         :type="showPassword ? 'text' : 'password'"
-                        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
-                        :class="{ 'border-red-500': errors.contraseña }"
+                        class="block w-full py-2.5 px-3 pr-10 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm transition-colors duration-200"
+                        :class="{ 'border-red-500 focus:ring-red-500': errors.contraseña }"
                       />
                       <button
                         type="button"
                         @click="showPassword = !showPassword"
-                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                       >
                         <ShowEye v-if="showPassword" />
                         <HideEye v-else />
                       </button>
                     </div>
-                    <p v-if="errors.contraseña" class="mt-2 text-sm text-red-600">
+                    <p v-if="errors.contraseña" class="mt-1 text-sm text-red-600">
                       {{ errors.contraseña[0] }}
                     </p>
                   </div>
@@ -416,44 +458,44 @@
                 <!-- Correo y Teléfono -->
                 <div class="grid grid-cols-2 gap-6">
                   <div>
-                    <label for="correo" class="block text-sm font-medium text-gray-700">
+                    <label for="correo" class="block text-sm font-medium text-gray-700 mb-1">
                       Correo <span class="text-red-500">*</span>
                     </label>
                     <input
                       type="email"
                       id="correo"
                       v-model="formData.correo"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
-                      :class="{ 'border-red-500': errors.correo }"
+                      class="block w-full py-2.5 px-3 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm transition-colors duration-200"
+                      :class="{ 'border-red-500 focus:ring-red-500': errors.correo }"
                     />
-                    <p v-if="errors.correo" class="mt-2 text-sm text-red-600">
+                    <p v-if="errors.correo" class="mt-1 text-sm text-red-600">
                       {{ errors.correo[0] }}
                     </p>
                   </div>
 
                   <div>
-                    <label for="telefono" class="block text-sm font-medium text-gray-700">
+                    <label for="telefono" class="block text-sm font-medium text-gray-700 mb-1">
                       Teléfono
                     </label>
                     <input
                       type="text"
                       id="telefono"
                       v-model="formData.telefono"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
+                      class="block w-full py-2.5 px-3 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm transition-colors duration-200"
                     />
                   </div>
                 </div>
 
                 <!-- Carrera -->
                 <div>
-                  <label for="carrera" class="block text-sm font-medium text-gray-700">
+                  <label for="carrera" class="block text-sm font-medium text-gray-700 mb-1">
                     Carrera <span class="text-red-500">*</span>
                   </label>
                   <select
                     id="carrera"
                     v-model="formData.carrera"
-                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
-                    :class="{ 'border-red-500': errors.carrera }"
+                    class="block w-full py-2.5 px-3 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm transition-colors duration-200"
+                    :class="{ 'border-red-500 focus:ring-red-500': errors.carrera }"
                   >
                     <option value="">Selecciona una carrera</option>
                     <option value="Ingeniería en Semiconductores">
@@ -473,7 +515,7 @@
                     <option value="Ingeniería en Minera">Ingeniería en Minera</option>
                     <option value="Arquitectura">Arquitectura</option>
                   </select>
-                  <p v-if="errors.carrera" class="mt-2 text-sm text-red-600">
+                  <p v-if="errors.carrera" class="mt-1 text-sm text-red-600">
                     {{ errors.carrera[0] }}
                   </p>
                 </div>
@@ -481,14 +523,14 @@
                 <!-- Semestre y Estado -->
                 <div class="grid grid-cols-2 gap-6">
                   <div>
-                    <label for="semestre" class="block text-sm font-medium text-gray-700">
+                    <label for="semestre" class="block text-sm font-medium text-gray-700 mb-1">
                       Semestre <span class="text-red-500">*</span>
                     </label>
                     <select
                       id="semestre"
                       v-model="formData.semestre_actual"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
-                      :class="{ 'border-red-500': errors.semestre_actual }"
+                      class="block w-full py-2.5 px-3 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm transition-colors duration-200"
+                      :class="{ 'border-red-500 focus:ring-red-500': errors.semestre_actual }"
                     >
                       <option value="">Selecciona un semestre</option>
                       <option value="1">1° Semestre</option>
@@ -501,46 +543,44 @@
                       <option value="8">8° Semestre</option>
                       <option value="9">9° Semestre</option>
                     </select>
-                    <p v-if="errors.semestre_actual" class="mt-2 text-sm text-red-600">
+                    <p v-if="errors.semestre_actual" class="mt-1 text-sm text-red-600">
                       {{ errors.semestre_actual[0] }}
                     </p>
                   </div>
 
                   <div>
-                    <label for="estado" class="block text-sm font-medium text-gray-700">
+                    <label for="estado" class="block text-sm font-medium text-gray-700 mb-1">
                       Estado <span class="text-red-500">*</span>
                     </label>
                     <select
                       id="estado"
                       v-model="formData.estado"
-                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm"
-                      :class="{ 'border-red-500': errors.estado }"
+                      class="block w-full py-2.5 px-3 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76] sm:text-sm transition-colors duration-200"
+                      :class="{ 'border-red-500 focus:ring-red-500': errors.estado }"
                     >
                       <option value="A">Activo</option>
                       <option value="I">Inactivo</option>
                     </select>
-                    <p v-if="errors.estado" class="mt-2 text-sm text-red-600">
+                    <p v-if="errors.estado" class="mt-1 text-sm text-red-600">
                       {{ errors.estado[0] }}
                     </p>
                   </div>
                 </div>
 
                 <!-- Botones -->
-                <div
-                  class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3 rounded-b-lg -mx-6 -mb-4"
-                >
-                  <button
-                    type="submit"
-                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#0A3B76] text-white text-base font-medium hover:bg-[#082D57] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A3B76] sm:ml-3 sm:w-auto sm:text-sm"
-                  >
-                    {{ modalMode === 'add' ? 'Añadir' : 'Guardar cambios' }}
-                  </button>
+                <div class="bg-gray-50 px-6 py-4 -mx-6 -mb-4 rounded-b-lg flex justify-end gap-3">
                   <button
                     @click="closeModal"
                     type="button"
-                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A3B76] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                    class="px-6 py-2.5 rounded-lg border border-gray-300 shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200"
                   >
                     Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    class="px-6 py-2.5 rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200"
+                  >
+                    {{ modalMode === 'add' ? 'Añadir Estudiante' : 'Guardar Cambios' }}
                   </button>
                 </div>
               </form>
@@ -569,7 +609,7 @@
         <div
           class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
         >
-          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+          <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"></div>
 
           <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"
             >&#8203;</span
@@ -578,7 +618,7 @@
           <div
             class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
           >
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="bg-white px-6 pt-6 pb-4">
               <div class="sm:flex sm:items-start">
                 <div
                   class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
@@ -600,35 +640,38 @@
                   </svg>
                 </div>
                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                  <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                  <h3 class="text-lg leading-6 font-bold text-gray-900" id="modal-title">
                     Eliminar Estudiante
                   </h3>
-                  <div class="mt-2">
-                    <p class="text-sm text-gray-500">
-                      ¿Estás seguro de que quieres eliminar a
-                      <strong
+                  <div class="mt-3">
+                    <p class="text-sm text-gray-600">
+                      ¿Estás seguro de que deseas eliminar a
+                      <strong class="text-gray-900"
                         >{{ studentToDelete?.nombre }} {{ studentToDelete?.apellido_p }}
                         {{ studentToDelete?.apellido_m }}</strong
-                      >? Esta acción no se puede deshacer.
+                      >?
+                    </p>
+                    <p class="text-sm text-red-600 font-medium mt-2">
+                      Esta acción no se puede deshacer.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
-              <button
-                @click="confirmDelete"
-                type="button"
-                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-              >
-                Eliminar
-              </button>
+            <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3 rounded-b-lg">
               <button
                 @click="cancelDelete"
                 type="button"
-                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A3B76] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                class="px-6 py-2.5 rounded-lg border border-gray-300 shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200"
               >
                 Cancelar
+              </button>
+              <button
+                @click="confirmDelete"
+                type="button"
+                class="px-6 py-2.5 rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200"
+              >
+                Eliminar
               </button>
             </div>
           </div>
@@ -656,11 +699,6 @@ import ShowEye from '@/components/icons/ShowEye.vue'
 import HideEye from '@/components/icons/HideEye.vue'
 import BaseSearchInput from '@/components/ui/BaseSearchInput.vue'
 import CargarAlumnosModal from '@/components/student/CargarAlumnosModal.vue'
-import AssignmentUploader from '@/components/tutor/AssignmentUploader.vue'
-
-// IMPORTS - SERVICES
-
-// ==================== ROUTER ====================
 
 // ==================== STATE - DATA ====================
 const students = ref([])

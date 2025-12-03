@@ -1,12 +1,12 @@
 <template>
-  <div class="space-y-8">
+  <div class="space-y-6">
     <!-- ==================== CONTROL DE ETAPAS - REPORTE INTEGRAL ==================== -->
-    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-indigo-500">
-      <div class="flex items-center justify-between mb-4">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div class="flex items-start justify-between mb-6">
         <div>
-          <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <svg
-              class="w-6 h-6 text-indigo-600"
+              class="w-6 h-6 text-blue-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -21,28 +21,27 @@
             Control de Etapas - Reporte Integral
           </h2>
           <p class="text-sm text-gray-600 mt-1">
-            Controla qué campos pueden llenar los tutores en el Reporte Integral
+            Controla qué campos pueden completar los tutores en el Reporte Integral
           </p>
         </div>
 
         <!-- Etapa Actual -->
         <div v-if="!isLoadingEtapa" class="text-right">
-          <p class="text-sm text-gray-600">Etapa Actual:</p>
-          <div class="flex items-center gap-2 mt-1">
-            <span
-              :class="[
-                'px-4 py-2 rounded-full font-bold text-lg',
-                {
-                  'bg-gray-200 text-gray-700': reporteIntegralEtapa === 0,
-                  'bg-yellow-100 text-yellow-800': reporteIntegralEtapa === 1,
-                  'bg-blue-100 text-blue-800': reporteIntegralEtapa === 2,
-                  'bg-green-100 text-green-800': reporteIntegralEtapa === 3,
-                },
-              ]"
-            >
-              {{ reporteIntegralEtapa === 0 ? 'Bloqueado' : `Etapa ${reporteIntegralEtapa}` }}
-            </span>
-          </div>
+          <p class="text-sm text-gray-600 mb-2">Etapa Actual:</p>
+          <span
+            :class="[
+              'inline-flex px-5 py-2.5 rounded-lg font-bold text-lg shadow-sm',
+              {
+                'bg-gray-200 text-gray-700': reporteIntegralEtapa === 0,
+                'bg-yellow-100 text-yellow-800 border-2 border-yellow-300':
+                  reporteIntegralEtapa === 1,
+                'bg-blue-100 text-blue-800 border-2 border-blue-300': reporteIntegralEtapa === 2,
+                'bg-green-100 text-green-800 border-2 border-green-300': reporteIntegralEtapa === 3,
+              },
+            ]"
+          >
+            {{ reporteIntegralEtapa === 0 ? 'Bloqueado' : `Etapa ${reporteIntegralEtapa}` }}
+          </span>
         </div>
       </div>
 
@@ -55,8 +54,20 @@
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
       >
-        <div v-if="successEtapa" class="mb-4 p-3 bg-green-50 border-l-4 border-green-500 rounded">
-          <p class="text-sm text-green-800 font-medium">{{ successEtapa }}</p>
+        <div
+          v-if="successEtapa"
+          class="mb-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg shadow-sm"
+        >
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <p class="text-sm text-green-800 font-medium">{{ successEtapa }}</p>
+          </div>
         </div>
       </Transition>
 
@@ -68,8 +79,20 @@
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
       >
-        <div v-if="errorEtapa" class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded">
-          <p class="text-sm text-red-800 font-medium">{{ errorEtapa }}</p>
+        <div
+          v-if="errorEtapa"
+          class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg shadow-sm"
+        >
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <p class="text-sm text-red-800 font-medium">{{ errorEtapa }}</p>
+          </div>
         </div>
       </Transition>
 
@@ -80,17 +103,17 @@
           @click="cambiarEtapa(1)"
           :disabled="isLoadingEtapa"
           :class="[
-            'p-4 rounded-lg border-2 transition-all duration-200 text-left',
+            'p-5 rounded-lg border-2 transition-all duration-200 text-left',
             reporteIntegralEtapa === 1
-              ? 'border-yellow-500 bg-yellow-50 shadow-md'
-              : 'border-gray-300 hover:border-yellow-400 hover:bg-yellow-50',
+              ? 'border-yellow-500 bg-yellow-50 shadow-md scale-105'
+              : 'border-gray-300 hover:border-yellow-400 hover:bg-yellow-50 hover:shadow-sm',
             isLoadingEtapa ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
           ]"
         >
           <div class="flex items-start gap-3">
             <div
               :class="[
-                'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg',
+                'flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-sm',
                 reporteIntegralEtapa === 1
                   ? 'bg-yellow-500 text-white'
                   : 'bg-gray-200 text-gray-600',
@@ -99,9 +122,9 @@
               1
             </div>
             <div class="flex-1">
-              <h3 class="font-bold text-gray-900 mb-1">Etapa 1</h3>
-              <p class="text-sm text-gray-600">Solo Seguimiento 1</p>
-              <div class="mt-2 flex items-center gap-2">
+              <h3 class="font-bold text-gray-900 mb-1 text-lg">Etapa 1</h3>
+              <p class="text-sm text-gray-600 mb-3">Solo Seguimiento 1</p>
+              <div class="flex items-center gap-2">
                 <svg class="w-4 h-4 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fill-rule="evenodd"
@@ -109,11 +132,11 @@
                     clip-rule="evenodd"
                   />
                 </svg>
-                <span class="text-xs text-gray-600">seguimiento_1</span>
+                <span class="text-xs text-gray-600 font-medium">seguimiento_1</span>
               </div>
             </div>
             <div v-if="reporteIntegralEtapa === 1" class="flex-shrink-0">
-              <svg class="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-7 h-7 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fill-rule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -129,40 +152,38 @@
           @click="cambiarEtapa(2)"
           :disabled="isLoadingEtapa"
           :class="[
-            'p-4 rounded-lg border-2 transition-all duration-200 text-left',
+            'p-5 rounded-lg border-2 transition-all duration-200 text-left',
             reporteIntegralEtapa === 2
-              ? 'border-blue-500 bg-blue-50 shadow-md'
-              : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50',
+              ? 'border-blue-500 bg-blue-50 shadow-md scale-105'
+              : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50 hover:shadow-sm',
             isLoadingEtapa ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
           ]"
         >
           <div class="flex items-start gap-3">
             <div
               :class="[
-                'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg',
+                'flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-sm',
                 reporteIntegralEtapa === 2 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600',
               ]"
             >
               2
             </div>
             <div class="flex-1">
-              <h3 class="font-bold text-gray-900 mb-1">Etapa 2</h3>
-              <p class="text-sm text-gray-600">Seguimientos 1 y 2</p>
-              <div class="mt-2 space-y-1">
-                <div class="flex items-center gap-2">
-                  <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fill-rule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  <span class="text-xs text-gray-600">seguimiento_1, seguimiento_2</span>
-                </div>
+              <h3 class="font-bold text-gray-900 mb-1 text-lg">Etapa 2</h3>
+              <p class="text-sm text-gray-600 mb-3">Seguimientos 1 y 2</p>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <span class="text-xs text-gray-600 font-medium">seguimiento_1, seguimiento_2</span>
               </div>
             </div>
             <div v-if="reporteIntegralEtapa === 2" class="flex-shrink-0">
-              <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-7 h-7 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fill-rule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -178,17 +199,17 @@
           @click="cambiarEtapa(3)"
           :disabled="isLoadingEtapa"
           :class="[
-            'p-4 rounded-lg border-2 transition-all duration-200 text-left',
+            'p-5 rounded-lg border-2 transition-all duration-200 text-left',
             reporteIntegralEtapa === 3
-              ? 'border-green-500 bg-green-50 shadow-md'
-              : 'border-gray-300 hover:border-green-400 hover:bg-green-50',
+              ? 'border-green-500 bg-green-50 shadow-md scale-105'
+              : 'border-gray-300 hover:border-green-400 hover:bg-green-50 hover:shadow-sm',
             isLoadingEtapa ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
           ]"
         >
           <div class="flex items-start gap-3">
             <div
               :class="[
-                'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg',
+                'flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-sm',
                 reporteIntegralEtapa === 3
                   ? 'bg-green-500 text-white'
                   : 'bg-gray-200 text-gray-600',
@@ -197,23 +218,21 @@
               3
             </div>
             <div class="flex-1">
-              <h3 class="font-bold text-gray-900 mb-1">Etapa 3</h3>
-              <p class="text-sm text-gray-600">Todos los campos</p>
-              <div class="mt-2">
-                <div class="flex items-center gap-2">
-                  <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fill-rule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  <span class="text-xs text-gray-600">Reporte completo</span>
-                </div>
+              <h3 class="font-bold text-gray-900 mb-1 text-lg">Etapa 3</h3>
+              <p class="text-sm text-gray-600 mb-3">Todos los campos</p>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <span class="text-xs text-gray-600 font-medium">Reporte completo</span>
               </div>
             </div>
             <div v-if="reporteIntegralEtapa === 3" class="flex-shrink-0">
-              <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-7 h-7 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fill-rule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -226,55 +245,46 @@
       </div>
 
       <!-- Loader -->
-      <div v-if="isLoadingEtapa" class="mt-4 flex items-center justify-center">
+      <div v-if="isLoadingEtapa" class="mt-6 flex items-center justify-center">
         <svg
-          class="animate-spin h-6 w-6 text-indigo-600"
+          class="animate-spin h-6 w-6 text-blue-600"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
         >
-          <circle
-            class="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            stroke-width="4"
-          ></circle>
+          ircle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
           <path
             class="opacity-75"
             fill="currentColor"
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
+          />
         </svg>
-        <span class="ml-2 text-sm text-gray-600">Actualizando etapa...</span>
+        <span class="ml-3 text-sm text-gray-600 font-medium">Actualizando etapa...</span>
       </div>
     </div>
 
     <!-- ==================== DESCARGA DE ANEXO 3 ==================== -->
-    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-emerald-500">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-            <svg
-              class="w-6 h-6 text-emerald-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            Descarga de Reportes - ANEXO 3
-          </h2>
-          <p class="text-sm text-gray-600 mt-1">
-            Descarga el archivo Excel del ANEXO 3 para el periodo seleccionado
-          </p>
-        </div>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <svg
+            class="w-6 h-6 text-emerald-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          Descarga de Reportes - ANEXO 3
+        </h2>
+        <p class="text-sm text-gray-600 mt-1">
+          Descarga el archivo Excel del ANEXO 3 para el periodo seleccionado
+        </p>
       </div>
 
       <!-- Mensajes de éxito/error -->
@@ -286,8 +296,20 @@
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
       >
-        <div v-if="successAnexo" class="mb-4 p-3 bg-green-50 border-l-4 border-green-500 rounded">
-          <p class="text-sm text-green-800 font-medium">{{ successAnexo }}</p>
+        <div
+          v-if="successAnexo"
+          class="mb-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg shadow-sm"
+        >
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <p class="text-sm text-green-800 font-medium">{{ successAnexo }}</p>
+          </div>
         </div>
       </Transition>
 
@@ -299,13 +321,25 @@
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
       >
-        <div v-if="errorAnexo" class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded">
-          <p class="text-sm text-red-800 font-medium">{{ errorAnexo }}</p>
+        <div
+          v-if="errorAnexo"
+          class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg shadow-sm"
+        >
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <p class="text-sm text-red-800 font-medium">{{ errorAnexo }}</p>
+          </div>
         </div>
       </Transition>
 
       <!-- Selector de Periodo -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label for="periodo" class="block text-sm font-medium text-gray-700 mb-2">
             Periodo Académico
@@ -317,16 +351,25 @@
             maxlength="5"
             placeholder="22025"
             :disabled="isDownloadingAnexo"
-            class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
+            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all shadow-sm font-medium"
           />
-          <p class="text-xs text-gray-500 mt-1">Formato: 22025 (5 dígitos)</p>
+          <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Formato: 22025 (5 dígitos)
+          </p>
         </div>
 
-        <div class="flex items-center">
+        <div class="flex items-end">
           <button
             @click="descargarAnexo3"
             :disabled="isDownloadingAnexo || !periodoAnexo || periodoAnexo.length !== 5"
-            class="w-full px-6 py-2 rounded-lg font-bold text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed transition-all inline-flex justify-center items-center shadow-md hover:shadow-lg mt-2"
+            class="w-full px-6 py-3 rounded-lg font-bold text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed transition-all inline-flex justify-center items-center shadow-md hover:shadow-lg"
             :class="
               isDownloadingAnexo || !periodoAnexo || periodoAnexo.length !== 5
                 ? 'bg-gray-400'
@@ -340,19 +383,13 @@
               fill="none"
               viewBox="0 0 24 24"
             >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
+              ircle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+              />
               <path
                 class="opacity-75"
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
+              />
             </svg>
             <svg v-else class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -368,7 +405,7 @@
       </div>
 
       <!-- Información adicional -->
-      <div class="mt-4 p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+      <div class="mt-6 p-4 bg-emerald-50 rounded-lg border-2 border-emerald-200">
         <div class="flex items-start gap-3">
           <svg
             class="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5"
@@ -382,10 +419,10 @@
             />
           </svg>
           <div class="flex-1">
-            <p class="text-sm text-emerald-800 font-medium">Información del Reporte</p>
-            <p class="text-xs text-emerald-700 mt-1">
+            <p class="text-sm text-emerald-800 font-bold mb-1">Información del Reporte</p>
+            <p class="text-sm text-emerald-700 leading-relaxed">
               El ANEXO 3 contiene toda la información consolidada de las tutorías del periodo
-              seleccionado. El archivo se descargará en formato Excel (.xlsx).
+              seleccionado. El archivo se descargará automáticamente en formato Excel (.xlsx).
             </p>
           </div>
         </div>
