@@ -1,6 +1,6 @@
 <template>
   <!-- ==================== CONTAINER GESTIÓN AVISOS ==================== -->
-  <div class="bg-white rounded-lg shadow-md p-6 border-l-4" style="border-color: #0A3B76">
+  <div class="bg-white rounded-lg shadow-md p-6 border-l-4" style="border-color: #0a3b76">
     <div class="flex items-center justify-between mb-6">
       <div>
         <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
@@ -50,8 +50,11 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div v-if="successMessage" class="mb-4 p-3 rounded border-l-4"
-        style="background:#e8f5ff; border-color:#0A3B76">
+      <div
+        v-if="successMessage"
+        class="mb-4 p-3 rounded border-l-4"
+        style="background: #e8f5ff; border-color: #0a3b76"
+      >
         <p class="text-sm font-medium" :style="{ color: '#0A3B76' }">{{ successMessage }}</p>
       </div>
     </Transition>
@@ -78,9 +81,12 @@
         fill="none"
         viewBox="0 0 24 24"
       >
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-        <path class="opacity-75" fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+        ircle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        />
       </svg>
       <span class="ml-2 text-gray-600">Cargando avisos...</span>
     </div>
@@ -91,9 +97,11 @@
         v-for="aviso in avisos"
         :key="aviso.id"
         class="border rounded-lg p-4 hover:shadow-md transition-shadow duration-200"
-        :style="aviso.is_activo
-          ? { background:'#e8f5ff', borderColor:'#0A3B76' }
-          : { background:'#f3f3f5', borderColor:'#ABACAE' }"
+        :style="
+          aviso.is_activo
+            ? { background: '#e8f5ff', borderColor: '#0A3B76' }
+            : { background: '#f3f3f5', borderColor: '#ABACAE' }
+        "
       >
         <div class="flex items-start justify-between">
           <div class="flex-1">
@@ -102,9 +110,11 @@
 
               <span
                 class="px-2 py-1 text-xs font-semibold rounded-full"
-                :style="aviso.is_activo
-                  ? { background:'#cfe6ff', color:'#0A3B76' }
-                  : { background:'#dddde2', color:'#4a4a4a' }"
+                :style="
+                  aviso.is_activo
+                    ? { background: '#cfe6ff', color: '#0A3B76' }
+                    : { background: '#dddde2', color: '#4a4a4a' }
+                "
               >
                 {{ aviso.is_activo ? 'Activo' : 'Inactivo' }}
               </span>
@@ -127,7 +137,9 @@
                   d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
                 />
               </svg>
-              <a :href="aviso.link" target="_blank"
+              <a
+                :href="aviso.link"
+                target="_blank"
                 class="text-sm hover:underline"
                 :style="{ color: '#0A3B76' }"
               >
@@ -148,7 +160,7 @@
             <button
               @click="openModal('edit', aviso)"
               class="p-2 rounded-lg transition-colors duration-200"
-              :style="{ color:'#0A3B76', background:'#e8f5ff' }"
+              :style="{ color: '#0A3B76', background: '#e8f5ff' }"
               title="Editar"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,7 +194,12 @@
 
     <!-- Sin avisos -->
     <div v-else class="text-center py-12">
-      <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg
+        class="w-16 h-16 text-gray-400 mx-auto mb-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -196,137 +213,216 @@
       <button
         @click="openModal('create')"
         class="mt-4 font-medium hover:underline"
-        :style="{ color:'#0A3B76' }"
+        :style="{ color: '#0A3B76' }"
       >
         Crear el primer aviso
       </button>
     </div>
 
     <!-- ==================== MODAL CREAR/EDITAR ==================== -->
-    <div
-      v-if="showModal"
-      class="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto z-50 flex items-center justify-center p-4"
+    <Transition
+      enter-active-class="transition ease-out duration-300"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition ease-in duration-200"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-95"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full" @click.stop>
-        
-        <!-- Header -->
-        <div class="px-6 py-4 rounded-t-lg" :style="{ background:'#0A3B76' }">
-          <h3 class="text-xl font-bold text-white">
-            {{ modalMode === 'create' ? 'Crear Nuevo Aviso' : 'Editar Aviso' }}
-          </h3>
+      <div
+        v-if="showModal"
+        class="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto z-50 flex items-center justify-center p-4"
+      >
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full" @click.stop>
+          <!-- Header -->
+          <div class="px-6 py-4 rounded-t-lg" :style="{ background: '#0A3B76' }">
+            <h3 class="text-xl font-bold text-white">
+              {{ modalMode === 'create' ? 'Crear Nuevo Aviso' : 'Editar Aviso' }}
+            </h3>
+          </div>
+
+          <!-- Body -->
+          <form @submit.prevent="saveAviso" class="p-6 space-y-4">
+            <div>
+              <label for="titulo" class="block text-sm font-medium text-gray-700 mb-1">
+                Título *
+              </label>
+              <input
+                v-model="formData.titulo"
+                type="text"
+                id="titulo"
+                required
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2"
+                :style="{
+                  borderColor: '#ABACAE',
+                  '--tw-ring-color': '#0A3B76',
+                }"
+                placeholder="Ej: Convocatoria de Becas 2025"
+              />
+            </div>
+
+            <div>
+              <label for="descripcion" class="block text-sm font-medium text-gray-700 mb-1">
+                Descripción *
+              </label>
+              <textarea
+                v-model="formData.descripcion"
+                id="descripcion"
+                required
+                rows="4"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2"
+                :style="{
+                  borderColor: '#ABACAE',
+                  '--tw-ring-color': '#0A3B76',
+                }"
+                placeholder="Describe el aviso..."
+              ></textarea>
+            </div>
+
+            <div>
+              <label for="link" class="block text-sm font-medium text-gray-700 mb-1">
+                Link (opcional)
+              </label>
+              <input
+                v-model="formData.link"
+                type="url"
+                id="link"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2"
+                :style="{
+                  borderColor: '#ABACAE',
+                  '--tw-ring-color': '#0A3B76',
+                }"
+                placeholder="https://ejemplo.com/informacion"
+              />
+            </div>
+
+            <div class="flex items-center">
+              <input
+                v-model="formData.is_activo"
+                type="checkbox"
+                id="is_activo"
+                class="w-4 h-4 rounded focus:ring-2"
+                :style="{
+                  color: '#0A3B76',
+                  '--tw-ring-color': '#0A3B76',
+                  borderColor: '#ABACAE',
+                }"
+              />
+              <label for="is_activo" class="ml-2 text-sm font-medium text-gray-700">
+                Aviso activo (visible para alumnos)
+              </label>
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-end gap-3 pt-4 border-t">
+              <button
+                type="button"
+                @click="closeModal"
+                class="px-4 py-2 rounded-md transition-colors"
+                :style="{ background: '#dddde2', color: '#333' }"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="submit"
+                :disabled="isSaving"
+                class="px-4 py-2 text-white rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                :style="{ background: '#0A3B76' }"
+              >
+                {{
+                  isSaving
+                    ? 'Guardando...'
+                    : modalMode === 'create'
+                      ? 'Crear Aviso'
+                      : 'Actualizar Aviso'
+                }}
+              </button>
+            </div>
+          </form>
         </div>
+      </div>
+    </Transition>
 
-        <!-- Body -->
-        <form @submit.prevent="saveAviso" class="p-6 space-y-4">
-
-          <div>
-            <label for="titulo" class="block text-sm font-medium text-gray-700 mb-1">
-              Título *
-            </label>
-            <input
-              v-model="formData.titulo"
-              type="text"
-              id="titulo"
-              required
-              class="w-full px-3 py-2 border rounded-md focus:outline-none"
-              :style="{
-                borderColor:'#ABACAE',
-                '--tw-ring-color': '#0A3B76'
-              }"
-              placeholder="Ej: Convocatoria de Becas 2025"
-            />
+    <!-- ==================== MODAL ELIMINAR ==================== -->
+    <Transition
+      enter-active-class="transition ease-out duration-300"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition ease-in duration-200"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-95"
+    >
+      <div
+        v-if="showDeleteModal"
+        class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center p-4"
+        @click="cancelDelete"
+      >
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full" @click.stop>
+          <!-- Header -->
+          <div class="px-6 py-4 bg-red-600 rounded-t-lg">
+            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+              Confirmar Eliminación
+            </h3>
           </div>
 
-          <div>
-            <label for="descripcion" class="block text-sm font-medium text-gray-700 mb-1">
-              Descripción *
-            </label>
-            <textarea
-              v-model="formData.descripcion"
-              id="descripcion"
-              required
-              rows="4"
-              class="w-full px-3 py-2 border rounded-md focus:outline-none"
-              :style="{
-                borderColor:'#ABACAE',
-                '--tw-ring-color': '#0A3B76'
-              }"
-              placeholder="Describe el aviso..."
-            ></textarea>
-          </div>
-
-          <div>
-            <label for="link" class="block text-sm font-medium text-gray-700 mb-1">
-              Link (opcional)
-            </label>
-            <input
-              v-model="formData.link"
-              type="url"
-              id="link"
-              class="w-full px-3 py-2 border rounded-md focus:outline-none"
-              :style="{
-                borderColor:'#ABACAE',
-                '--tw-ring-color': '#0A3B76'
-              }"
-              placeholder="https://ejemplo.com/informacion"
-            />
-          </div>
-
-          <div class="flex items-center">
-            <input
-              v-model="formData.is_activo"
-              type="checkbox"
-              id="is_activo"
-              class="w-4 h-4 rounded focus:ring-2"
-              :style="{
-                color:'#0A3B76',
-                '--tw-ring-color': '#0A3B76',
-                borderColor:'#ABACAE'
-              }"
-            />
-            <label for="is_activo" class="ml-2 text-sm font-medium text-gray-700">
-              Aviso activo (visible para alumnos)
-            </label>
+          <!-- Body -->
+          <div class="p-6">
+            <p class="text-gray-700 mb-4">
+              ¿Estás seguro de que deseas eliminar el aviso
+              <strong>"{{ avisoToDelete?.titulo }}"</strong>?
+            </p>
+            <p class="text-sm text-red-600 font-medium">Esta acción no se puede deshacer.</p>
           </div>
 
           <!-- Footer -->
-          <div class="flex justify-end gap-3 pt-4 border-t">
+          <div class="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end gap-3">
             <button
-              type="button"
-              @click="closeModal"
-              class="px-4 py-2 rounded-md transition-colors"
-              :style="{ background:'#dddde2', color:'#333' }"
+              @click="cancelDelete"
+              :disabled="isDeleting"
+              class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors disabled:opacity-50"
             >
               Cancelar
             </button>
-
             <button
-              type="submit"
-              :disabled="isSaving"
-              class="px-4 py-2 text-white rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              :style="{ background:'#0A3B76' }"
+              @click="deleteAviso"
+              :disabled="isDeleting"
+              class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {{
-                isSaving
-                  ? 'Guardando...'
-                  : modalMode === 'create'
-                    ? 'Crear Aviso'
-                    : 'Actualizar Aviso'
-              }}
+              <svg
+                v-if="isDeleting"
+                class="animate-spin h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                ircle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                stroke-width="4" />
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
+              {{ isDeleting ? 'Eliminando...' : 'Eliminar' }}
             </button>
           </div>
-
-        </form>
+        </div>
       </div>
-    </div>
-
+    </Transition>
   </div>
 </template>
 
-
 <script setup>
+import { avisosAPI } from '@/api/avisos'
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
 
 // ==================== STATE ====================
 const avisos = ref([])
@@ -355,12 +451,7 @@ const fetchAvisos = async () => {
   errorMessage.value = null
 
   try {
-    const token = localStorage.getItem('accessToken')
-    const response = await axios.get('http://localhost:8000/api/avisos/admin/todos', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    const response = await avisosAPI.getAll()
 
     avisos.value = response.data
     console.log('✅ Avisos cargados:', avisos.value.length)
@@ -378,7 +469,6 @@ const saveAviso = async () => {
   successMessage.value = null
 
   try {
-    const token = localStorage.getItem('accessToken')
     const payload = {
       titulo: formData.value.titulo,
       descripcion: formData.value.descripcion,
@@ -388,23 +478,11 @@ const saveAviso = async () => {
 
     let response
     if (modalMode.value === 'create') {
-      response = await axios.post('http://localhost:8000/api/avisos/admin', payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      response = await avisosAPI.create(payload)
       successMessage.value = '✅ Aviso creado exitosamente'
     } else {
       //eslint-disable-next-line no-unused-vars
-      response = await axios.put(
-        `http://localhost:8000/api/avisos/admin/${currentAvisoId.value}`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
+      response = await avisosAPI.update(currentAvisoId.value, payload)
       successMessage.value = '✅ Aviso actualizado exitosamente'
     }
 
@@ -433,12 +511,7 @@ const deleteAviso = async () => {
   errorMessage.value = null
 
   try {
-    const token = localStorage.getItem('accessToken')
-    await axios.delete(`http://localhost:8000/api/avisos/admin/${avisoToDelete.value.id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    await avisosAPI.delete(avisoToDelete.value.id)
 
     successMessage.value = '✅ Aviso eliminado exitosamente'
     await fetchAvisos()
