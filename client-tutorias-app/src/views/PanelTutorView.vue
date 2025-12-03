@@ -517,9 +517,9 @@
 <script setup>
 import { tutoresAPI } from '@/api/tutores'
 import { tutoriasAPI } from '@/api/tutorias'
+import { reportesAPI } from '@/api/reportes'
 import { ref, computed, onMounted, watch, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
 import ReporteIntegralMasivo from '@/components/ReporteIntegralMasivo.vue'
 import BaseSearchInput from '@/components/ui/BaseSearchInput.vue'
 import ReporteIndividual1 from '@/components/tutor/ReporteIndividual1.vue'
@@ -823,19 +823,10 @@ const handleLogout = () => {
 const descargarPDFReporteIntegral = async () => {
   try {
     loading.value = true
-    const token = localStorage.getItem('accessToken')
 
     const periodo = studentsData.value?.tutorialPeriod || '22025'
 
-    const response = await axios.get(
-      `http://localhost:8000/api/reportes/integral/pdf/tutor/${tutor.value.id_tutor}/periodo/${periodo}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        responseType: 'blob',
-      },
-    )
+    const response = await reportesAPI.downloadIntegralPDF(tutor.value.id_tutor, periodo)
 
     const blob = new Blob([response.data], { type: 'application/pdf' })
     const url = window.URL.createObjectURL(blob)

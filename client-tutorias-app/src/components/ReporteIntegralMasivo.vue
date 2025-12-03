@@ -793,6 +793,7 @@
 
 <script setup>
 import { tutoriasAPI } from '@/api/tutorias'
+import { reportesAPI } from '@/api/reportes'
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 
@@ -1001,15 +1002,7 @@ const cargarTodosLosAlumnos = async () => {
 
         // SIEMPRE intentar cargar datos existentes (no solo si reporte_integral_guardado es true)
         try {
-          const token = localStorage.getItem('accessToken')
-          const reporteResponse = await axios.get(
-            `http://localhost:8000/api/reportes/integral/tutoria/${tutoria.id_tutoria}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            },
-          )
+          const reporteResponse = await reportesAPI.getIntegralByTutoria(tutoria.id_tutoria)
 
           if (reporteResponse.status === 200) {
             // Cargar TODOS los datos que existan, incluso si solo tienen seguimiento_1
@@ -1091,19 +1084,10 @@ const editarReporte = async (alumno) => {
   errorMessage.value = null
 
   try {
-    const token = localStorage.getItem('accessToken')
-    const response = await axios.post(
-      'http://localhost:8000/api/reportes/integral',
-      {
-        id_tutoria: alumno.id_tutoria,
-        ...alumno.datos,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
+    const response = await reportesAPI.createIntegral({
+      id_tutoria: alumno.id_tutoria,
+      ...alumno.datos,
+    })
 
     if (response.status === 201 || response.status === 200) {
       alumno.estado = 'guardado'
@@ -1130,15 +1114,7 @@ const eliminarReporte = async (alumno) => {
   }
 
   try {
-    const token = localStorage.getItem('accessToken')
-    const response = await axios.delete(
-      `http://localhost:8000/api/reportes/integral/${alumno.reporte_id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
+    const response = await reportesAPI.deleteIntegral(alumno.reporte_id)
 
     if (response.status === 200 || response.status === 204) {
       // Reset alumno a estado pendiente
@@ -1189,19 +1165,10 @@ const guardarAlumno = async (alumno) => {
   errorMessage.value = null
 
   try {
-    const token = localStorage.getItem('accessToken')
-    const response = await axios.post(
-      'http://localhost:8000/api/reportes/integral',
-      {
-        id_tutoria: alumno.id_tutoria,
-        ...alumno.datos,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
+    const response = await reportesAPI.createIntegral({
+      id_tutoria: alumno.id_tutoria,
+      ...alumno.datos,
+    })
 
     if (response.status === 201 || response.status === 200) {
       alumno.estado = 'guardado'
