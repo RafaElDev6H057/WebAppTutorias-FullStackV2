@@ -13,14 +13,14 @@
       class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
     >
       <div
-        class="relative top-20 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-md bg-white"
+        class="relative top-20 mx-auto p-5 border-2 w-11/12 max-w-md shadow-xl rounded-lg bg-white"
       >
-        <div class="flex justify-between items-center mb-4 border-b pb-3">
-          <h2 class="text-xl font-semibold text-gray-900">Cambiar Contraseña</h2>
+        <div class="flex justify-between items-center mb-4 border-b-2 border-gray-200 pb-3">
+          <h2 class="text-xl font-bold text-gray-900">Cambiar Contraseña</h2>
           <button
             @click="cerrarModal"
             :disabled="isChangingPassword"
-            class="text-gray-500 hover:text-gray-700 disabled:opacity-50"
+            class="text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg p-1 disabled:opacity-50 transition-colors"
           >
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -36,7 +36,7 @@
         <!-- Mensaje de advertencia para primera vez -->
         <div
           v-if="requiresPasswordChange"
-          class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md"
+          class="mb-4 p-3 bg-yellow-50 border-2 border-yellow-200 rounded-lg shadow-sm"
         >
           <p class="text-sm text-yellow-800">
             <strong>Importante:</strong> Esta es tu primera vez cambiando la contraseña. Por favor,
@@ -55,7 +55,7 @@
         >
           <div
             v-if="passwordChangeSuccess"
-            class="mb-4 p-3 bg-green-50 border-l-4 border-green-400 rounded-md"
+            class="mb-4 p-3 bg-green-50 border-l-4 border-green-400 rounded-lg shadow-sm"
           >
             <div class="flex items-center">
               <svg
@@ -71,7 +71,7 @@
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              <p class="text-sm text-green-800 font-medium">¡Contraseña cambiada exitosamente!</p>
+              <p class="text-sm text-green-800 font-medium">Contraseña cambiada exitosamente</p>
             </div>
           </div>
         </Transition>
@@ -87,7 +87,7 @@
         >
           <div
             v-if="passwordChangeError"
-            class="mb-4 p-3 bg-red-50 border-l-4 border-red-400 rounded-md"
+            class="mb-4 p-3 bg-red-50 border-l-4 border-red-400 rounded-lg shadow-sm"
           >
             <div class="flex items-start">
               <svg
@@ -121,7 +121,7 @@
               type="email"
               required
               :disabled="isChangingPassword"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
               placeholder="tu.correo@example.com"
             />
           </div>
@@ -138,8 +138,8 @@
                 :type="showCurrentPassword ? 'text' : 'password'"
                 required
                 :disabled="isChangingPassword"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                placeholder="- - - - - - - - "
+                class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
+                placeholder="········"
               />
               <button
                 type="button"
@@ -191,8 +191,8 @@
                 required
                 minlength="8"
                 :disabled="isChangingPassword"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                placeholder="- - - - - - - - "
+                class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
+                placeholder="········"
               />
               <button
                 type="button"
@@ -245,8 +245,8 @@
                 required
                 minlength="8"
                 :disabled="isChangingPassword"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                placeholder="- - - - - - - - "
+                class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
+                placeholder="········"
               />
               <button
                 type="button"
@@ -291,14 +291,14 @@
               type="button"
               @click="cerrarModal"
               :disabled="isChangingPassword"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               :disabled="isChangingPassword"
-              class="flex-1 px-4 py-2 bg-[#0A3B76] border border-transparent rounded-md text-sm font-medium text-white hover:bg-[#092F5C] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A3B76] disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex justify-center items-center"
+              class="flex-1 px-4 py-2 bg-[#0A3B76] border border-transparent rounded-lg text-sm font-bold text-white hover:bg-[#083060] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex justify-center items-center shadow-md"
             >
               <svg
                 v-if="isChangingPassword"
@@ -314,12 +314,12 @@
                   r="10"
                   stroke="currentColor"
                   stroke-width="4"
-                ></circle>
+                />
                 <path
                   class="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                />
               </svg>
               {{ isChangingPassword ? 'Cambiando...' : 'Cambiar Contraseña' }}
             </button>

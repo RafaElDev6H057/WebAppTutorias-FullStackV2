@@ -3,15 +3,15 @@
     <!-- ==================== VISTA: SUB-PANEL (Lista de Reportes) ==================== -->
     <div v-if="vistaActual === 'lista'">
       <!-- Header -->
-      <div class="bg-[#0A3B76] hover:bg-[#092F5C] px-6 py-4 rounded-t-lg">
+      <div class="bg-[#0A3B76] px-6 py-4 rounded-t-lg">
         <h2 class="text-2xl font-bold text-white">Reporte Individual 2</h2>
-        <p class="text-blue-100 text-sm mt-1">Gestiona tus reportes de seguimiento</p>
+        <p class="text-gray-200 text-sm mt-1">Gestiona tus reportes de seguimiento</p>
       </div>
 
       <!-- Loading -->
       <div v-if="isLoading" class="flex justify-center items-center py-12">
         <svg
-          class="animate-spin h-10 w-10 text-blue-500"
+          class="animate-spin h-10 w-10 text-blue-600"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -23,12 +23,12 @@
             r="10"
             stroke="currentColor"
             stroke-width="4"
-          ></circle>
+          />
           <path
             class="opacity-75"
             fill="currentColor"
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
+          />
         </svg>
         <span class="ml-3 text-gray-600">Cargando reportes...</span>
       </div>
@@ -46,7 +46,7 @@
         >
           <div
             v-if="successMessage"
-            class="mb-4 p-3 bg-green-50 border-l-4 border-green-500 rounded-md"
+            class="mb-4 p-3 bg-green-50 border-l-4 border-green-500 rounded-lg shadow-sm"
           >
             <div class="flex items-center justify-between">
               <div class="flex items-center">
@@ -88,7 +88,10 @@
           leave-from-class="opacity-100"
           leave-to-class="opacity-0"
         >
-          <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded-md">
+          <div
+            v-if="errorMessage"
+            class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded-lg shadow-sm"
+          >
             <div class="flex items-center justify-between">
               <div class="flex items-center">
                 <svg
@@ -124,7 +127,7 @@
         <div class="mb-6">
           <button
             @click="crearNuevoReporte"
-            class="w-full sm:w-auto px-6 py-3 bg-[#0A3B76] hover:bg-[#092F5C] text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+            class="w-full sm:w-auto px-6 py-3 bg-[#10B981] hover:bg-[#059669] text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -143,7 +146,7 @@
           <div
             v-for="reporte in reportes"
             :key="reporte.id"
-            class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow bg-gradient-to-br from-white to-blue-50"
+            class="border-2 border-gray-200 rounded-lg p-4 hover:shadow-lg transition-all bg-gradient-to-br from-white to-blue-50 hover:border-blue-400"
           >
             <div class="flex items-start justify-between mb-3">
               <div class="flex-1">
@@ -153,7 +156,7 @@
                 <p class="text-sm text-gray-600">Periodo: {{ reporte.periodo }}</p>
               </div>
               <div
-                class="flex-shrink-0 ml-3 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold"
+                class="flex-shrink-0 ml-3 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold border border-blue-300"
               >
                 {{ reporte.porcentaje_avance }}%
               </div>
@@ -192,7 +195,7 @@
               <button
                 @click="descargarPDF(reporte)"
                 :disabled="isDownloadingPDF[reporte.id]"
-                class="flex-1 px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="flex-1 px-3 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
               >
                 <svg
                   v-if="isDownloadingPDF[reporte.id]"
@@ -208,12 +211,12 @@
                     r="10"
                     stroke="currentColor"
                     stroke-width="4"
-                  ></circle>
+                  />
                   <path
                     class="opacity-75"
                     fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
+                  />
                 </svg>
                 <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -227,7 +230,7 @@
               </button>
               <button
                 @click="editarReporte(reporte)"
-                class="flex-1 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-1"
+                class="flex-1 px-3 py-2 bg-[#F59E0B] hover:bg-[#D97706] text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-1 shadow-sm"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -241,7 +244,7 @@
               </button>
               <button
                 @click="confirmarEliminar(reporte)"
-                class="flex-1 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-1"
+                class="flex-1 px-3 py-2 bg-[#EF4444] hover:bg-[#DC2626] text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-1 shadow-sm"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -272,7 +275,7 @@
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          <p class="text-gray-600 text-lg mb-2">No tienes reportes aún</p>
+          <p class="text-gray-600 text-lg font-semibold mb-2">No tienes reportes aún</p>
           <p class="text-gray-500 text-sm">Crea tu primer reporte para comenzar</p>
         </div>
       </div>
@@ -281,13 +284,13 @@
     <!-- ==================== VISTA: FORMULARIO (Crear/Editar) ==================== -->
     <div v-else-if="vistaActual === 'formulario'">
       <!-- Header -->
-      <div class="bg-[#0A3B76] hover:bg-[#092F5C] px-6 py-4 rounded-t-lg">
+      <div class="bg-[#0A3B76] px-6 py-4 rounded-t-lg">
         <div class="flex items-center justify-between">
           <div>
             <h2 class="text-2xl font-bold text-white">
               {{ modoFormulario === 'crear' ? 'Crear Reporte' : 'Editar Reporte' }}
             </h2>
-            <p class="text-blue-100 text-sm mt-1">
+            <p class="text-gray-200 text-sm mt-1">
               {{
                 modoFormulario === 'crear'
                   ? 'Completa los campos del nuevo reporte'
@@ -297,7 +300,7 @@
           </div>
           <button
             @click="cancelarFormulario"
-            class="text-white hover:text-blue-100 transition-colors"
+            class="text-white hover:bg-white/20 rounded-lg p-2 transition-colors"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -320,7 +323,7 @@
             v-model="formulario.nombre_tutor"
             type="text"
             readonly
-            class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed"
+            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed"
           />
         </div>
 
@@ -332,7 +335,7 @@
           <select
             v-model="formulario.periodo"
             required
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76] bg-white"
+            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition-all"
           >
             <option value="" disabled selected>Selecciona un periodo</option>
             <option v-for="periodo in periodosDisponibles" :key="periodo" :value="periodo">
@@ -352,7 +355,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.nombre_proyecto"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
+            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             :class="{ 'border-red-500': isLimiteExcedido('nombre_proyecto') }"
             placeholder="Nombre del proyecto"
           ></textarea>
@@ -366,7 +369,7 @@
                 ({{ getCaracterRestantes('nombre_proyecto') }} restantes)
               </span>
               <span v-else class="text-red-600 font-bold">
-                (¡Excedido por {{ Math.abs(getCaracterRestantes('nombre_proyecto')) }}!)
+                (Excedido por {{ Math.abs(getCaracterRestantes('nombre_proyecto')) }})
               </span>
             </p>
           </div>
@@ -384,7 +387,7 @@
               min="10"
               max="100"
               step="10"
-              class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#0A3B76]"
+              class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
             />
             <input
               v-model.number="formulario.porcentaje_avance"
@@ -393,7 +396,7 @@
               step="10"
               max="100"
               required
-              class="w-20 px-3 py-2 border border-gray-300 rounded-md text-center focus:outline-none focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76]"
+              class="w-20 px-3 py-2 border-2 border-gray-300 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             />
           </div>
         </div>
@@ -408,7 +411,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.objetivo"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
+            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             :class="{ 'border-red-500': isLimiteExcedido('objetivo') }"
             placeholder="Describe el objetivo del proyecto"
           ></textarea>
@@ -420,7 +423,7 @@
                 ({{ getCaracterRestantes('objetivo') }} restantes)
               </span>
               <span v-else class="text-red-600 font-bold">
-                (¡Excedido por {{ Math.abs(getCaracterRestantes('objetivo')) }}!)
+                (Excedido por {{ Math.abs(getCaracterRestantes('objetivo')) }})
               </span>
             </p>
           </div>
@@ -436,7 +439,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.descripcion"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
+            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             :class="{ 'border-red-500': isLimiteExcedido('descripcion') }"
             placeholder="Descripción del proyecto"
           ></textarea>
@@ -448,7 +451,7 @@
                 ({{ getCaracterRestantes('descripcion') }} restantes)
               </span>
               <span v-else class="text-red-600 font-bold">
-                (¡Excedido por {{ Math.abs(getCaracterRestantes('descripcion')) }}!)
+                (Excedido por {{ Math.abs(getCaracterRestantes('descripcion')) }})
               </span>
             </p>
           </div>
@@ -464,7 +467,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.metas"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
+            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             :class="{ 'border-red-500': isLimiteExcedido('metas') }"
             placeholder="Metas a alcanzar"
           ></textarea>
@@ -476,7 +479,7 @@
                 ({{ getCaracterRestantes('metas') }} restantes)
               </span>
               <span v-else class="text-red-600 font-bold">
-                (¡Excedido por {{ Math.abs(getCaracterRestantes('metas')) }}!)
+                (Excedido por {{ Math.abs(getCaracterRestantes('metas')) }})
               </span>
             </p>
           </div>
@@ -492,7 +495,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.actividades"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
+            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             :class="{ 'border-red-500': isLimiteExcedido('actividades') }"
             placeholder="Actividades realizadas"
           ></textarea>
@@ -504,7 +507,7 @@
                 ({{ getCaracterRestantes('actividades') }} restantes)
               </span>
               <span v-else class="text-red-600 font-bold">
-                (¡Excedido por {{ Math.abs(getCaracterRestantes('actividades')) }}!)
+                (Excedido por {{ Math.abs(getCaracterRestantes('actividades')) }})
               </span>
             </p>
           </div>
@@ -520,7 +523,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.documentos_anexados"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
+            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             :class="{ 'border-red-500': isLimiteExcedido('documentos_anexados') }"
             placeholder="Lista de documentos anexados"
           ></textarea>
@@ -535,7 +538,7 @@
                 ({{ getCaracterRestantes('documentos_anexados') }} restantes)
               </span>
               <span v-else class="text-red-600 font-bold">
-                (¡Excedido por {{ Math.abs(getCaracterRestantes('documentos_anexados')) }}!)
+                (Excedido por {{ Math.abs(getCaracterRestantes('documentos_anexados')) }})
               </span>
             </p>
           </div>
@@ -551,7 +554,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.conclusiones"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
+            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             :class="{ 'border-red-500': isLimiteExcedido('conclusiones') }"
             placeholder="Conclusiones del proyecto"
           ></textarea>
@@ -565,7 +568,7 @@
                 ({{ getCaracterRestantes('conclusiones') }} restantes)
               </span>
               <span v-else class="text-red-600 font-bold">
-                (¡Excedido por {{ Math.abs(getCaracterRestantes('conclusiones')) }}!)
+                (Excedido por {{ Math.abs(getCaracterRestantes('conclusiones')) }})
               </span>
             </p>
           </div>
@@ -581,7 +584,7 @@
             required
             rows="3"
             :maxlength="caracterLimites.observaciones"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#0A3B76] focus:border-[#0A3B76]"
+            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             :class="{ 'border-red-500': isLimiteExcedido('observaciones') }"
             placeholder="Observaciones adicionales (opcional)"
           ></textarea>
@@ -595,25 +598,25 @@
                 ({{ getCaracterRestantes('observaciones') }} restantes)
               </span>
               <span v-else class="text-red-600 font-bold">
-                (¡Excedido por {{ Math.abs(getCaracterRestantes('observaciones')) }}!)
+                (Excedido por {{ Math.abs(getCaracterRestantes('observaciones')) }})
               </span>
             </p>
           </div>
         </div>
 
         <!-- Botones -->
-        <div class="flex gap-3 pt-4 border-t">
+        <div class="flex gap-3 pt-4 border-t-2 border-gray-200">
           <button
             type="button"
             @click="cancelarFormulario"
-            class="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+            class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
           >
             Cancelar
           </button>
           <button
             type="submit"
             :disabled="isGuardando"
-            class="flex-1 px-4 py-2 bg-[#0A3B76] hover:bg-[#092F5C] text-white rounded-md font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="flex-1 px-4 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
           >
             <svg
               v-if="isGuardando"
@@ -629,12 +632,12 @@
                 r="10"
                 stroke="currentColor"
                 stroke-width="4"
-              ></circle>
+              />
               <path
                 class="opacity-75"
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
+              />
             </svg>
             {{
               isGuardando
@@ -697,14 +700,14 @@
             <button
               @click="cancelarEliminar"
               :disabled="isEliminando"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+              class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
             >
               Cancelar
             </button>
             <button
               @click="eliminarReporte"
               :disabled="isEliminando"
-              class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              class="flex-1 px-4 py-2 bg-[#EF4444] hover:bg-[#DC2626] text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
             >
               <svg
                 v-if="isEliminando"
@@ -720,12 +723,12 @@
                   r="10"
                   stroke="currentColor"
                   stroke-width="4"
-                ></circle>
+                />
                 <path
                   class="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                />
               </svg>
               {{ isEliminando ? 'Eliminando...' : 'Eliminar' }}
             </button>

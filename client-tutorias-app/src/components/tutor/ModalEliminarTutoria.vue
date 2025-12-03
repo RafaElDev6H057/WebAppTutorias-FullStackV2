@@ -31,7 +31,7 @@
               </svg>
             </div>
             <div class="flex-1">
-              <h2 class="text-xl font-bold text-gray-900 mb-2">⚠️ Confirmar Eliminación</h2>
+              <h2 class="text-xl font-bold text-gray-900 mb-2">Confirmar Eliminación</h2>
               <p class="text-sm text-gray-600">
                 Esta acción es <strong class="text-red-600">permanente e irreversible</strong>
               </p>
@@ -39,7 +39,7 @@
             <button
               @click="cerrarModal"
               :disabled="isDeleting"
-              class="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 -mt-1"
+              class="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-1 transition-colors disabled:opacity-50 -mt-1"
             >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -53,7 +53,10 @@
           </div>
 
           <!-- Información del alumno -->
-          <div v-if="tutoria" class="mb-6 p-4 bg-gray-50 border-l-4 border-red-500 rounded">
+          <div
+            v-if="tutoria"
+            class="mb-6 p-4 bg-gray-50 border-l-4 border-red-500 rounded-lg shadow-sm"
+          >
             <p class="text-sm text-gray-700 mb-2">Estás a punto de eliminar la tutoría de:</p>
             <div class="font-bold text-gray-900 text-lg">
               {{ tutoria.name }}
@@ -66,7 +69,7 @@
           </div>
 
           <!-- Advertencia -->
-          <div class="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+          <div class="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg shadow-sm">
             <div class="flex items-start">
               <svg
                 class="w-5 h-5 text-yellow-400 mr-2 flex-shrink-0 mt-0.5"
@@ -89,7 +92,7 @@
           <!-- Input de confirmación de correo -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              🔒 Para confirmar, escribe tu correo electrónico
+              Para confirmar, escribe tu correo electrónico
             </label>
             <input
               v-model="correoConfirmacion"
@@ -115,7 +118,7 @@
           >
             <div
               v-if="errorModalEliminar"
-              class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded"
+              class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded-lg shadow-sm"
             >
               <div class="flex items-start">
                 <svg
@@ -135,7 +138,7 @@
           </Transition>
 
           <!-- Botones -->
-          <div class="flex gap-3 pt-4 border-t">
+          <div class="flex gap-3 pt-4 border-t-2 border-gray-200">
             <button
               @click="cerrarModal"
               :disabled="isDeleting"
@@ -156,7 +159,7 @@
                 !correoConfirmacion ||
                 correoConfirmacion.trim().toLowerCase() !== tutorEmail?.trim().toLowerCase()
                   ? 'bg-gray-400'
-                  : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 focus:ring-red-500'
+                  : 'bg-[#EF4444] hover:bg-[#DC2626] focus:ring-red-500'
               "
             >
               <svg
@@ -173,12 +176,12 @@
                   r="10"
                   stroke="currentColor"
                   stroke-width="4"
-                ></circle>
+                />
                 <path
                   class="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                />
               </svg>
               <svg
                 v-else

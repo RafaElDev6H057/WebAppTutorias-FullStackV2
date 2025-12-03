@@ -14,12 +14,12 @@
 
         <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6 z-10">
           <!-- Header -->
-          <div class="flex justify-between items-center mb-6 border-b pb-3">
+          <div class="flex justify-between items-center mb-6 border-b-2 border-gray-200 pb-3">
             <h2 class="text-2xl font-bold text-gray-900">Crear Nueva Tutoría</h2>
             <button
               @click="cerrarModal"
               :disabled="isCreating"
-              class="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+              class="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-1 transition-colors disabled:opacity-50"
             >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -35,7 +35,7 @@
           <!-- Búsqueda de Alumno -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              🔍 Buscar Alumno <span class="text-red-500">*</span>
+              Buscar Alumno <span class="text-red-500">*</span>
             </label>
             <input
               v-model="searchAlumnoQuery"
@@ -43,7 +43,7 @@
               type="text"
               :disabled="isCreating"
               placeholder="Nombre, apellido o número de control..."
-              class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-coral-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
+              class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
             />
             <p class="text-xs text-gray-500 mt-1">Mínimo 3 caracteres</p>
 
@@ -112,7 +112,7 @@
                 <button
                   @click="clearAlumnoSelection"
                   :disabled="isCreating"
-                  class="text-green-600 hover:text-green-800 disabled:opacity-50"
+                  class="text-green-600 hover:text-green-800 hover:bg-green-100 rounded p-1 disabled:opacity-50 transition-colors"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -130,12 +130,12 @@
           <!-- Semestre -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              📚 Semestre <span class="text-red-500">*</span>
+              Semestre <span class="text-red-500">*</span>
             </label>
             <select
               v-model="semestreSeleccionado"
               :disabled="isCreating"
-              class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-coral-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
+              class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
             >
               <option value="">Seleccionar semestre...</option>
               <option v-for="sem in 9" :key="sem" :value="sem">{{ sem }}° Semestre</option>
@@ -145,7 +145,7 @@
           <!-- Periodo -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              📅 Periodo <span class="text-red-500">*</span>
+              Periodo <span class="text-red-500">*</span>
             </label>
             <input
               v-model="periodoInput"
@@ -158,7 +158,7 @@
               :class="
                 errorPeriodo
                   ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
-                  : 'border-gray-300 focus:ring-coral-500 focus:border-coral-500'
+                  : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
               "
             />
             <p v-if="errorPeriodo" class="text-red-500 text-xs mt-1 flex items-center">
@@ -187,7 +187,7 @@
           >
             <div
               v-if="errorModalCrear"
-              class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded"
+              class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded-lg shadow-sm"
             >
               <div class="flex items-start">
                 <svg
@@ -207,7 +207,7 @@
           </Transition>
 
           <!-- Botones -->
-          <div class="flex gap-3 pt-4 border-t">
+          <div class="flex gap-3 pt-4 border-t-2 border-gray-200">
             <button
               @click="cerrarModal"
               :disabled="isCreating"
@@ -232,7 +232,7 @@
                 errorPeriodo ||
                 periodoInput.length !== 5
                   ? 'bg-gray-400'
-                  : 'bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 focus:ring-orange-500'
+                  : 'bg-[#10B981] hover:bg-[#059669] focus:ring-green-500'
               "
             >
               <svg
@@ -249,12 +249,12 @@
                   r="10"
                   stroke="currentColor"
                   stroke-width="4"
-                ></circle>
+                />
                 <path
                   class="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                />
               </svg>
               {{ isCreating ? 'Creando...' : 'Crear Tutoría' }}
             </button>
@@ -432,13 +432,3 @@ const cerrarModal = () => {
   }
 }
 </script>
-
-<style scoped>
-.focus\:ring-coral-500:focus {
-  --tw-ring-color: #ff6b5b;
-}
-
-.focus\:border-coral-500:focus {
-  border-color: #ff6b5b;
-}
-</style>

@@ -1,15 +1,11 @@
 <template>
-  <div class="min-h-screen">
-    <!-- Animated Circles -->
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
+    <!-- CÍRCULOS ANIMADOS (Azul institucional con opacidades) -->
     <div class="absolute inset-0 pointer-events-none overflow-hidden">
       <div
         v-for="(circle, index) in circles"
         :key="index"
-        :class="[
-          'absolute rounded-full opacity-70',
-          circle.color,
-          `animate-float-${(index % 3) + 1}`,
-        ]"
+        :class="['absolute rounded-full', circle.color, `animate-float-${(index % 3) + 1}`]"
         :style="{
           top: `${circle.top}%`,
           left: `${circle.left}%`,
@@ -22,34 +18,35 @@
 
     <!-- Dashboard content -->
     <div class="relative z-10">
-      <!-- Barra de navegación -->
-      <nav class="shadow-sm" style="background-color: white">
+      <!-- NAVBAR -->
+      <nav class="bg-[#0A3B76] shadow-xl border-b-2 border-[#083060]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between h-16">
+            <!-- Left Section -->
             <div class="flex items-center">
               <img
-                class="h-12 w-12 border-2 border-white rounded-full"
+                class="h-12 w-12 border-2 border-white rounded-full shadow-md"
                 src="/EscudoITSF.png"
                 alt="Escudo ITSF"
               />
               <div class="ml-4">
-                <div class="text-lg font-medium" style="color: #0a3b76">
+                <div class="text-lg font-bold text-white">
                   {{
                     tutor?.nombre + ' ' + tutor?.apellido_p + ' ' + tutor?.apellido_m ||
                     'Nombre no disponible'
                   }}
                 </div>
-                <div class="text-sm" style="color: #0a3b76">{{ tutor?.correo }}</div>
+                <div class="text-sm text-gray-200">{{ tutor?.correo }}</div>
               </div>
             </div>
 
+            <!-- Right Section -->
             <div class="flex items-center gap-3">
               <!-- Dropdown de Acciones -->
               <div class="relative z-20" ref="dropdownRef">
                 <button
                   @click="showDropdown = !showDropdown"
-                  class="text-white px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center gap-2"
-                  style="background-color: #0a3b76"
+                  class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 inline-flex items-center gap-2 border border-white/20"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -93,15 +90,19 @@
                 >
                   <div
                     v-if="showDropdown"
-                    class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+                    class="absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5"
                   >
                     <div class="py-1">
                       <button
                         @click="handleOpenChangePasswordModal()"
-                        class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 inline-flex items-center gap-2"
-                        style="color: #0a3b76"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 inline-flex items-center gap-2 transition-colors"
                       >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg
+                          class="w-4 h-4 text-blue-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
@@ -115,10 +116,14 @@
                       <button
                         @click="handleDescargarPDF()"
                         :disabled="loading || !studentsData.length"
-                        class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                        style="color: #0a3b76"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg
+                          class="w-4 h-4 text-blue-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
@@ -136,8 +141,7 @@
               <!-- Botón Cerrar Sesión -->
               <button
                 @click="handleLogout"
-                class="text-white px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center gap-2"
-                style="background-color: red"
+                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 inline-flex items-center gap-2 shadow-md hover:shadow-lg"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -154,8 +158,8 @@
         </div>
       </nav>
 
-      <!-- Contenido principal -->
-      <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <!-- CONTENIDO PRINCIPAL -->
+      <main class="max-w-[1400px] mx-auto py-6 sm:px-6 lg:px-8">
         <BannerPasswordWarning
           :show="tutor?.requires_password_change"
           @change-password="openChangePasswordModal"
@@ -163,17 +167,19 @@
 
         <!-- Encabezado y búsqueda -->
         <div class="px-4 py-6 sm:px-0">
+          <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Panel del Tutor</h1>
+            <p class="text-gray-600">Gestiona tus tutorías y genera reportes académicos</p>
+          </div>
+
           <div
             class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6"
           >
-            <h1 class="text-3xl font-bold" style="color: #0a3b76">Dashboard del Tutor</h1>
-
             <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
               <!-- Botón Crear Tutoría -->
               <button
                 @click="abrirModalCrear"
-                class="px-4 py-2 text-white rounded-md font-medium inline-flex items-center justify-center gap-2 transition-colors shadow-md hover:shadow-lg"
-                style="background-color: #abacae"
+                class="px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium inline-flex items-center justify-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -190,7 +196,7 @@
               <div class="relative" ref="reportesDropdownRef">
                 <button
                   @click="showReportesDropdown = !showReportesDropdown"
-                  class="w-full sm:w-auto px-4 py-2 bg-[#0A3B76] hover:bg-[#082e5a] text-white rounded-md font-medium inline-flex items-center justify-center gap-2 transition-colors shadow-md hover:shadow-lg"
+                  class="w-full sm:w-auto px-4 py-2.5 bg-[#0A3B76] hover:bg-[#083060] text-white rounded-lg font-medium inline-flex items-center justify-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -228,16 +234,16 @@
                 >
                   <div
                     v-if="showReportesDropdown"
-                    class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10"
+                    class="absolute left-0 mt-2 w-56 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10"
                   >
                     <div class="py-1">
                       <!-- Reporte Integral -->
                       <button
                         @click="handleOpenReporteIntegralMasivo()"
-                        class="w-full text-left px-4 py-2 text-sm text-[#0A3B76] hover:bg-[#ABACAE]/20 inline-flex items-center gap-2"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 inline-flex items-center gap-2 transition-colors"
                       >
                         <svg
-                          class="w-4 h-4 text-[#0A3B76]"
+                          class="w-4 h-4 text-blue-600"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -255,10 +261,10 @@
                       <!-- Primer Reporte -->
                       <button
                         @click="handleMostrarModalPrimerReporte()"
-                        class="w-full text-left px-4 py-2 text-sm text-[#0A3B76] hover:bg-[#ABACAE]/20 inline-flex items-center gap-2"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 inline-flex items-center gap-2 transition-colors"
                       >
                         <svg
-                          class="w-4 h-4 text-[#0A3B76]"
+                          class="w-4 h-4 text-blue-600"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -276,10 +282,10 @@
                       <!-- Segundo Reporte -->
                       <button
                         @click="handleMostrarModalSegundoReporte()"
-                        class="w-full text-left px-4 py-2 text-sm text-[#0A3B76] hover:bg-[#ABACAE]/20 inline-flex items-center gap-2"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 inline-flex items-center gap-2 transition-colors"
                       >
                         <svg
-                          class="w-4 h-4 text-[#0A3B76]"
+                          class="w-4 h-4 text-blue-600"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -321,7 +327,7 @@
         >
           <div
             v-if="error"
-            class="mx-4 mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-md flex items-start"
+            class="mx-4 mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-start shadow-sm"
           >
             <svg
               class="w-5 h-5 text-red-500 mr-3 flex-shrink-0 mt-0.5"
@@ -392,23 +398,17 @@
         >
           <div
             v-if="mostrarModalPrimerReporte"
-            class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+            class="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto h-full w-full z-50"
           >
             <div
-              class="relative top-20 mx-auto p-5 border w-11/12 max-w-5xl shadow-lg rounded-md bg-white"
+              class="relative top-20 mx-auto p-5 border w-11/12 max-w-5xl shadow-xl rounded-lg bg-white"
             >
               <div class="p-4 border-b flex justify-end items-center">
                 <button
                   @click="mostrarModalPrimerReporte = false"
-                  class="text-gray-500 hover:text-gray-700"
+                  class="text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-2 rounded-lg transition-colors"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
+                  <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -436,23 +436,17 @@
         >
           <div
             v-if="mostrarModalSegundoReporte"
-            class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+            class="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto h-full w-full z-50"
           >
             <div
-              class="relative top-20 mx-auto p-5 border w-11/12 max-w-5xl shadow-lg rounded-md bg-white"
+              class="relative top-20 mx-auto p-5 border w-11/12 max-w-5xl shadow-xl rounded-lg bg-white"
             >
               <div class="p-4 border-b flex justify-end items-center">
                 <button
                   @click="mostrarModalSegundoReporte = false"
-                  class="text-gray-500 hover:text-gray-700"
+                  class="text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-2 rounded-lg transition-colors"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
+                  <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -574,18 +568,11 @@ const passwordChangeSuccess = ref(false)
 
 // ==================== CONSTANTS ====================
 const circles = [
-  { color: 'bg-[#0A3B76]', size: 96, top: 10, left: 5 }, // Azul principal
-  { color: 'bg-[#C5C6C8]', size: 64, top: 20, left: 80 }, // Gris claro
-  { color: 'bg-[#0C4A99]', size: 128, top: 70, left: 20 }, // Azul más vivo
-  { color: 'bg-[#E3E3E4]', size: 80, top: 40, left: 95 }, // Gris muy claro
-  { color: 'bg-[#082C54]', size: 112, top: 85, left: 70 }, // Azul oscuro
-  { color: 'bg-[#D0D1D3]', size: 48, top: 25, left: 30 }, // Gris suave
-  { color: 'bg-[#0A3B76]', size: 72, top: 60, left: 50 }, // Azul principal
-  { color: 'bg-[#C5C6C8]', size: 56, top: 5, left: 90 }, // Gris claro
-  { color: 'bg-[#C5C6C8]', size: 88, top: 80, left: 40 }, // Gris claro
-  { color: 'bg-[#D0D1D3]', size: 40, top: 90, left: 10 }, // Gris suave
-  { color: 'bg-[#0C4A99]', size: 104, top: 15, left: 60 }, // Azul vivo
-  { color: 'bg-[#E3E3E4]', size: 68, top: 50, left: 85 }, // Gris muy claro
+  { color: 'bg-[#0A3B76]/20', size: 120, top: 5, left: 5 },
+  { color: 'bg-[#0A3B76]/15', size: 80, top: 20, left: 85 },
+  { color: 'bg-[#0A3B76]/10', size: 150, top: 70, left: 15 },
+  { color: 'bg-[#0A3B76]/8', size: 100, top: 40, left: 90 },
+  { color: 'bg-[#0A3B76]/12', size: 130, top: 85, left: 65 },
 ]
 
 // ==================== COMPUTED ====================
@@ -635,7 +622,6 @@ const fetchAssignedStudents = async (page) => {
     return
   }
 
-  // loading.value = true
   error.value = null
 
   try {
@@ -779,7 +765,7 @@ const handleDescargarPDF = () => {
 
 const handleOpenReporteIntegralMasivo = () => {
   openReporteIntegralMasivo()
-  showDropdown.value = false
+  showReportesDropdown.value = false
 }
 
 const handleMostrarModalPrimerReporte = () => {
@@ -864,83 +850,44 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style>
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
-
+<style scoped>
 @keyframes float-1 {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) rotate(0deg);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-20px) rotate(5deg);
   }
 }
 
 @keyframes float-2 {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) rotate(0deg);
   }
   50% {
-    transform: translateY(-15px);
+    transform: translateY(-30px) rotate(-5deg);
   }
 }
 
 @keyframes float-3 {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) rotate(0deg);
   }
   50% {
-    transform: translateY(-20px);
+    transform: translateY(-25px) rotate(3deg);
   }
 }
 
 .animate-float-1 {
-  animation: float-1 4s ease-in-out infinite;
+  animation: float-1 6s ease-in-out infinite;
 }
-
 .animate-float-2 {
-  animation: float-2 6s ease-in-out infinite;
+  animation: float-2 8s ease-in-out infinite;
 }
-
 .animate-float-3 {
-  animation: float-3 5s ease-in-out infinite;
-}
-
-.bg-coral-300 {
-  background-color: #ff9f92;
-}
-.bg-coral-400 {
-  background-color: #ff8576;
-}
-.bg-coral-500 {
-  background-color: #ff6b5b;
-}
-.bg-coral-600 {
-  background-color: #ff5242;
-}
-
-.bg-navy-300 {
-  background-color: #4a5568;
-}
-.bg-navy-400 {
-  background-color: #2d3748;
-}
-.bg-navy-500 {
-  background-color: #1a202c;
-}
-.bg-navy-600 {
-  background-color: #171923;
-}
-
-.text-coral-600 {
-  color: #ff5242;
-}
-.hover\:bg-coral-600:hover {
-  background-color: #ff5242;
+  animation: float-3 7s ease-in-out infinite;
 }
 </style>

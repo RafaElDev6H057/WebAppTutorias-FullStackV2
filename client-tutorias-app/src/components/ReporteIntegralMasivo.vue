@@ -1,7 +1,7 @@
 <template>
   <div class="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-hidden flex flex-col z-[9999]">
     <div class="flex-1 flex flex-col max-h-screen">
-      <!-- Header con más color -->
+      <!-- Header -->
       <div class="bg-[#0A3B76] shadow-2xl p-6 text-white flex-shrink-0">
         <div class="flex justify-between items-center">
           <div>
@@ -24,12 +24,12 @@
         </div>
       </div>
 
-      <!-- Información del Tutor con color -->
+      <!-- Información del Tutor -->
       <div
-        class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-md flex-shrink-0 border-b-2 border-[#ffccc6]"
+        class="bg-gradient-to-r from-blue-50 to-gray-50 p-6 shadow-md flex-shrink-0 border-b border-gray-200"
       >
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-[#ff5242]">
+          <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-[#0A3B76]">
             <label class="block text-xs font-medium text-gray-600 mb-1">Nombre del Tutor</label>
             <p class="text-sm font-semibold text-gray-900">{{ tutorInfo.nombre }}</p>
           </div>
@@ -50,7 +50,7 @@
         </div>
       </div>
 
-      <!-- Toolbar con color -->
+      <!-- Toolbar -->
       <div
         class="bg-gradient-to-r from-gray-50 to-gray-100 p-4 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 flex-shrink-0 border-b border-gray-300"
       >
@@ -60,7 +60,7 @@
               v-model="searchQuery"
               type="text"
               placeholder="Buscar alumno por nombre o número de control..."
-              class="w-full pl-10 pr-4 py-2.5 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] transition-all"
+              class="w-full pl-10 pr-4 py-2.5 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             />
             <svg
               class="absolute left-3 top-3 h-5 w-5 text-gray-400"
@@ -81,8 +81,8 @@
           <span
             class="text-sm font-medium text-gray-700 bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-200"
           >
-            📊 Mostrando <strong class="text-[#ff5242]">{{ alumnosFiltrados.length }}</strong> de
-            <strong class="text-[#ff5242]">{{ totalAlumnos }}</strong> alumnos
+            Mostrando <strong class="text-blue-600">{{ alumnosFiltrados.length }}</strong> de
+            <strong class="text-blue-600">{{ totalAlumnos }}</strong> alumnos
           </span>
           <button
             v-if="isLoadingMore"
@@ -102,12 +102,12 @@
                 r="10"
                 stroke="currentColor"
                 stroke-width="4"
-              ></circle>
+              />
               <path
                 class="opacity-75"
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
+              />
             </svg>
             Cargando...
           </button>
@@ -115,7 +115,7 @@
             v-else
             @click="guardarTodo"
             :disabled="isSaving || alumnosFiltrados.length === 0"
-            class="px-6 py-2.5 bg-[#0A3B76] text-white rounded-lg font-bold hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A3B76] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl transform hover:scale-105 inline-flex items-center"
+            class="px-6 py-2.5 bg-[#10B981] text-white rounded-lg font-bold hover:bg-[#059669] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#10B981] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl inline-flex items-center"
           >
             <svg
               v-if="isSaving"
@@ -131,12 +131,12 @@
                 r="10"
                 stroke="currentColor"
                 stroke-width="4"
-              ></circle>
+              />
               <path
                 class="opacity-75"
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
+              />
             </svg>
             <svg v-else class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -163,7 +163,7 @@
         <div
           v-if="!isLoadingConfig"
           :class="[
-            'mx-4 mt-2 p-4 rounded-md border-l-4 shadow-md',
+            'mx-4 mt-2 p-4 rounded-lg border-l-4 shadow-sm',
             {
               'bg-red-50 border-red-500': reporteIntegralEtapa === 0,
               'bg-yellow-50 border-yellow-500': reporteIntegralEtapa === 1,
@@ -230,7 +230,7 @@
       >
         <div
           v-if="successMessage"
-          class="mx-4 mt-2 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-md flex items-start flex-shrink-0 shadow-md"
+          class="mx-4 mt-2 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg flex items-start flex-shrink-0 shadow-sm"
         >
           <svg
             class="w-6 h-6 text-green-500 mr-3 flex-shrink-0"
@@ -271,7 +271,7 @@
       >
         <div
           v-if="errorMessage"
-          class="mx-4 mt-2 p-4 bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-red-500 rounded-md flex items-start flex-shrink-0 shadow-md"
+          class="mx-4 mt-2 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-start flex-shrink-0 shadow-sm"
         >
           <svg
             class="w-6 h-6 text-red-500 mr-3 flex-shrink-0"
@@ -303,13 +303,15 @@
       </Transition>
 
       <!-- Tabla de Alumnos con Scroll Horizontal -->
-      <div class="flex-1 overflow-hidden bg-white shadow-xl rounded-xl border-2 border-gray-200">
+      <div
+        class="flex-1 overflow-hidden bg-white shadow-xl rounded-xl border-2 border-gray-200 m-4"
+      >
         <div class="h-full overflow-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-[#0A3B76] sticky top-0 z-20 shadow-md">
               <tr>
                 <th
-                  class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider sticky left-0 bg-[#0A3B76] z-30 border-r border-gray-300 min-w-[200px]"
+                  class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider sticky left-0 bg-[#0A3B76] z-30 border-r border-white/20 min-w-[200px]"
                 >
                   Alumno
                 </th>
@@ -359,7 +361,7 @@
                   Estado
                 </th>
                 <th
-                  class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-[#0A3B76] z-30 border-l border-gray-300 min-w-[180px]"
+                  class="px-4 py-4 text-center text-xs font-bold text-white uppercase tracking-wider sticky right-0 bg-[#0A3B76] z-30 border-l border-white/20 min-w-[180px]"
                 >
                   Acciones
                 </th>
@@ -396,7 +398,7 @@
                         alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
                         alumno.errores?.tutoria_grupal
                           ? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50'
-                          : 'border-gray-300 focus:ring-[#ff6b5b] focus:border-[#ff6b5b]',
+                          : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500',
                       ]"
                     />
                     <Transition
@@ -432,7 +434,7 @@
                         alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
                         alumno.errores?.tutoria_individual
                           ? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50'
-                          : 'border-gray-300 focus:ring-[#ff6b5b] focus:border-[#ff6b5b]',
+                          : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500',
                       ]"
                     />
                     <Transition
@@ -461,7 +463,7 @@
                     placeholder="Ej: Cálculo, Álgebra..."
                     :disabled="alumno.modoVer || !camposHabilitados.seguimiento_1"
                     :class="[
-                      'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all',
+                      'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all',
                       alumno.modoVer || !camposHabilitados.seguimiento_1
                         ? 'bg-gray-100 cursor-not-allowed opacity-60'
                         : '',
@@ -477,7 +479,7 @@
                     placeholder="Ej: Programación..."
                     :disabled="alumno.modoVer || !camposHabilitados.seguimiento_2"
                     :class="[
-                      'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all',
+                      'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all',
                       alumno.modoVer || !camposHabilitados.seguimiento_2
                         ? 'bg-gray-100 cursor-not-allowed opacity-60'
                         : '',
@@ -493,7 +495,7 @@
                     placeholder="Ej: Física..."
                     :disabled="alumno.modoVer || !camposHabilitados.seguimiento_3"
                     :class="[
-                      'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all',
+                      'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all',
                       alumno.modoVer || !camposHabilitados.seguimiento_3
                         ? 'bg-gray-100 cursor-not-allowed opacity-60'
                         : '',
@@ -501,7 +503,7 @@
                   />
                 </td>
 
-                <!-- Área Canalizada (Checkboxes con color) -->
+                <!-- Área Canalizada (Checkboxes) -->
                 <td class="px-4 py-4">
                   <div class="flex flex-col gap-2 text-xs">
                     <label
@@ -560,7 +562,7 @@
                         alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
                         alumno.errores?.materias_aprobadas
                           ? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50'
-                          : 'border-gray-300 focus:ring-[#ff6b5b] focus:border-[#ff6b5b]',
+                          : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500',
                       ]"
                     />
                     <Transition
@@ -589,17 +591,17 @@
                     placeholder="Ej: Bases de Datos..."
                     :disabled="alumno.modoVer || !camposHabilitados.materias_no_aprobadas"
                     :class="[
-                      'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6b5b] focus:border-[#ff6b5b] text-sm transition-all',
+                      'w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all',
                       alumno.modoVer ? 'bg-gray-100 cursor-not-allowed' : '',
                     ]"
                   />
                 </td>
 
-                <!-- Estado con colores mejorados -->
+                <!-- Estado con badges -->
                 <td class="px-4 py-4 whitespace-nowrap text-center">
                   <span
                     v-if="alumno.estado === 'guardado'"
-                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-md"
+                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-300"
                   >
                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                       <path
@@ -612,7 +614,7 @@
                   </span>
                   <span
                     v-else-if="alumno.estado === 'guardando'"
-                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-blue-400 to-indigo-500 text-white shadow-md"
+                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-300"
                   >
                     <svg
                       class="animate-spin w-4 h-4 mr-1"
@@ -627,18 +629,18 @@
                         r="10"
                         stroke="currentColor"
                         stroke-width="4"
-                      ></circle>
+                      />
                       <path
                         class="opacity-75"
                         fill="currentColor"
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
+                      />
                     </svg>
                     Guardando...
                   </span>
                   <span
                     v-else-if="alumno.estado === 'error'"
-                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-red-400 to-pink-500 text-white shadow-md"
+                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-300"
                   >
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -652,7 +654,7 @@
                   </span>
                   <span
                     v-else
-                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-md"
+                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800 border border-yellow-300"
                   >
                     Pendiente
                   </span>
@@ -660,7 +662,7 @@
 
                 <!-- Acciones DINÁMICAS -->
                 <td
-                  class="px-4 py-4 whitespace-nowrap text-center bg-white hover:bg-blue-50 z-10 border-l border-gray-200"
+                  class="px-4 py-4 whitespace-nowrap text-center bg-white hover:bg-blue-50 z-10 border-l border-gray-200 sticky right-0"
                 >
                   <!-- Si está en modo VER -->
                   <div v-if="alumno.modoVer" class="flex gap-2 justify-center">
@@ -668,7 +670,7 @@
                       @click="cerrarVistaReporte(alumno)"
                       class="px-3 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all text-xs font-bold shadow-md"
                     >
-                      ✖️ Cerrar
+                      Cerrar
                     </button>
                   </div>
 
@@ -678,10 +680,10 @@
                     @click="guardarAlumno(alumno)"
                     :disabled="alumno.estado === 'guardando' || tieneErrores(alumno)"
                     :class="[
-                      'px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all text-xs font-bold shadow-md transform hover:scale-105',
+                      'px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all text-xs font-bold shadow-md',
                       tieneErrores(alumno)
-                        ? 'bg-gray-400 text-gray-700 cursor-not-allowed' // Gris institucional
-                        : 'bg-[#0A3B76] text-white hover:bg-blue-800 focus:ring-[#0A3B76]', // Azul institucional
+                        ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                        : 'bg-[#10B981] text-white hover:bg-[#059669] focus:ring-[#10B981]',
                     ]"
                   >
                     {{ tieneErrores(alumno) ? 'Errores' : 'Guardar' }}
@@ -691,10 +693,23 @@
                   <div v-else-if="alumno.estado === 'guardado'" class="flex gap-2 justify-center">
                     <button
                       @click="verReporte(alumno)"
-                      class="px-3 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all text-xs font-bold shadow-md"
+                      class="px-3 py-2 rounded-lg bg-[#3B82F6] text-white hover:bg-[#2563EB] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3B82F6] transition-all text-xs font-bold shadow-md"
                       title="Ver reporte"
                     >
-                      👁️
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
+                      </svg>
                     </button>
                     <button
                       @click="editarReporte(alumno)"
@@ -703,25 +718,39 @@
                         'px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all text-xs font-bold shadow-md',
                         tieneErrores(alumno)
                           ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                          : 'bg-gradient-to-r from-[#ff5242] to-[#ff3d2a] text-white hover:from-[#ff3d2a] hover:to-[#e62a1a] focus:ring-[#ff6b5b]',
+                          : 'bg-[#F59E0B] text-white hover:bg-[#D97706] focus:ring-[#F59E0B]',
                       ]"
                       title="Editar y actualizar"
                     >
-                      ✏️
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
+                      </svg>
                     </button>
                     <button
                       @click="eliminarReporte(alumno)"
-                      class="px-3 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all text-xs font-bold shadow-md"
+                      class="px-3 py-2 rounded-lg bg-[#EF4444] text-white hover:bg-[#DC2626] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#EF4444] transition-all text-xs font-bold shadow-md"
                       title="Eliminar reporte"
                     >
-                      🗑️
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
+                      </svg>
                     </button>
                   </div>
 
                   <!-- Si está GUARDANDO -->
                   <div v-else-if="alumno.estado === 'guardando'" class="flex justify-center">
                     <div
-                      class="px-4 py-2 rounded-lg bg-blue-400 text-white text-xs font-bold inline-flex items-center"
+                      class="px-4 py-2 rounded-lg bg-blue-100 text-blue-800 text-xs font-bold inline-flex items-center border border-blue-300"
                     >
                       <svg
                         class="animate-spin w-4 h-4 mr-1"
@@ -736,12 +765,12 @@
                           r="10"
                           stroke="currentColor"
                           stroke-width="4"
-                        ></circle>
+                        />
                         <path
                           class="opacity-75"
                           fill="currentColor"
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
+                        />
                       </svg>
                       ...
                     </div>
@@ -775,13 +804,13 @@
         </div>
       </div>
 
-      <!-- Footer con información y color -->
+      <!-- Footer con información -->
       <div
         class="p-4 bg-gradient-to-r from-gray-100 to-gray-200 shadow-inner text-sm font-medium text-gray-700 flex-shrink-0 border-t-2 border-gray-300"
       >
         <div class="flex justify-between items-center">
           <p>
-            <strong class="text-[#ff5242]">Total de alumnos:</strong> {{ totalAlumnos }} |
+            <strong class="text-blue-600">Total de alumnos:</strong> {{ totalAlumnos }} |
             <strong class="text-green-600">Guardados:</strong> {{ alumnosGuardados }} |
             <strong class="text-yellow-600">Pendientes:</strong> {{ alumnosPendientes }}
           </p>
@@ -862,15 +891,15 @@ const camposHabilitados = computed(() => ({
 const mensajeEtapa = computed(() => {
   switch (reporteIntegralEtapa.value) {
     case 0:
-      return '🔒 El reporte integral no está disponible aún. Espera a que el administrador habilite el primer seguimiento.'
+      return 'El reporte integral no está disponible aún. Espera a que el administrador habilite el primer seguimiento.'
     case 1:
-      return '📝 Etapa 1: Solo puedes llenar el Seguimiento 1.'
+      return 'Etapa 1: Solo puedes llenar el Seguimiento 1.'
     case 2:
-      return '📝 Etapa 2: Puedes llenar los Seguimientos 1 y 2.'
+      return 'Etapa 2: Puedes llenar los Seguimientos 1 y 2.'
     case 3:
-      return '✅ Etapa 3: Todos los campos están disponibles para completar el reporte integral.'
+      return 'Etapa 3: Todos los campos están disponibles para completar el reporte integral.'
     default:
-      return '⏳ Cargando configuración...'
+      return 'Cargando configuración...'
   }
 })
 
@@ -897,9 +926,9 @@ const validarTutoriaGrupal = (alumno) => {
   }
 
   if (alumno.datos.tutoria_grupal < 0) {
-    alumno.errores.tutoria_grupal = '❌ El número debe ser mayor o igual a 0'
+    alumno.errores.tutoria_grupal = 'El número debe ser mayor o igual a 0'
   } else if (alumno.datos.tutoria_grupal > 16) {
-    alumno.errores.tutoria_grupal = '❌ El número debe ser menor o igual a 16'
+    alumno.errores.tutoria_grupal = 'El número debe ser menor o igual a 16'
   } else {
     delete alumno.errores.tutoria_grupal
   }
@@ -911,9 +940,9 @@ const validarTutoriaIndividual = (alumno) => {
   }
 
   if (alumno.datos.tutoria_individual < 0) {
-    alumno.errores.tutoria_individual = '❌ El número debe ser mayor o igual a 0'
+    alumno.errores.tutoria_individual = 'El número debe ser mayor o igual a 0'
   } else if (alumno.datos.tutoria_individual > 5) {
-    alumno.errores.tutoria_individual = '❌ El número debe ser menor o igual a 5'
+    alumno.errores.tutoria_individual = 'El número debe ser menor o igual a 5'
   } else {
     delete alumno.errores.tutoria_individual
   }
@@ -925,7 +954,7 @@ const validarMateriasAprobadas = (alumno) => {
   }
 
   if (alumno.datos.materias_aprobadas < 0) {
-    alumno.errores.materias_aprobadas = '❌ El número debe ser mayor o igual a 0'
+    alumno.errores.materias_aprobadas = 'El número debe ser mayor o igual a 0'
   } else {
     delete alumno.errores.materias_aprobadas
   }
@@ -944,11 +973,11 @@ const fetchConfiguracion = async () => {
 
     if (response.status === 200) {
       reporteIntegralEtapa.value = response.data.reporte_integral_etapa
-      console.log('✅ Etapa de reporte integral:', reporteIntegralEtapa.value)
+      console.log('Etapa de reporte integral:', reporteIntegralEtapa.value)
     }
   } catch (error) {
-    console.error('❌ Error al obtener configuración:', error)
-    reporteIntegralEtapa.value = 0 // Por defecto bloqueado
+    console.error('Error al obtener configuración:', error)
+    reporteIntegralEtapa.value = 0
     errorMessage.value =
       'No se pudo cargar la configuración del reporte. Los campos estarán bloqueados.'
   } finally {
@@ -969,7 +998,6 @@ const cargarTodosLosAlumnos = async () => {
 
     console.log('Response completa:', response.data)
 
-    // Mapear alumnos y SIEMPRE intentar cargar datos existentes
     alumnos.value = await Promise.all(
       response.data.tutorias.map(async (tutoria) => {
         const alumno = {
@@ -995,12 +1023,10 @@ const cargarTodosLosAlumnos = async () => {
           },
         }
 
-        // SIEMPRE intentar cargar datos existentes (no solo si reporte_integral_guardado es true)
         try {
           const reporteResponse = await reportesAPI.getIntegralByTutoria(tutoria.id_tutoria)
 
           if (reporteResponse.status === 200) {
-            // Cargar TODOS los datos que existan, incluso si solo tienen seguimiento_1
             alumno.datos = {
               tutoria_grupal: reporteResponse.data.tutoria_grupal || 0,
               tutoria_individual: reporteResponse.data.tutoria_individual || 0,
@@ -1015,22 +1041,19 @@ const cargarTodosLosAlumnos = async () => {
             }
             alumno.reporte_id = reporteResponse.data.id
 
-            // Si tiene algún dato guardado, marcar el estado apropiado
             if (tutoria.reporte_integral_guardado) {
               alumno.estado = 'guardado'
             } else if (reporteResponse.data.seguimiento_1 || reporteResponse.data.seguimiento_2) {
-              // Si tiene seguimientos parciales, mantener como "pendiente" pero con datos cargados
               alumno.estado = 'pendiente'
             }
 
-            console.log(`✅ Datos cargados para ${alumno.nombre}:`, alumno.datos)
+            console.log(`Datos cargados para ${alumno.nombre}:`, alumno.datos)
           }
         } catch (err) {
-          // Si el endpoint devuelve 404, significa que no hay reporte guardado aún
           if (err.response?.status === 404) {
-            console.log(`ℹ️ No hay reporte guardado para ${alumno.nombre}`)
+            console.log(`No hay reporte guardado para ${alumno.nombre}`)
           } else {
-            console.error(`❌ Error al cargar reporte de ${alumno.nombre}:`, err)
+            console.error(`Error al cargar reporte de ${alumno.nombre}:`, err)
           }
         }
 
@@ -1038,7 +1061,7 @@ const cargarTodosLosAlumnos = async () => {
       }),
     )
 
-    console.log(`✅ Cargados ${alumnos.value.length} alumnos con sus datos`)
+    console.log(`Cargados ${alumnos.value.length} alumnos con sus datos`)
   } catch (error) {
     console.error('Error al cargar alumnos:', error)
     errorMessage.value = 'No se pudieron cargar todos los alumnos. Intenta de nuevo.'
@@ -1048,30 +1071,25 @@ const cargarTodosLosAlumnos = async () => {
 }
 
 // ==================== CRUD OPERATIONS ====================
-
-// VER REPORTE (modo lectura)
 const verReporte = (alumno) => {
   alumno.modoVer = true
-  successMessage.value = `👁️ Mostrando reporte de ${alumno.nombre} (solo lectura)`
+  successMessage.value = `Mostrando reporte de ${alumno.nombre} (solo lectura)`
   setTimeout(() => {
     successMessage.value = null
   }, 2000)
 }
 
-// CERRAR VISTA
 const cerrarVistaReporte = (alumno) => {
   alumno.modoVer = false
 }
 
-// EDITAR REPORTE
 const editarReporte = async (alumno) => {
-  // Validar antes de guardar
   validarTutoriaGrupal(alumno)
   validarTutoriaIndividual(alumno)
   validarMateriasAprobadas(alumno)
 
   if (tieneErrores(alumno)) {
-    errorMessage.value = `❌ Corrige los errores en el formulario de ${alumno.nombre} antes de actualizar.`
+    errorMessage.value = `Corrige los errores en el formulario de ${alumno.nombre} antes de actualizar.`
     return
   }
 
@@ -1086,7 +1104,7 @@ const editarReporte = async (alumno) => {
 
     if (response.status === 201 || response.status === 200) {
       alumno.estado = 'guardado'
-      successMessage.value = `✅ Reporte de ${alumno.nombre} actualizado exitosamente.`
+      successMessage.value = `Reporte de ${alumno.nombre} actualizado exitosamente.`
       setTimeout(() => {
         successMessage.value = null
       }, 3000)
@@ -1094,15 +1112,14 @@ const editarReporte = async (alumno) => {
   } catch (error) {
     console.error('Error al actualizar reporte:', error)
     alumno.estado = 'error'
-    errorMessage.value = `❌ Error al actualizar reporte de ${alumno.nombre}. ${error.response?.data?.detail || error.message}`
+    errorMessage.value = `Error al actualizar reporte de ${alumno.nombre}. ${error.response?.data?.detail || error.message}`
   }
 }
 
-// ELIMINAR REPORTE
 const eliminarReporte = async (alumno) => {
   if (
     !confirm(
-      `⚠️ ¿Estás seguro de eliminar el reporte de ${alumno.nombre}?\n\nEsta acción no se puede deshacer.`,
+      `¿Estás seguro de eliminar el reporte de ${alumno.nombre}?\n\nEsta acción no se puede deshacer.`,
     )
   ) {
     return
@@ -1112,7 +1129,6 @@ const eliminarReporte = async (alumno) => {
     const response = await reportesAPI.deleteIntegral(alumno.reporte_id)
 
     if (response.status === 200 || response.status === 204) {
-      // Reset alumno a estado pendiente
       alumno.estado = 'pendiente'
       alumno.reporte_id = null
       alumno.datos = {
@@ -1127,32 +1143,29 @@ const eliminarReporte = async (alumno) => {
         materias_aprobadas: 0,
         materias_no_aprobadas: '',
       }
-      successMessage.value = `🗑️ Reporte de ${alumno.nombre} eliminado exitosamente.`
+      successMessage.value = `Reporte de ${alumno.nombre} eliminado exitosamente.`
       setTimeout(() => {
         successMessage.value = null
       }, 3000)
     }
   } catch (error) {
     console.error('Error al eliminar reporte:', error)
-    errorMessage.value = `❌ Error al eliminar reporte de ${alumno.nombre}. ${error.response?.data?.detail || error.message}`
+    errorMessage.value = `Error al eliminar reporte de ${alumno.nombre}. ${error.response?.data?.detail || error.message}`
   }
 }
 
-// GUARDAR ALUMNO (crear reporte)
 const guardarAlumno = async (alumno) => {
-  // Validar etapa
   if (reporteIntegralEtapa.value === 0) {
-    errorMessage.value = `❌ No puedes guardar reportes. La etapa 1 no ha sido habilitada por el administrador.`
+    errorMessage.value = `No puedes guardar reportes. La etapa 1 no ha sido habilitada por el administrador.`
     return
   }
 
-  // Validar antes de guardar
   validarTutoriaGrupal(alumno)
   validarTutoriaIndividual(alumno)
   validarMateriasAprobadas(alumno)
 
   if (tieneErrores(alumno)) {
-    errorMessage.value = `❌ Corrige los errores en el formulario de ${alumno.nombre} antes de guardar.`
+    errorMessage.value = `Corrige los errores en el formulario de ${alumno.nombre} antes de guardar.`
     return
   }
 
@@ -1168,7 +1181,7 @@ const guardarAlumno = async (alumno) => {
     if (response.status === 201 || response.status === 200) {
       alumno.estado = 'guardado'
       alumno.reporte_id = response.data.id || alumno.id_tutoria
-      successMessage.value = `✅ Reporte de ${alumno.nombre} guardado exitosamente.`
+      successMessage.value = `Reporte de ${alumno.nombre} guardado exitosamente.`
       setTimeout(() => {
         successMessage.value = null
       }, 3000)
@@ -1176,13 +1189,11 @@ const guardarAlumno = async (alumno) => {
   } catch (error) {
     console.error('Error al guardar reporte:', error)
     alumno.estado = 'error'
-    errorMessage.value = `❌ Error al guardar reporte de ${alumno.nombre}. ${error.response?.data?.detail || error.message}`
+    errorMessage.value = `Error al guardar reporte de ${alumno.nombre}. ${error.response?.data?.detail || error.message}`
   }
 }
 
-// GUARDAR TODO
 const guardarTodo = async () => {
-  // Validar todos los alumnos primero
   let hayErrores = false
   alumnos.value.forEach((alumno) => {
     if (alumno.estado !== 'guardado') {
@@ -1197,7 +1208,7 @@ const guardarTodo = async () => {
 
   if (hayErrores) {
     errorMessage.value =
-      '❌ Hay errores de validación en algunos formularios. Corrígelos antes de guardar todo.'
+      'Hay errores de validación en algunos formularios. Corrígelos antes de guardar todo.'
     return
   }
 
@@ -1221,12 +1232,12 @@ const guardarTodo = async () => {
   isSaving.value = false
 
   if (errores === 0) {
-    successMessage.value = `🎉 ¡Todos los reportes guardados exitosamente! (${exitosos} reportes)`
+    successMessage.value = `Todos los reportes guardados exitosamente (${exitosos} reportes)`
     setTimeout(() => {
       emit('success')
     }, 2000)
   } else {
-    errorMessage.value = `⚠️ Se guardaron ${exitosos} reportes, pero ${errores} tuvieron errores.`
+    errorMessage.value = `Se guardaron ${exitosos} reportes, pero ${errores} tuvieron errores.`
   }
 }
 
@@ -1236,13 +1247,13 @@ const closeModal = () => {
 
 // ==================== LIFECYCLE ====================
 onMounted(async () => {
-  await fetchConfiguracion() // Cargar configuración primero
+  await fetchConfiguracion()
   await cargarTodosLosAlumnos()
 })
 </script>
 
 <style scoped>
-/* Scrollbar personalizado con colores coral */
+/* Scrollbar personalizado */
 .overflow-auto::-webkit-scrollbar {
   width: 14px;
   height: 14px;
@@ -1254,13 +1265,13 @@ onMounted(async () => {
 }
 
 .overflow-auto::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #ff6b5b, #ff5242);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   border-radius: 10px;
   border: 2px solid #f3f4f6;
 }
 
 .overflow-auto::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #ff5242, #ff3d2a);
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
 }
 
 /* Animaciones suaves */

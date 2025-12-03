@@ -8,7 +8,10 @@
     leave-from-class="opacity-100"
     leave-to-class="opacity-0"
   >
-    <div v-if="show" class="mx-4 mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-md">
+    <div
+      v-if="show"
+      class="mx-4 mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg shadow-sm"
+    >
       <div class="flex items-start">
         <svg
           class="w-6 h-6 text-yellow-400 mr-3 flex-shrink-0"
@@ -24,16 +27,24 @@
           />
         </svg>
         <div class="flex-1">
-          <h3 class="text-sm font-medium text-yellow-800">Contraseña Insegura</h3>
+          <h3 class="text-sm font-bold text-yellow-800">Contraseña Insegura</h3>
           <p class="mt-1 text-sm text-yellow-700">
             Tu contraseña actual no está protegida adecuadamente. Por seguridad, te recomendamos
             cambiarla lo antes posible.
           </p>
           <button
             @click="$emit('change-password')"
-            class="mt-3 text-sm font-medium text-yellow-800 hover:text-yellow-900 underline"
+            class="mt-3 text-sm font-semibold text-yellow-800 hover:text-yellow-900 underline inline-flex items-center gap-1 transition-colors"
           >
-            Cambiar contraseña ahora →
+            Cambiar contraseña ahora
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 7l5 5m0 0l-5 5m5-5H6"
+              />
+            </svg>
           </button>
         </div>
       </div>
