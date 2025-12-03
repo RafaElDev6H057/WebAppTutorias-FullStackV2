@@ -1,15 +1,11 @@
 <template>
-  <div class="min-h-screen bg-gray-50 relative overflow-hidden">
-    <!-- Animated Circles -->
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
+    <!-- Animated Circles - Azul institucional -->
     <div class="absolute inset-0 pointer-events-none">
       <div
         v-for="(circle, index) in circles"
         :key="index"
-        :class="[
-          'absolute rounded-full opacity-20',
-          circle.color,
-          `animate-float-${(index % 3) + 1}`,
-        ]"
+        :class="['absolute rounded-full', circle.color, `animate-float-${(index % 3) + 1}`]"
         :style="{
           top: `${circle.top}%`,
           left: `${circle.left}%`,
@@ -21,14 +17,14 @@
     </div>
 
     <!-- Navigation Bar - RESPONSIVE -->
-    <nav class="bg-gradient-to-r from-[#0A3B76] to-[#092F5C] border-b border-[#0A3B76] shadow-lg">
+    <nav class="bg-[#0A3B76] shadow-xl relative z-10 border-b-2 border-[#083060]">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16 lg:h-20">
           <!-- Left Section: Logo + User Info -->
           <div class="flex items-center space-x-2 sm:space-x-4 flex-1 min-w-0">
             <div class="flex-shrink-0">
               <img
-                class="h-10 w-10 sm:h-12 sm:w-12 border-2 border-white rounded-full"
+                class="h-10 w-10 sm:h-12 sm:w-12 border-2 border-white rounded-full shadow-md"
                 src="/EscudoITSF.png"
                 alt="Escudo ITSF"
               />
@@ -41,7 +37,7 @@
                     : 'Cargando...'
                 }}
               </div>
-              <div class="text-lime-100 text-xs sm:text-sm">
+              <div class="text-gray-200 text-xs sm:text-sm">
                 No. Control: {{ alumno?.num_control || 'Cargando...' }}
               </div>
             </div>
@@ -56,7 +52,7 @@
               v-if="estadoTutorias?.es_elegible"
               @click="descargarConstancia"
               :disabled="isDownloading"
-              class="bg-white hover:bg-[#0A3B76]/10 text-[#0A3B76] font-medium px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+              class="bg-white hover:bg-gray-100 text-[#0A3B76] font-medium px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
             >
               <svg
                 v-if="isDownloading"
@@ -72,12 +68,12 @@
                   r="10"
                   stroke="currentColor"
                   stroke-width="4"
-                ></circle>
+                />
                 <path
                   class="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                />
               </svg>
               <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -93,7 +89,7 @@
             <!-- Botón Cambiar Contraseña -->
             <button
               @click="openChangePasswordModal"
-              class="bg-white hover:bg-[#0A3B76]/90 text-[#0A3B76] font-medium px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg"
+              class="bg-white hover:bg-gray-100 text-[#0A3B76] font-medium px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg"
             >
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -108,7 +104,7 @@
 
             <button
               @click="handleLogout"
-              class="bg-red-700 hover:bg-red-800 text-white font-medium px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg"
+              class="bg-[#EF4444] hover:bg-[#DC2626] text-white font-medium px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg"
             >
               <span>Cerrar Sesión</span>
             </button>
@@ -117,7 +113,7 @@
           <!-- Mobile Menu Button -->
           <button
             @click="mobileMenuOpen = !mobileMenuOpen"
-            class="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-lime-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+            class="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white transition-colors"
           >
             <svg
               v-if="!mobileMenuOpen"
@@ -155,7 +151,7 @@
         >
           <div v-if="mobileMenuOpen" class="lg:hidden pb-4 space-y-2">
             <!-- Título -->
-            <div class="px-4 py-2 text-white font-bold text-center border-t border-lime-600 pt-4">
+            <div class="px-4 py-2 text-white font-bold text-center border-t border-blue-700 pt-4">
               Sistema de Tutorías
             </div>
 
@@ -164,7 +160,7 @@
               v-if="estadoTutorias?.es_elegible"
               @click="(descargarConstancia(), (mobileMenuOpen = false))"
               :disabled="isDownloading"
-              class="w-full mx-4 bg-white hover:bg-lime-50 text-lime-700 font-medium px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+              class="w-full mx-4 bg-white hover:bg-gray-100 text-[#0A3B76] font-medium px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
               style="max-width: calc(100% - 2rem)"
             >
               <svg
@@ -181,12 +177,12 @@
                   r="10"
                   stroke="currentColor"
                   stroke-width="4"
-                ></circle>
+                />
                 <path
                   class="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                />
               </svg>
               <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -202,7 +198,7 @@
             <!-- Botón Cambiar Contraseña -->
             <button
               @click="(openChangePasswordModal(), (mobileMenuOpen = false))"
-              class="w-full mx-4 bg-white hover:bg-lime-50 text-lime-700 font-medium px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-all duration-200 shadow-md"
+              class="w-full mx-4 bg-white hover:bg-gray-100 text-[#0A3B76] font-medium px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-all duration-200 shadow-md"
               style="max-width: calc(100% - 2rem)"
             >
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -219,7 +215,7 @@
             <!-- Botón Cerrar Sesión -->
             <button
               @click="(handleLogout(), (mobileMenuOpen = false))"
-              class="w-full mx-4 bg-lime-700 hover:bg-lime-800 text-white font-medium px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-all duration-200 shadow-md"
+              class="w-full mx-4 bg-[#EF4444] hover:bg-[#DC2626] text-white font-medium px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-all duration-200 shadow-md"
               style="max-width: calc(100% - 2rem)"
             >
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -252,11 +248,11 @@
       >
         <div
           v-if="alumno?.requires_password_change"
-          class="mb-6 p-4 bg-gray-50 border-l-4 border-gray-500 rounded-md shadow-sm"
+          class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg shadow-sm"
         >
           <div class="flex items-start">
             <svg
-              class="w-6 h-6 text-gray-600 mr-3 flex-shrink-0"
+              class="w-6 h-6 text-yellow-400 mr-3 flex-shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -269,23 +265,31 @@
               />
             </svg>
             <div class="flex-1">
-              <h3 class="text-sm font-medium text-gray-800">Contraseña Insegura</h3>
-              <p class="mt-1 text-sm text-gray-700">
+              <h3 class="text-sm font-bold text-yellow-800">Contraseña Insegura</h3>
+              <p class="mt-1 text-sm text-yellow-700">
                 Tu contraseña actual no está protegida adecuadamente. Por seguridad, te recomendamos
                 cambiarla lo antes posible.
               </p>
               <button
                 @click="openChangePasswordModal"
-                class="mt-3 text-sm font-medium text-gray-700 hover:text-gray-900 underline"
+                class="mt-3 text-sm font-semibold text-yellow-800 hover:text-yellow-900 underline inline-flex items-center gap-1 transition-colors"
               >
-                Cambiar contraseña ahora →
+                Cambiar contraseña ahora
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
+                </svg>
               </button>
             </div>
           </div>
         </div>
       </Transition>
 
-      <!-- ==================== AVISOS IMPORTANTES ==================== -->
+      <!-- Avisos Importantes -->
       <div class="mb-6 sm:mb-8">
         <AvisosAlumno />
       </div>
@@ -301,11 +305,11 @@
       >
         <div
           v-if="estadoTutorias && !estadoTutorias.es_elegible"
-          class="mb-6 bg-gray-50 border-l-4 border-gray-500 p-4 rounded-md shadow-sm"
+          class="mb-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg shadow-sm"
         >
           <div class="flex items-start">
             <svg
-              class="w-6 h-6 text-gray-600 mr-3 flex-shrink-0"
+              class="w-6 h-6 text-blue-500 mr-3 flex-shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -314,25 +318,25 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
             <div class="flex-1">
-              <h3 class="text-sm font-bold text-[#0A3B76] mb-1">📄 Constancia no disponible</h3>
-              <p class="text-sm text-[#092F5C]">
+              <h3 class="text-sm font-bold text-blue-800 mb-1">Constancia no disponible</h3>
+              <p class="text-sm text-blue-700">
                 Debes completar tus <strong>4 tutorías</strong> para poder descargar tu constancia
                 de acreditación.
               </p>
               <div class="mt-2 flex items-center">
                 <div class="flex-1 bg-gray-200 rounded-full h-2 mr-3">
                   <div
-                    class="bg-gradient-to-r from-[#0A3B76] to-[#092F5C] h-2 rounded-full transition-all duration-500"
+                    class="bg-blue-500 h-2 rounded-full transition-all duration-500"
                     :style="{
                       width: `${(estadoTutorias.tutorias_completadas / 4) * 100}%`,
                     }"
                   ></div>
                 </div>
-                <span class="text-xs font-bold text-[#092F5C]">
+                <span class="text-xs font-bold text-blue-700">
                   {{ estadoTutorias.tutorias_completadas }} / 4 completadas
                 </span>
               </div>
@@ -352,11 +356,11 @@
       >
         <div
           v-if="successMessage"
-          class="mb-6 bg-gray-50 border-l-4 border-[#0A3B76] p-4 rounded-md shadow-sm"
+          class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-lg shadow-sm"
         >
           <div class="flex items-start">
             <svg
-              class="w-6 h-6 text-[#0A3B76] mr-3 flex-shrink-0"
+              class="w-6 h-6 text-green-500 mr-3 flex-shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -369,9 +373,12 @@
               />
             </svg>
             <div class="flex-1">
-              <p class="text-sm font-medium text-[#092F5C]">{{ successMessage }}</p>
+              <p class="text-sm font-medium text-green-800">{{ successMessage }}</p>
             </div>
-            <button @click="successMessage = null" class="text-[#0A3B76] hover:text-[#092F5C]">
+            <button
+              @click="successMessage = null"
+              class="text-green-500 hover:text-green-700 transition-colors"
+            >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
@@ -393,9 +400,9 @@
           :class="[
             'bg-white rounded-lg p-4 sm:p-6 border-l-4 shadow-md hover:shadow-xl transition-all duration-300',
             {
-              'border-[#0A3B76]': tutoria.estado === 'completada',
-              'border-gray-500': tutoria.estado === 'en curso',
-              'border-red-500': tutoria.estado === 'pendiente',
+              'border-green-500': tutoria.estado === 'completada',
+              'border-blue-500': tutoria.estado === 'en curso',
+              'border-gray-400': tutoria.estado === 'pendiente',
             },
           ]"
         >
@@ -407,9 +414,9 @@
               :class="[
                 'px-3 py-1 text-xs font-semibold rounded-full',
                 {
-                  'bg-[#0A3B76] text-white': tutoria.estado === 'completada',
-                  'bg-gray-200 text-gray-800': tutoria.estado === 'en curso',
-                  'bg-red-100 text-red-700': tutoria.estado === 'pendiente',
+                  'bg-green-100 text-green-800': tutoria.estado === 'completada',
+                  'bg-blue-100 text-blue-800': tutoria.estado === 'en curso',
+                  'bg-gray-200 text-gray-700': tutoria.estado === 'pendiente',
                 },
               ]"
             >
@@ -449,7 +456,7 @@
           <button
             v-if="showSolicitarButton(tutoria)"
             @click="solicitarTutoria(tutoria.semestre)"
-            class="w-full mt-4 bg-[#0A3B76] hover:bg-[#092F5C] text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg text-sm sm:text-base"
+            class="w-full mt-4 bg-[#10B981] hover:bg-[#059669] text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg text-sm sm:text-base"
           >
             <span>Solicitar Tutoría</span>
             <svg
@@ -469,8 +476,7 @@
       </div>
     </main>
 
-    <!-- ==================== MODAL CAMBIAR CONTRASEÑA ==================== -->
-    <!-- (El resto del código del modal permanece igual) -->
+    <!-- MODAL CAMBIAR CONTRASEÑA -->
     <Transition
       enter-active-class="transition ease-out duration-300"
       enter-from-class="opacity-0 scale-95"
@@ -483,7 +489,9 @@
         v-if="showChangePasswordModal"
         class="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
       >
-        <div class="relative w-full max-w-md bg-white rounded-lg shadow-2xl border border-gray-200">
+        <div
+          class="relative w-full max-w-md bg-white rounded-lg shadow-2xl border-2 border-gray-200"
+        >
           <div class="bg-[#0A3B76] px-6 py-4 rounded-t-lg flex justify-between items-center">
             <h2 class="text-xl font-semibold text-white flex items-center gap-2">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -499,7 +507,7 @@
             <button
               @click="closeChangePasswordModal"
               :disabled="isChangingPassword"
-              class="text-white hover:text-lime-100 disabled:opacity-50 transition-colors"
+              class="text-white hover:bg-white/20 rounded-lg p-1 disabled:opacity-50 transition-colors"
             >
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -516,9 +524,9 @@
             <!-- Mensaje de advertencia para primera vez -->
             <div
               v-if="alumno?.requires_password_change"
-              class="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-md"
+              class="mb-4 p-3 bg-yellow-50 border-2 border-yellow-200 rounded-lg shadow-sm"
             >
-              <p class="text-sm text-amber-800">
+              <p class="text-sm text-yellow-800">
                 <strong>Importante:</strong> Esta es tu primera vez cambiando la contraseña. Por
                 favor, elige una contraseña segura.
               </p>
@@ -535,11 +543,11 @@
             >
               <div
                 v-if="passwordChangeSuccess"
-                class="mb-4 p-3 bg-green-50 border-l-4 border-green-500 rounded-md"
+                class="mb-4 p-3 bg-green-50 border-l-4 border-green-500 rounded-lg shadow-sm"
               >
                 <div class="flex items-center">
                   <svg
-                    class="w-5 h-5 text-green-600 mr-2"
+                    class="w-5 h-5 text-green-500 mr-2"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -551,9 +559,7 @@
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  <p class="text-sm text-green-800 font-medium">
-                    ¡Contraseña cambiada exitosamente!
-                  </p>
+                  <p class="text-sm text-green-800 font-medium">Contraseña cambiada exitosamente</p>
                 </div>
               </div>
             </Transition>
@@ -569,11 +575,11 @@
             >
               <div
                 v-if="passwordChangeError"
-                class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded-md"
+                class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded-lg shadow-sm"
               >
                 <div class="flex items-start">
                   <svg
-                    class="w-5 h-5 text-red-600 mr-2 flex-shrink-0 mt-0.5"
+                    class="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -603,7 +609,7 @@
                   type="text"
                   required
                   :disabled="isChangingPassword"
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-lime-500 focus:border-lime-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  class="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
                   placeholder="Tu número de control"
                 />
               </div>
@@ -620,8 +626,8 @@
                     :type="showCurrentPassword ? 'text' : 'password'"
                     required
                     :disabled="isChangingPassword"
-                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-lime-500 focus:border-lime-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                    placeholder="••••••••"
+                    class="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
+                    placeholder="········"
                   />
                   <button
                     type="button"
@@ -679,8 +685,8 @@
                     required
                     minlength="8"
                     :disabled="isChangingPassword"
-                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-lime-500 focus:border-lime-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                    placeholder="••••••••"
+                    class="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
+                    placeholder="········"
                   />
                   <button
                     type="button"
@@ -739,8 +745,8 @@
                     required
                     minlength="8"
                     :disabled="isChangingPassword"
-                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-lime-500 focus:border-lime-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                    placeholder="••••••••"
+                    class="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
+                    placeholder="········"
                   />
                   <button
                     type="button"
@@ -786,19 +792,19 @@
               </div>
 
               <!-- Botones -->
-              <div class="flex gap-3 pt-4 border-t">
+              <div class="flex gap-3 pt-4 border-t-2 border-gray-200">
                 <button
                   type="button"
                   @click="closeChangePasswordModal"
                   :disabled="isChangingPassword"
-                  class="flex-1 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#0A3B76] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   :disabled="isChangingPassword"
-                  class="flex-1 px-4 py-2 bg-[#0A3B76] hover:from-[#092F5C] hover:to-[#8C8D8F] border border-transparent rounded-md text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-[#0A3B76] disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex justify-center items-center"
+                  class="flex-1 px-4 py-2 bg-[#0A3B76] hover:bg-[#083060] border border-transparent rounded-lg text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex justify-center items-center shadow-md"
                 >
                   <svg
                     v-if="isChangingPassword"
@@ -814,12 +820,12 @@
                       r="10"
                       stroke="currentColor"
                       stroke-width="4"
-                    ></circle>
+                    />
                     <path
                       class="opacity-75"
                       fill="currentColor"
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
+                    />
                   </svg>
                   {{ isChangingPassword ? 'Cambiando...' : 'Cambiar Contraseña' }}
                 </button>
@@ -835,7 +841,7 @@
       v-if="mostrarModal"
       class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4"
     >
-      <div class="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+      <div class="bg-white p-6 rounded-lg shadow-xl max-w-md w-full border-2 border-gray-200">
         <h3 class="text-xl font-bold text-gray-900 mb-4">Solicitud de Tutoría</h3>
         <p class="text-gray-700 mb-6">
           Su solicitud para la tutoría del Semestre {{ semestreSolicitado }} ha sido enviada al
@@ -843,7 +849,7 @@
         </p>
         <button
           @click="cerrarModal"
-          class="w-full bg-lime-500 hover:bg-lime-600 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200"
+          class="w-full bg-[#10B981] hover:bg-[#059669] text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
         >
           Entendido
         </button>
@@ -1139,26 +1145,11 @@ onMounted(async () => {
 
 // ==================== CIRCLES ANIMATION ====================
 const circles = [
-  { color: 'bg-lime-400', size: 96, top: 10, left: 5 },
-  { color: 'bg-lime-300', size: 64, top: 20, left: 80 },
-  { color: 'bg-lime-500', size: 128, top: 70, left: 20 },
-  { color: 'bg-lime-200', size: 80, top: 40, left: 95 },
-  { color: 'bg-lime-600', size: 112, top: 85, left: 70 },
-  { color: 'bg-lime-300', size: 48, top: 25, left: 30 },
-  { color: 'bg-lime-400', size: 72, top: 60, left: 50 },
-  { color: 'bg-lime-200', size: 56, top: 5, left: 90 },
-  { color: 'bg-lime-500', size: 88, top: 80, left: 40 },
-  { color: 'bg-lime-300', size: 40, top: 90, left: 10 },
-  { color: 'bg-lime-600', size: 104, top: 15, left: 60 },
-  { color: 'bg-lime-400', size: 68, top: 50, left: 85 },
-  { color: 'bg-lime-300', size: 52, top: 5, left: 15 },
-  { color: 'bg-lime-500', size: 60, top: 10, left: 50 },
-  { color: 'bg-lime-400', size: 100, top: 55, left: 10 },
-  { color: 'bg-lime-600', size: 90, top: 65, left: 85 },
-  { color: 'bg-lime-500', size: 76, top: 80, left: 15 },
-  { color: 'bg-lime-200', size: 44, top: 35, left: 60 },
-  { color: 'bg-lime-400', size: 84, top: 25, left: 10 },
-  { color: 'bg-lime-500', size: 50, top: 45, left: 75 },
+  { color: 'bg-[#0A3B76]/20', size: 120, top: 5, left: 5 },
+  { color: 'bg-[#0A3B76]/15', size: 80, top: 20, left: 85 },
+  { color: 'bg-[#0A3B76]/10', size: 150, top: 70, left: 15 },
+  { color: 'bg-[#0A3B76]/8', size: 100, top: 40, left: 90 },
+  { color: 'bg-[#0A3B76]/12', size: 130, top: 85, left: 65 },
 ]
 </script>
 
@@ -1166,42 +1157,40 @@ const circles = [
 @keyframes float-1 {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) rotate(0deg);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-20px) rotate(5deg);
   }
 }
 
 @keyframes float-2 {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) rotate(0deg);
   }
   50% {
-    transform: translateY(-15px);
+    transform: translateY(-30px) rotate(-5deg);
   }
 }
 
 @keyframes float-3 {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) rotate(0deg);
   }
   50% {
-    transform: translateY(-20px);
+    transform: translateY(-25px) rotate(3deg);
   }
 }
 
 .animate-float-1 {
-  animation: float-1 4s ease-in-out infinite;
+  animation: float-1 6s ease-in-out infinite;
 }
-
 .animate-float-2 {
-  animation: float-2 6s ease-in-out infinite;
+  animation: float-2 8s ease-in-out infinite;
 }
-
 .animate-float-3 {
-  animation: float-3 5s ease-in-out infinite;
+  animation: float-3 7s ease-in-out infinite;
 }
 </style>

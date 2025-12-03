@@ -21,12 +21,15 @@
     </div>
 
     <!-- Header -->
-    <nav class="shadow-lg relative z-10" :class="departamentoConfig.headerBg">
+    <nav
+      class="shadow-xl relative z-10 border-b-2"
+      :class="[departamentoConfig.headerBg, departamentoConfig.headerBorder]"
+    >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
           <div class="flex items-center">
             <img
-              class="h-12 w-12 border-2 border-white rounded-full"
+              class="h-12 w-12 border-2 border-white rounded-full shadow-md"
               src="/EscudoITSF.png"
               alt="Escudo ITSF"
             />
@@ -40,7 +43,7 @@
           <div class="flex items-center">
             <button
               @click="handleLogout"
-              class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out flex items-center gap-2"
+              class="bg-[#EF4444] hover:bg-[#DC2626] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -129,7 +132,7 @@
         >
           <div
             v-if="successMessage"
-            class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded"
+            class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg shadow-sm"
           >
             <p class="text-sm text-green-800 font-medium">{{ successMessage }}</p>
           </div>
@@ -143,7 +146,10 @@
           leave-from-class="opacity-100"
           leave-to-class="opacity-0"
         >
-          <div v-if="errorMessage" class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
+          <div
+            v-if="errorMessage"
+            class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg shadow-sm"
+          >
             <p class="text-sm text-red-800 font-medium">{{ errorMessage }}</p>
           </div>
         </Transition>
@@ -164,7 +170,7 @@
                 placeholder="Ejemplo: 22025"
                 :disabled="isDownloading"
                 class="w-full px-5 py-4 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed transition-all shadow-sm"
-                :class="`focus:ring-2 focus:ring-${departamentoConfig.ringColor}`"
+                :class="`focus:ring-2 ${departamentoConfig.focusRing}`"
               />
               <div class="absolute right-4 top-1/2 transform -translate-y-1/2">
                 <svg
@@ -217,7 +223,7 @@
               </svg>
               <div class="flex-1">
                 <p class="text-sm font-bold" :class="departamentoConfig.infoText">
-                  ℹ️ Información del Reporte
+                  Información del Reporte
                 </p>
                 <p class="text-xs mt-1" :class="departamentoConfig.infoText">
                   {{ departamentoConfig.reporteInfo }}
@@ -271,7 +277,7 @@
         </div>
 
         <!-- Footer del Card -->
-        <div class="mt-8 pt-6 border-t border-gray-200">
+        <div class="mt-8 pt-6 border-t-2 border-gray-200">
           <div class="flex items-center justify-between text-sm text-gray-600">
             <div class="flex items-center gap-2">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -300,7 +306,7 @@
 
       <!-- Card Informativa Adicional -->
       <div
-        class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200"
+        class="mt-8 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 border-2 border-blue-200 shadow-sm"
       >
         <div class="flex items-start gap-4">
           <div class="flex-shrink-0">
@@ -319,7 +325,7 @@
             </svg>
           </div>
           <div>
-            <h3 class="text-lg font-bold text-gray-900 mb-2">💡 Ayuda y Soporte</h3>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Ayuda y Soporte</h3>
             <ul class="space-y-2 text-sm text-gray-700">
               <li class="flex items-center gap-2">
                 <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
@@ -386,9 +392,10 @@ const departamentosConfig = {
     bgColor: 'bg-teal-100',
     iconColor: 'text-teal-600',
     buttonColor: 'bg-teal-600 hover:bg-teal-700 focus:ring-teal-500',
-    ringColor: 'teal-500',
+    focusRing: 'focus:ring-teal-500',
     headerBg: 'bg-teal-600',
-    headerSubtitle: 'text-teal-200',
+    headerBorder: 'border-teal-700',
+    headerSubtitle: 'text-teal-100',
     borderColor: 'border-teal-500',
     infoBg: 'bg-teal-50',
     infoBorder: 'border-teal-200',
@@ -412,9 +419,10 @@ const departamentosConfig = {
     bgColor: 'bg-indigo-100',
     iconColor: 'text-indigo-600',
     buttonColor: 'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500',
-    ringColor: 'indigo-500',
+    focusRing: 'focus:ring-indigo-500',
     headerBg: 'bg-indigo-600',
-    headerSubtitle: 'text-indigo-200',
+    headerBorder: 'border-indigo-700',
+    headerSubtitle: 'text-indigo-100',
     borderColor: 'border-indigo-500',
     infoBg: 'bg-indigo-50',
     infoBorder: 'border-indigo-200',
@@ -433,14 +441,15 @@ const departamentosConfig = {
   },
   jefatura_academica: {
     titulo: 'Jefatura Académica',
-    descripcion: 'Coordinación y Supervisión',
+    descripción: 'Coordinación y Supervisión',
     icon: JefaturaLogo,
     bgColor: 'bg-rose-100',
     iconColor: 'text-rose-600',
     buttonColor: 'bg-rose-600 hover:bg-rose-700 focus:ring-rose-500',
-    ringColor: 'rose-500',
+    focusRing: 'focus:ring-rose-500',
     headerBg: 'bg-rose-600',
-    headerSubtitle: 'text-rose-200',
+    headerBorder: 'border-rose-700',
+    headerSubtitle: 'text-rose-100',
     borderColor: 'border-rose-500',
     infoBg: 'bg-rose-50',
     infoBorder: 'border-rose-200',
@@ -519,7 +528,7 @@ const descargarReporte = async () => {
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
 
-    successMessage.value = '✅ Reporte descargado exitosamente'
+    successMessage.value = 'Reporte descargado exitosamente'
     console.log('✅ Reporte descargado:', periodo.value)
 
     setTimeout(() => {
