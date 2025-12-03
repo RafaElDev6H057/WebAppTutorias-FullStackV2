@@ -738,8 +738,8 @@
 
 <script setup>
 import { tutoresAPI } from '@/api/tutores'
+import { reportesAPI } from '@/api/reportes'
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
 
 // ==================== PROPS & EMITS ====================
 defineEmits(['cerrar'])
@@ -803,12 +803,7 @@ const fetchReportes = async () => {
   errorMessage.value = null
 
   try {
-    const token = localStorage.getItem('accessToken')
-    const response = await axios.get('http://localhost:8000/api/reportes/general-2/tutor', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    const response = await reportesAPI.getGeneral2ByTutor()
 
     reportes.value = response.data
     console.log('✅ Reportes cargados:', reportes.value)
@@ -838,7 +833,6 @@ const guardarReporte = async () => {
   successMessage.value = null
 
   try {
-    const token = localStorage.getItem('accessToken')
     const payload = {
       nombre_tutor: formulario.value.nombre_tutor,
       periodo: formulario.value.periodo,
@@ -854,22 +848,10 @@ const guardarReporte = async () => {
     }
 
     if (modoFormulario.value === 'crear') {
-      await axios.post('http://localhost:8000/api/reportes/general-2', payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      await reportesAPI.createGeneral2(payload)
       successMessage.value = '✅ Reporte creado exitosamente'
     } else {
-      await axios.put(
-        `http://localhost:8000/api/reportes/general-2/${reporteEditando.value.id}`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
+      await reportesAPI.updateGeneral2(reporteEditando.value.id, payload)
       successMessage.value = '✅ Reporte actualizado exitosamente'
     }
 
@@ -893,15 +875,7 @@ const eliminarReporte = async () => {
   isEliminando.value = true
 
   try {
-    const token = localStorage.getItem('accessToken')
-    await axios.delete(
-      `http://localhost:8000/api/reportes/general-2/${reporteAEliminar.value.id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
+    await reportesAPI.deleteGeneral2(reporteAEliminar.value.id)
 
     successMessage.value = '✅ Reporte eliminado exitosamente'
     await fetchReportes()
@@ -925,16 +899,7 @@ const descargarPDF = async (reporte) => {
   errorMessage.value = null
 
   try {
-    const token = localStorage.getItem('accessToken')
-    const response = await axios.get(
-      `http://localhost:8000/api/reportes/general-2/${reporte.id}/pdf`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        responseType: 'blob', // IMPORTANTE: para recibir el PDF como blob
-      },
-    )
+    const response = await reportesAPI.downloadGeneral2PDF(reporte.id)
 
     // Crear un URL temporal para el blob
     const blob = new Blob([response.data], { type: 'application/pdf' })

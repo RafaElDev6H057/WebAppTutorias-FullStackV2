@@ -790,8 +790,8 @@
 </template>
 
 <script setup>
+import { reportesAPI } from '@/api/reportes'
 import { reactive, ref, computed, watch, onUnmounted } from 'vue'
-import axios from 'axios'
 import AlumnoService from '@/services/AlumnoService'
 import { listaDeMaterias } from '@/data/materias.js'
 
@@ -1168,7 +1168,7 @@ const guardarReporteGeneral2 = async () => {
       alumnos_asesoria: JSON.stringify(alumnosAsesoriaLista.value),
     }
     // 3. Realiza la petición POST a tu endpoint de FastAPI
-    const response = await axios.post('http://localhost:8000/api/reportes/general-2', datosEnviar)
+    const response = await reportesAPI.createGeneral2(datosEnviar)
 
     // 4. Maneja la respuesta exitosa
     if (response.status === 201) {
