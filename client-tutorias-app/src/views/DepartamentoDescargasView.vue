@@ -362,7 +362,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import { canalizacionesAPI } from '@/api/canalizaciones'
 import PsicologiaLogo from '@/components/icons/PsicologiaLogo.vue'
 import CienciasLogo from '@/components/icons/CienciasLogo.vue'
 import JefaturaLogo from '@/components/icons/JefaturaLogo.vue'
@@ -397,7 +397,6 @@ const departamentosConfig = {
     reporteDescripcion: 'Consolidado de atención psicológica estudiantil',
     reporteInfo:
       'Este reporte contiene información consolidada de las sesiones y seguimientos del área de psicología para el periodo seleccionado.',
-    endpoint: '/api/canalizaciones/psicologia',
     circles: [
       { color: 'bg-teal-300', size: 96, top: 10, left: 5 },
       { color: 'bg-cyan-200', size: 64, top: 20, left: 85 },
@@ -424,7 +423,6 @@ const departamentosConfig = {
     reporteDescripcion: 'Consolidado académico del departamento',
     reporteInfo:
       'Este reporte contiene información consolidada del desempeño académico y actividades del departamento de Ciencias Básicas.',
-    endpoint: '/api/canalizaciones/ciencias-basicas',
     circles: [
       { color: 'bg-indigo-300', size: 96, top: 10, left: 5 },
       { color: 'bg-purple-200', size: 64, top: 20, left: 85 },
@@ -451,7 +449,6 @@ const departamentosConfig = {
     reporteDescripcion: 'Consolidado de gestión académica institucional',
     reporteInfo:
       'Este reporte contiene información consolidada de la gestión académica, coordinación y supervisión institucional.',
-    endpoint: '/api/canalizaciones/jefatura-academica',
     circles: [
       { color: 'bg-rose-300', size: 96, top: 10, left: 5 },
       { color: 'bg-pink-200', size: 64, top: 20, left: 85 },
@@ -501,22 +498,10 @@ const descargarReporte = async () => {
   successMessage.value = null
 
   try {
-    const token = localStorage.getItem('accessToken')
-
-    if (!token) {
-      console.log('No hay token, redirigiendo...')
-      router.push('/')
-      return
-    }
-
-    const response = await axios.get(
-      `http://localhost:8000${departamentoConfig.value.endpoint}/${periodo.value}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        responseType: 'blob',
-      },
+    // ✅ Usar API centralizada
+    const response = await canalizacionesAPI.getReportePorDepartamento(
+      userRole.value,
+      periodo.value,
     )
 
     // Crear el blob y descargar
