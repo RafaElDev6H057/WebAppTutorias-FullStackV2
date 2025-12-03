@@ -37,148 +37,145 @@
         </RouterLink>
 
         <!-- Form -->
-        <form @submit.prevent="handleSubmit" class="space-y-6 sm:space-y-8">
-          <!-- Título dinámico con ícono -->
-          <div class="space-y-2">
-            <div class="flex items-center gap-3">
-              <div
-                :class="[
-                  'h-12 w-12 sm:h-14 sm:w-14 rounded-xl flex items-center justify-center',
-                  departamentoConfig.bgColor,
-                ]"
-              >
-                <component
-                  :is="departamentoConfig.icon"
-                  :class="['h-6 w-6 sm:h-7 sm:w-7', departamentoConfig.iconColor]"
-                ></component>
-              </div>
-              <div class="flex-1 min-w-0">
-                <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800 truncate">
-                  {{ departamentoConfig.titulo }}
-                </h1>
-                <p class="text-xs sm:text-sm text-slate-600">
-                  {{ departamentoConfig.descripcion }}
-                </p>
-              </div>
-            </div>
-          </div>
+<form @submit.prevent="handleSubmit" class="space-y-6 sm:space-y-8">
+  <!-- Título dinámico con ícono -->
+  <div class="space-y-2">
+    <div class="flex items-center gap-3">
+      <div
+        :class="[
+          'h-12 w-12 sm:h-14 sm:w-14 rounded-xl flex items-center justify-center',
+          departamentoConfig.bgColor, // aquí tu variable, pero ahora debe contener azul institucional
+        ]"
+      >
+        <component
+          :is="departamentoConfig.icon"
+          :class="['h-6 w-6 sm:h-7 sm:w-7', departamentoConfig.iconColor]"
+        ></component>
+      </div>
+      <div class="flex-1 min-w-0">
+        <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800 truncate">
+          {{ departamentoConfig.titulo }}
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-600">
+          {{ departamentoConfig.descripcion }}
+        </p>
+      </div>
+    </div>
+  </div>
 
-          <!-- Mostrar mensaje de error -->
-          <Transition
-            enter-active-class="transition ease-out duration-200"
-            enter-from-class="opacity-0 translate-y-1"
-            enter-to-class="opacity-100 translate-y-0"
-            leave-active-class="transition ease-in duration-150"
-            leave-from-class="opacity-100"
-            leave-to-class="opacity-0"
-          >
-            <div
-              v-if="errorMessage"
-              class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-red-800 text-xs sm:text-sm font-medium"
-            >
-              {{ errorMessage }}
-            </div>
-          </Transition>
+  <!-- Mostrar mensaje de error -->
+  <Transition
+    enter-active-class="transition ease-out duration-200"
+    enter-from-class="opacity-0 translate-y-1"
+    enter-to-class="opacity-100 translate-y-0"
+    leave-active-class="transition ease-in duration-150"
+    leave-from-class="opacity-100"
+    leave-to-class="opacity-0"
+  >
+    <div
+      v-if="errorMessage"
+      class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-red-800 text-xs sm:text-sm font-medium"
+    >
+      {{ errorMessage }}
+    </div>
+  </Transition>
 
-          <div class="space-y-4 sm:space-y-6">
-            <div class="space-y-2">
-              <label for="usuario" class="block text-base sm:text-lg font-medium text-slate-700">
-                Usuario
-              </label>
-              <input
-                id="usuario"
-                v-model="usuario"
-                type="text"
-                required
-                class="w-full px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:border-transparent placeholder-gray-500 transition-all"
-                :class="`focus:ring-${departamentoConfig.ringColor}`"
-                placeholder="Ingresa tu usuario"
-              />
-            </div>
+  <div class="space-y-4 sm:space-y-6">
+    <div class="space-y-2">
+      <label for="usuario" class="block text-base sm:text-lg font-medium text-slate-700">
+        Usuario
+      </label>
+      <input
+        id="usuario"
+        v-model="usuario"
+        type="text"
+        required
+        class="w-full px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:border-transparent placeholder-gray-500 transition-all"
+        :class="`focus:ring-[#0A3B76]`"
+        placeholder="Ingresa tu usuario"
+      />
+    </div>
 
-            <div class="space-y-2">
-              <label for="password" class="block text-base sm:text-lg font-medium text-slate-700">
-                Contraseña
-              </label>
-              <div class="relative">
-                <input
-                  id="password"
-                  v-model="password"
-                  :type="showPassword ? 'text' : 'password'"
-                  required
-                  class="w-full px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:border-transparent placeholder-gray-500 transition-all"
-                  :class="`focus:ring-${departamentoConfig.ringColor}`"
-                  placeholder="Ingresa tu contraseña"
-                />
-                <button
-                  type="button"
-                  @click="showPassword = !showPassword"
-                  class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-slate-500 text-lg sm:text-xl hover:text-slate-700 transition-colors"
-                >
-                  <span v-if="showPassword">
-                    <ShowEye />
-                  </span>
-                  <span v-else>
-                    <HideEye />
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
+    <div class="space-y-2">
+      <label for="password" class="block text-base sm:text-lg font-medium text-slate-700">
+        Contraseña
+      </label>
+      <div class="relative">
+        <input
+          id="password"
+          v-model="password"
+          :type="showPassword ? 'text' : 'password'"
+          required
+          class="w-full px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg rounded-lg bg-white/50 border border-white/30 focus:ring-2 focus:border-transparent placeholder-gray-500 transition-all"
+          :class="`focus:ring-[#0A3B76]`"
+          placeholder="Ingresa tu contraseña"
+        />
+        <button
+          type="button"
+          @click="showPassword = !showPassword"
+          class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-[#0A3B76] text-lg sm:text-xl hover:text-[#082d59] transition-colors"
+        >
+          <span v-if="showPassword"><ShowEye /></span>
+          <span v-else><HideEye /></span>
+        </button>
+      </div>
+    </div>
+  </div>
 
-          <button
-            type="submit"
-            :disabled="isLoading"
-            :class="[
-              'w-full text-white rounded-lg px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg font-medium transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2',
-              departamentoConfig.buttonColor,
-            ]"
-          >
-            <svg
-              v-if="isLoading"
-              class="animate-spin h-5 w-5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-            {{ isLoading ? 'Iniciando sesión...' : 'ENTRAR' }}
-          </button>
-        </form>
+  <button
+    type="submit"
+    :disabled="isLoading"
+    :class="[
+      'w-full text-white rounded-lg px-4 sm:px-6 py-2.5 sm:py-3 text-base sm:text-lg font-medium transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2',
+      'bg-[#0A3B76] hover:bg-[#082d59]' // botón azul institucional
+    ]"
+  >
+    <svg
+      v-if="isLoading"
+      class="animate-spin h-5 w-5"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        class="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        stroke-width="4"
+      ></circle>
+      <path
+        class="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      ></path>
+    </svg>
+    {{ isLoading ? 'Iniciando sesión...' : 'ENTRAR' }}
+  </button>
+</form>
 
-        <!-- Info adicional -->
-        <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <div class="flex items-start gap-2">
-            <svg
-              class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            <p class="text-xs sm:text-sm text-blue-800">
-              Este acceso es exclusivo para el personal del departamento. Si tienes problemas para
-              ingresar, contacta al administrador del sistema.
-            </p>
-          </div>
-        </div>
+<!-- Info adicional -->
+<div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-[#ABACAE]/30 rounded-lg border border-[#ABACAE]">
+  <div class="flex items-start gap-2">
+    <svg
+      class="w-4 h-4 sm:w-5 sm:h-5 text-[#0A3B76] flex-shrink-0 mt-0.5"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    <p class="text-xs sm:text-sm text-[#0A3B76]">
+      Este acceso es exclusivo para el personal del departamento. Si tienes problemas para ingresar,
+      contacta al administrador del sistema.
+    </p>
+  </div>
+</div>
+
       </div>
     </div>
 
@@ -230,19 +227,20 @@ const departamentosConfig = {
     imagen: '/EscudoITSF.png',
     rol: 'psicologia',
     circles: [
-      { color: 'bg-teal-300', size: 96, top: 10, left: 5 },
-      { color: 'bg-cyan-200', size: 64, top: 20, left: 80 },
-      { color: 'bg-teal-400', size: 128, top: 70, left: 20 },
-      { color: 'bg-gray-100', size: 80, top: 40, left: 95 },
-      { color: 'bg-cyan-300', size: 112, top: 85, left: 70 },
-      { color: 'bg-gray-200', size: 48, top: 25, left: 30 },
-      { color: 'bg-teal-500', size: 72, top: 60, left: 50 },
-      { color: 'bg-cyan-100', size: 56, top: 5, left: 90 },
-      { color: 'bg-gray-300', size: 88, top: 80, left: 40 },
-      { color: 'bg-teal-200', size: 40, top: 90, left: 10 },
-      { color: 'bg-cyan-400', size: 104, top: 15, left: 60 },
-      { color: 'bg-gray-100', size: 68, top: 50, left: 85 },
-    ],
+  { color: 'bg-[#0A3B76]', size: 96, top: 10, left: 5 },
+  { color: 'bg-[#ABACAE]', size: 64, top: 20, left: 80 },
+  { color: 'bg-[#0A3B76]', size: 128, top: 70, left: 20 },
+  { color: 'bg-[#ABACAE]', size: 80, top: 40, left: 95 },
+  { color: 'bg-[#0A3B76]', size: 112, top: 85, left: 70 },
+  { color: 'bg-[#ABACAE]', size: 48, top: 25, left: 30 },
+  { color: 'bg-[#0A3B76]', size: 72, top: 60, left: 50 },
+  { color: 'bg-[#ABACAE]', size: 56, top: 5, left: 90 },
+  { color: 'bg-[#ABACAE]', size: 88, top: 80, left: 40 },
+  { color: 'bg-[#0A3B76]', size: 40, top: 90, left: 10 },
+  { color: 'bg-[#0A3B76]', size: 104, top: 15, left: 60 },
+  { color: 'bg-[#ABACAE]', size: 68, top: 50, left: 85 },
+]
+
   },
   ciencias: {
     titulo: 'Departamento de Ciencias Básicas',
@@ -255,19 +253,20 @@ const departamentosConfig = {
     imagen: '/EscudoITSF.png',
     rol: 'ciencias_basicas',
     circles: [
-      { color: 'bg-indigo-300', size: 96, top: 10, left: 5 },
-      { color: 'bg-purple-200', size: 64, top: 20, left: 80 },
-      { color: 'bg-indigo-400', size: 128, top: 70, left: 20 },
-      { color: 'bg-gray-100', size: 80, top: 40, left: 95 },
-      { color: 'bg-purple-300', size: 112, top: 85, left: 70 },
-      { color: 'bg-gray-200', size: 48, top: 25, left: 30 },
-      { color: 'bg-indigo-500', size: 72, top: 60, left: 50 },
-      { color: 'bg-purple-100', size: 56, top: 5, left: 90 },
-      { color: 'bg-gray-300', size: 88, top: 80, left: 40 },
-      { color: 'bg-indigo-200', size: 40, top: 90, left: 10 },
-      { color: 'bg-purple-400', size: 104, top: 15, left: 60 },
-      { color: 'bg-gray-100', size: 68, top: 50, left: 85 },
-    ],
+  { color: 'bg-[#0A3B76]', size: 96, top: 10, left: 5 },
+  { color: 'bg-[#ABACAE]', size: 64, top: 20, left: 80 },
+  { color: 'bg-[#0A3B76]', size: 128, top: 70, left: 20 },
+  { color: 'bg-[#ABACAE]', size: 80, top: 40, left: 95 },
+  { color: 'bg-[#0A3B76]', size: 112, top: 85, left: 70 },
+  { color: 'bg-[#ABACAE]', size: 48, top: 25, left: 30 },
+  { color: 'bg-[#0A3B76]', size: 72, top: 60, left: 50 },
+  { color: 'bg-[#ABACAE]', size: 56, top: 5, left: 90 },
+  { color: 'bg-[#ABACAE]', size: 88, top: 80, left: 40 },
+  { color: 'bg-[#0A3B76]', size: 40, top: 90, left: 10 },
+  { color: 'bg-[#0A3B76]', size: 104, top: 15, left: 60 },
+  { color: 'bg-[#ABACAE]', size: 68, top: 50, left: 85 },
+]
+
   },
   jefatura: {
     titulo: 'Jefatura Académica',
@@ -280,19 +279,20 @@ const departamentosConfig = {
     imagen: '/EscudoITSF.png',
     rol: 'jefatura_academica',
     circles: [
-      { color: 'bg-rose-300', size: 96, top: 10, left: 5 },
-      { color: 'bg-pink-200', size: 64, top: 20, left: 80 },
-      { color: 'bg-rose-400', size: 128, top: 70, left: 20 },
-      { color: 'bg-gray-100', size: 80, top: 40, left: 95 },
-      { color: 'bg-pink-300', size: 112, top: 85, left: 70 },
-      { color: 'bg-gray-200', size: 48, top: 25, left: 30 },
-      { color: 'bg-rose-500', size: 72, top: 60, left: 50 },
-      { color: 'bg-pink-100', size: 56, top: 5, left: 90 },
-      { color: 'bg-gray-300', size: 88, top: 80, left: 40 },
-      { color: 'bg-rose-200', size: 40, top: 90, left: 10 },
-      { color: 'bg-pink-400', size: 104, top: 15, left: 60 },
-      { color: 'bg-gray-100', size: 68, top: 50, left: 85 },
-    ],
+  { color: 'bg-[#0A3B76]', size: 96, top: 10, left: 5 },
+  { color: 'bg-[#ABACAE]', size: 64, top: 20, left: 80 },
+  { color: 'bg-[#0A3B76]', size: 128, top: 70, left: 20 },
+  { color: 'bg-[#ABACAE]', size: 80, top: 40, left: 95 },
+  { color: 'bg-[#0A3B76]', size: 112, top: 85, left: 70 },
+  { color: 'bg-[#ABACAE]', size: 48, top: 25, left: 30 },
+  { color: 'bg-[#0A3B76]', size: 72, top: 60, left: 50 },
+  { color: 'bg-[#ABACAE]', size: 56, top: 5, left: 90 },
+  { color: 'bg-[#ABACAE]', size: 88, top: 80, left: 40 },
+  { color: 'bg-[#0A3B76]', size: 40, top: 90, left: 10 },
+  { color: 'bg-[#0A3B76]', size: 104, top: 15, left: 60 },
+  { color: 'bg-[#ABACAE]', size: 68, top: 50, left: 85 },
+]
+
   },
 }
 
