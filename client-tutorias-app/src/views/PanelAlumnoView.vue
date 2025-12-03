@@ -238,237 +238,236 @@
     </nav>
 
     <!-- Main Content -->
-<main class="max-w-7xl mx-auto py-6 sm:py-12 px-4 sm:px-6 lg:px-8 relative z-10">
-  <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8">Mis Tutorías</h1>
+    <main class="max-w-7xl mx-auto py-6 sm:py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8">Mis Tutorías</h1>
 
-  <!-- Banner de Advertencia de Contraseña Insegura -->
-  <Transition
-    enter-active-class="transition ease-out duration-300"
-    enter-from-class="opacity-0 translate-y-2"
-    enter-to-class="opacity-100 translate-y-0"
-    leave-active-class="transition ease-in duration-200"
-    leave-from-class="opacity-100"
-    leave-to-class="opacity-0"
-  >
-    <div
-      v-if="alumno?.requires_password_change"
-      class="mb-6 p-4 bg-gray-50 border-l-4 border-gray-500 rounded-md shadow-sm"
-    >
-      <div class="flex items-start">
-        <svg
-          class="w-6 h-6 text-gray-600 mr-3 flex-shrink-0"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      <!-- Banner de Advertencia de Contraseña Insegura -->
+      <Transition
+        enter-active-class="transition ease-out duration-300"
+        enter-from-class="opacity-0 translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition ease-in duration-200"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="alumno?.requires_password_change"
+          class="mb-6 p-4 bg-gray-50 border-l-4 border-gray-500 rounded-md shadow-sm"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-          />
-        </svg>
-        <div class="flex-1">
-          <h3 class="text-sm font-medium text-gray-800">Contraseña Insegura</h3>
-          <p class="mt-1 text-sm text-gray-700">
-            Tu contraseña actual no está protegida adecuadamente. Por seguridad, te recomendamos
-            cambiarla lo antes posible.
-          </p>
-          <button
-            @click="openChangePasswordModal"
-            class="mt-3 text-sm font-medium text-gray-700 hover:text-gray-900 underline"
-          >
-            Cambiar contraseña ahora →
-          </button>
-        </div>
-      </div>
-    </div>
-  </Transition>
-
-  <!-- ==================== AVISOS IMPORTANTES ==================== -->
-  <div class="mb-6 sm:mb-8">
-    <AvisosAlumno />
-  </div>
-
-  <!-- Mensaje de Constancia no disponible -->
-  <Transition
-    enter-active-class="transition ease-out duration-300"
-    enter-from-class="opacity-0 translate-y-2"
-    enter-to-class="opacity-100 translate-y-0"
-    leave-active-class="transition ease-in duration-200"
-    leave-from-class="opacity-100"
-    leave-to-class="opacity-0"
-  >
-    <div
-      v-if="estadoTutorias && !estadoTutorias.es_elegible"
-      class="mb-6 bg-gray-50 border-l-4 border-gray-500 p-4 rounded-md shadow-sm"
-    >
-      <div class="flex items-start">
-        <svg
-          class="w-6 h-6 text-gray-600 mr-3 flex-shrink-0"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-          />
-        </svg>
-        <div class="flex-1">
-          <h3 class="text-sm font-bold text-[#0A3B76] mb-1">📄 Constancia no disponible</h3>
-          <p class="text-sm text-[#092F5C]">
-            Debes completar tus <strong>4 tutorías</strong> para poder descargar tu constancia
-            de acreditación.
-          </p>
-          <div class="mt-2 flex items-center">
-            <div class="flex-1 bg-gray-200 rounded-full h-2 mr-3">
-              <div
-                class="bg-gradient-to-r from-[#0A3B76] to-[#092F5C] h-2 rounded-full transition-all duration-500"
-                :style="{
-                  width: `${(estadoTutorias.tutorias_completadas / 4) * 100}%`,
-                }"
-              ></div>
+          <div class="flex items-start">
+            <svg
+              class="w-6 h-6 text-gray-600 mr-3 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <div class="flex-1">
+              <h3 class="text-sm font-medium text-gray-800">Contraseña Insegura</h3>
+              <p class="mt-1 text-sm text-gray-700">
+                Tu contraseña actual no está protegida adecuadamente. Por seguridad, te recomendamos
+                cambiarla lo antes posible.
+              </p>
+              <button
+                @click="openChangePasswordModal"
+                class="mt-3 text-sm font-medium text-gray-700 hover:text-gray-900 underline"
+              >
+                Cambiar contraseña ahora →
+              </button>
             </div>
-            <span class="text-xs font-bold text-[#092F5C]">
-              {{ estadoTutorias.tutorias_completadas }} / 4 completadas
-            </span>
           </div>
         </div>
-      </div>
-    </div>
-  </Transition>
+      </Transition>
 
-  <!-- Mensaje de éxito -->
-  <Transition
-    enter-active-class="transition ease-out duration-300"
-    enter-from-class="opacity-0 translate-y-2"
-    enter-to-class="opacity-100 translate-y-0"
-    leave-active-class="transition ease-in duration-200"
-    leave-from-class="opacity-100"
-    leave-to-class="opacity-0"
-  >
-    <div
-      v-if="successMessage"
-      class="mb-6 bg-gray-50 border-l-4 border-[#0A3B76] p-4 rounded-md shadow-sm"
-    >
-      <div class="flex items-start">
-        <svg
-          class="w-6 h-6 text-[#0A3B76] mr-3 flex-shrink-0"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      <!-- ==================== AVISOS IMPORTANTES ==================== -->
+      <div class="mb-6 sm:mb-8">
+        <AvisosAlumno />
+      </div>
+
+      <!-- Mensaje de Constancia no disponible -->
+      <Transition
+        enter-active-class="transition ease-out duration-300"
+        enter-from-class="opacity-0 translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition ease-in duration-200"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="estadoTutorias && !estadoTutorias.es_elegible"
+          class="mb-6 bg-gray-50 border-l-4 border-gray-500 p-4 rounded-md shadow-sm"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <div class="flex-1">
-          <p class="text-sm font-medium text-[#092F5C]">{{ successMessage }}</p>
+          <div class="flex items-start">
+            <svg
+              class="w-6 h-6 text-gray-600 mr-3 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <div class="flex-1">
+              <h3 class="text-sm font-bold text-[#0A3B76] mb-1">📄 Constancia no disponible</h3>
+              <p class="text-sm text-[#092F5C]">
+                Debes completar tus <strong>4 tutorías</strong> para poder descargar tu constancia
+                de acreditación.
+              </p>
+              <div class="mt-2 flex items-center">
+                <div class="flex-1 bg-gray-200 rounded-full h-2 mr-3">
+                  <div
+                    class="bg-gradient-to-r from-[#0A3B76] to-[#092F5C] h-2 rounded-full transition-all duration-500"
+                    :style="{
+                      width: `${(estadoTutorias.tutorias_completadas / 4) * 100}%`,
+                    }"
+                  ></div>
+                </div>
+                <span class="text-xs font-bold text-[#092F5C]">
+                  {{ estadoTutorias.tutorias_completadas }} / 4 completadas
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-        <button @click="successMessage = null" class="text-[#0A3B76] hover:text-[#092F5C]">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </div>
-    </div>
-  </Transition>
+      </Transition>
 
-  <!-- Cards de Tutorías -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-    <div
-      v-for="tutoria in sortedTutorias"
-      :key="tutoria.semestre"
-      :class="[
-        'bg-white rounded-lg p-4 sm:p-6 border-l-4 shadow-md hover:shadow-xl transition-all duration-300',
-        {
-          'border-[#0A3B76]': tutoria.estado === 'completada',
-          'border-gray-500': tutoria.estado === 'en curso',
-          'border-red-500': tutoria.estado === 'pendiente',
-        },
-      ]"
-    >
-      <div class="flex justify-between items-start mb-4">
-        <h2 class="text-lg sm:text-xl font-semibold text-gray-800">
-          Semestre {{ tutoria.semestre }}
-        </h2>
-        <span
+      <!-- Mensaje de éxito -->
+      <Transition
+        enter-active-class="transition ease-out duration-300"
+        enter-from-class="opacity-0 translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition ease-in duration-200"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="successMessage"
+          class="mb-6 bg-gray-50 border-l-4 border-[#0A3B76] p-4 rounded-md shadow-sm"
+        >
+          <div class="flex items-start">
+            <svg
+              class="w-6 h-6 text-[#0A3B76] mr-3 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-[#092F5C]">{{ successMessage }}</p>
+            </div>
+            <button @click="successMessage = null" class="text-[#0A3B76] hover:text-[#092F5C]">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </Transition>
+
+      <!-- Cards de Tutorías -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div
+          v-for="tutoria in sortedTutorias"
+          :key="tutoria.semestre"
           :class="[
-            'px-3 py-1 text-xs font-semibold rounded-full',
+            'bg-white rounded-lg p-4 sm:p-6 border-l-4 shadow-md hover:shadow-xl transition-all duration-300',
             {
-              'bg-[#0A3B76] text-white': tutoria.estado === 'completada',
-              'bg-gray-200 text-gray-800': tutoria.estado === 'en curso',
-              'bg-red-100 text-red-700': tutoria.estado === 'pendiente',
+              'border-[#0A3B76]': tutoria.estado === 'completada',
+              'border-gray-500': tutoria.estado === 'en curso',
+              'border-red-500': tutoria.estado === 'pendiente',
             },
           ]"
         >
-          {{
-            tutoria.estado === 'completada'
-              ? 'Acreditado'
-              : tutoria.estado === 'en curso'
-                ? 'En curso'
-                : 'Pendiente'
-          }}
-        </span>
+          <div class="flex justify-between items-start mb-4">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800">
+              Semestre {{ tutoria.semestre }}
+            </h2>
+            <span
+              :class="[
+                'px-3 py-1 text-xs font-semibold rounded-full',
+                {
+                  'bg-[#0A3B76] text-white': tutoria.estado === 'completada',
+                  'bg-gray-200 text-gray-800': tutoria.estado === 'en curso',
+                  'bg-red-100 text-red-700': tutoria.estado === 'pendiente',
+                },
+              ]"
+            >
+              {{
+                tutoria.estado === 'completada'
+                  ? 'Acreditado'
+                  : tutoria.estado === 'en curso'
+                    ? 'En curso'
+                    : 'Pendiente'
+              }}
+            </span>
+          </div>
+          <div class="space-y-3">
+            <div class="text-gray-600">
+              <p class="text-sm font-medium text-gray-500">Tutor</p>
+              <p class="text-gray-800 text-sm sm:text-base">
+                {{ getTutorName(tutoria) || 'Por asignar' }}
+              </p>
+            </div>
+            <div class="text-gray-600">
+              <p class="text-sm font-medium text-gray-500">Periodo</p>
+              <p class="text-gray-800 text-sm sm:text-base">{{ tutoria.periodo || 'Pendiente' }}</p>
+            </div>
+            <div class="text-gray-600">
+              <p class="text-sm font-medium text-gray-500">Día</p>
+              <p class="text-gray-800 text-sm sm:text-base">
+                {{ capitalize(tutoria) || 'Pendiente' }}
+              </p>
+            </div>
+            <div class="text-gray-600">
+              <p class="text-sm font-medium text-gray-500">Hora</p>
+              <p class="text-gray-800 text-sm sm:text-base">
+                {{ formatoHora(tutoria) || 'Pendiente' }}
+              </p>
+            </div>
+          </div>
+          <button
+            v-if="showSolicitarButton(tutoria)"
+            @click="solicitarTutoria(tutoria.semestre)"
+            class="w-full mt-4 bg-[#0A3B76] hover:bg-[#092F5C] text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg text-sm sm:text-base"
+          >
+            <span>Solicitar Tutoría</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
-      <div class="space-y-3">
-        <div class="text-gray-600">
-          <p class="text-sm font-medium text-gray-500">Tutor</p>
-          <p class="text-gray-800 text-sm sm:text-base">
-            {{ getTutorName(tutoria) || 'Por asignar' }}
-          </p>
-        </div>
-        <div class="text-gray-600">
-          <p class="text-sm font-medium text-gray-500">Periodo</p>
-          <p class="text-gray-800 text-sm sm:text-base">{{ tutoria.periodo || 'Pendiente' }}</p>
-        </div>
-        <div class="text-gray-600">
-          <p class="text-sm font-medium text-gray-500">Día</p>
-          <p class="text-gray-800 text-sm sm:text-base">
-            {{ capitalize(tutoria) || 'Pendiente' }}
-          </p>
-        </div>
-        <div class="text-gray-600">
-          <p class="text-sm font-medium text-gray-500">Hora</p>
-          <p class="text-gray-800 text-sm sm:text-base">
-            {{ formatoHora(tutoria) || 'Pendiente' }}
-          </p>
-        </div>
-      </div>
-      <button
-        v-if="showSolicitarButton(tutoria)"
-        @click="solicitarTutoria(tutoria.semestre)"
-        class="w-full mt-4 bg-[#0A3B76] hover:bg-[#092F5C] text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg text-sm sm:text-base"
-      >
-        <span>Solicitar Tutoría</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </button>
-    </div>
-  </div>
-</main>
-
+    </main>
 
     <!-- ==================== MODAL CAMBIAR CONTRASEÑA ==================== -->
     <!-- (El resto del código del modal permanece igual) -->
@@ -485,9 +484,7 @@
         class="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
       >
         <div class="relative w-full max-w-md bg-white rounded-lg shadow-2xl border border-gray-200">
-          <div
-            class="bg-[#0A3B76] px-6 py-4 rounded-t-lg flex justify-between items-center"
-          >
+          <div class="bg-[#0A3B76] px-6 py-4 rounded-t-lg flex justify-between items-center">
             <h2 class="text-xl font-semibold text-white flex items-center gap-2">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -856,6 +853,7 @@
 </template>
 
 <script setup>
+import { alumnosAPI } from '@/api/alumnos'
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
@@ -895,32 +893,16 @@ const passwordForm = ref({
 // ==================== API CALLS - ALUMNO ====================
 const fetchAlumnoData = async () => {
   try {
-    const token = localStorage.getItem('accessToken')
+    const response = await alumnosAPI.getMe()
 
-    if (!token) {
-      console.log('No hay token, redirigiendo al login...')
-      router.push('/login_alumno')
-      return
-    }
-
-    const response = await axios.get('http://localhost:8000/api/alumnos/me', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
-    if (response.status === 200) {
-      alumno.value = response.data
-      console.log('✅ Datos del alumno cargados:', alumno.value)
-    }
+    alumno.value = response.data
+    console.log('✅ Datos del alumno cargados:', alumno.value)
   } catch (error) {
     console.error('❌ Error al obtener datos del alumno:', error)
 
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('alumno')
-      router.push('/login_alumno')
-    } else {
+    // El interceptor ya maneja el 401/403 y redirige automáticamente
+    // Solo manejamos otros errores
+    if (error.response?.status !== 401 && error.response?.status !== 403) {
       errorMessage.value = 'Error al cargar tus datos. Por favor, intenta de nuevo.'
     }
   }
@@ -928,18 +910,8 @@ const fetchAlumnoData = async () => {
 
 const fetchEstadoTutorias = async () => {
   try {
-    const token = localStorage.getItem('accessToken')
-
-    const response = await axios.get('http://localhost:8000/api/alumnos/me/estado-tutorias', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
-    if (response.status === 200) {
-      estadoTutorias.value = response.data
-      console.log('✅ Estado de tutorías:', estadoTutorias.value)
-    }
+    const response = await alumnosAPI.getEstadoTutorias()
+    estadoTutorias.value = response.data
   } catch (error) {
     console.error('❌ Error al obtener estado de tutorías:', error)
   }
@@ -969,15 +941,9 @@ const descargarConstancia = async () => {
     isDownloading.value = true
     errorMessage.value = null
 
-    const token = localStorage.getItem('accessToken')
+    const response = await alumnosAPI.getConstanciaPDF()
 
-    const response = await axios.get('http://localhost:8000/api/alumnos/me/constancia-pdf', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      responseType: 'blob',
-    })
-
+    // Crear blob y descargar
     const blob = new Blob([response.data], { type: 'application/pdf' })
     const url = window.URL.createObjectURL(blob)
 
@@ -1046,6 +1012,7 @@ const handleChangePassword = async () => {
   passwordChangeError.value = null
   passwordChangeSuccess.value = false
 
+  // Validaciones
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
     passwordChangeError.value = 'Las contraseñas no coinciden.'
     return
@@ -1064,53 +1031,42 @@ const handleChangePassword = async () => {
   isChangingPassword.value = true
 
   try {
-    const token = localStorage.getItem('accessToken')
+    let response
 
     if (alumno.value.requires_password_change) {
-      const response = await axios.post('http://localhost:8000/api/alumnos/set-password', {
+      // Primera vez - usar setPassword
+      response = await alumnosAPI.setPassword({
         num_control: passwordForm.value.num_control,
         contraseña_actual: passwordForm.value.currentPassword,
         nueva_contraseña: passwordForm.value.newPassword,
       })
-
-      if (response.status === 200) {
-        passwordChangeSuccess.value = true
-        alumno.value.requires_password_change = false
-
-        setTimeout(() => {
-          closeChangePasswordModal()
-        }, 2000)
-      }
     } else {
-      const response = await axios.put(
-        'http://localhost:8000/api/alumnos/change-password',
-        {
-          contraseña_actual: passwordForm.value.currentPassword,
-          nueva_contraseña: passwordForm.value.newPassword,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
+      // Cambio normal - usar changePassword
+      response = await alumnosAPI.changePassword({
+        contraseña_actual: passwordForm.value.currentPassword,
+        nueva_contraseña: passwordForm.value.newPassword,
+      })
+    }
 
-      if (response.status === 200) {
-        passwordChangeSuccess.value = true
+    if (response.status === 200) {
+      passwordChangeSuccess.value = true
 
-        setTimeout(() => {
-          closeChangePasswordModal()
-        }, 2000)
+      if (alumno.value.requires_password_change) {
+        alumno.value.requires_password_change = false
       }
+
+      setTimeout(() => {
+        closeChangePasswordModal()
+      }, 2000)
     }
   } catch (err) {
     console.error('Error al cambiar la contraseña:', err)
 
-    if (err.response && err.response.data && err.response.data.detail) {
+    if (err.response?.data?.detail) {
       passwordChangeError.value = err.response.data.detail
-    } else if (err.response && err.response.status === 400) {
+    } else if (err.response?.status === 400) {
       passwordChangeError.value = 'Contraseña actual incorrecta.'
-    } else if (err.response && err.response.status === 401) {
+    } else if (err.response?.status === 401) {
       passwordChangeError.value = 'No tienes autorización para realizar esta acción.'
     } else {
       passwordChangeError.value = 'Error al cambiar la contraseña. Intenta de nuevo.'

@@ -266,6 +266,7 @@
 </template>
 
 <script setup>
+import { alumnosAPI } from '@/api/alumnos'
 import { ref } from 'vue'
 import axios from 'axios'
 
@@ -307,17 +308,7 @@ const buscarAlumnos = async () => {
 
   debounceTimerAlumnos = setTimeout(async () => {
     try {
-      const token = localStorage.getItem('accessToken')
-      const response = await axios.get('http://localhost:8000/api/alumnos/', {
-        params: {
-          page: 1,
-          size: 100,
-          search: searchAlumnoQuery.value,
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const response = await alumnosAPI.getAll(1, 100, searchAlumnoQuery.value)
 
       alumnosEncontrados.value = response.data.alumnos || response.data
     } catch (error) {

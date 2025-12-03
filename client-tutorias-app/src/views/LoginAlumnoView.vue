@@ -11,13 +11,13 @@
           `animate-float-${(index % 3) + 1}`,
         ]"
         :style="{
-  top: `${circle.top}%`,
-  left: `${circle.left}%`,
-  width: `${circle.size}px`,
-  height: `${circle.size}px`,
-  animationDelay: `${index * 0.1}s`,
-  backgroundColor: circle.color,
-}"
+          top: `${circle.top}%`,
+          left: `${circle.left}%`,
+          width: `${circle.size}px`,
+          height: `${circle.size}px`,
+          animationDelay: `${index * 0.1}s`,
+          backgroundColor: circle.color,
+        }"
       ></div>
     </div>
 
@@ -190,13 +190,12 @@
   </div>
 </template>
 
-
 <script setup>
+import { alumnosAPI } from '@/api/alumnos'
 import HomeLogo from '@/components/icons/HomeLogo.vue'
 import ShowEye from '@/components/icons/ShowEye.vue'
 import HideEye from '@/components/icons/HideEye.vue'
 import { ref } from 'vue'
-import axios from 'axios'
 import { RouterLink, useRouter } from 'vue-router'
 
 // ==================== STATE ====================
@@ -213,29 +212,23 @@ const handleSubmit = async () => {
   errorMessage.value = ''
 
   try {
-    const formData = new URLSearchParams()
-    formData.append('username', usuario.value)
-    formData.append('password', password.value)
-
-    const response = await axios.post('http://localhost:8000/api/alumnos/login', formData, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+    //  Llamada limpia y simple
+    const response = await alumnosAPI.login({
+      username: usuario.value,
+      password: password.value,
     })
 
-    if (response.status === 200 && response.data.access_token) {
-      console.log('✅ Inicio de sesión exitoso:', response.data)
+    console.log('Inicio de sesión exitoso:', response.data)
 
-      // Guardar token y rol
-      localStorage.setItem('accessToken', response.data.access_token)
-      localStorage.setItem('userRole', 'alumno')
+    // Guardar token y rol
+    localStorage.setItem('accessToken', response.data.access_token)
+    localStorage.setItem('userRole', 'alumno')
 
-      // Redirigir al dashboard
-      router.push('/alumno/dashboard')
-    }
+    // Redirigir al dashboard
+    router.push('/alumno/dashboard')
   } catch (error) {
-    console.error('❌ Error en la solicitud:', error)
-    if (error.response && error.response.data && error.response.data.detail) {
+    console.error('Error en la solicitud:', error)
+    if (error.response?.data?.detail) {
       errorMessage.value = error.response.data.detail
     } else {
       errorMessage.value = 'Error de conexión o credenciales incorrectas.'
@@ -267,8 +260,7 @@ const circles = [
   { color: 'bg-[#ABACAE]', size: 44, top: 35, left: 60 },
   { color: 'bg-[#ABACAE]', size: 84, top: 25, left: 10 },
   { color: 'bg-[#0A3B76]', size: 50, top: 45, left: 75 },
-];
-
+]
 </script>
 
 <style scoped>

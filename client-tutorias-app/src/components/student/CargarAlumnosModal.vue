@@ -1,6 +1,6 @@
 <script setup>
+import { alumnosAPI } from '@/api/alumnos'
 import { ref, computed } from 'vue'
-import AlumnoService from '@/services/AlumnoService.js' // Importamos el servicio aquí
 
 // Props y Emits
 defineProps({
@@ -74,7 +74,7 @@ async function uploadFile() {
   uploadState.value = 'uploading'
   errorMessage.value = ''
   try {
-    await AlumnoService.uploadAlumnos(selectedFile.value)
+    await alumnosAPI.uploadExcel(selectedFile.value)
     uploadState.value = 'success'
     emit('upload-success') // Notificamos al padre del éxito
   } catch (error) {
