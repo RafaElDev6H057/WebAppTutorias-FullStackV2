@@ -374,30 +374,29 @@
 
         <!-- Porcentaje de Avance -->
         <div>
-  <label class="block text-sm font-medium text-gray-700 mb-1">
-    Porcentaje de Avance (%) <span class="text-red-500">*</span>
-  </label>
-  <div class="flex items-center gap-3">
-    <input
-      v-model.number="formulario.porcentaje_avance"
-      type="range"
-      min="10"
-      max="100"
-      step="10"
-      class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#0A3B76]"
-    />
-    <input
-      v-model.number="formulario.porcentaje_avance"
-      type="number"
-      min="10"
-      step="10"
-      max="100"
-      required
-      class="w-20 px-3 py-2 border border-gray-300 rounded-md text-center focus:outline-none focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76]"
-    />
-  </div>
-</div>
-
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Porcentaje de Avance (%) <span class="text-red-500">*</span>
+          </label>
+          <div class="flex items-center gap-3">
+            <input
+              v-model.number="formulario.porcentaje_avance"
+              type="range"
+              min="10"
+              max="100"
+              step="10"
+              class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#0A3B76]"
+            />
+            <input
+              v-model.number="formulario.porcentaje_avance"
+              type="number"
+              min="10"
+              step="10"
+              max="100"
+              required
+              class="w-20 px-3 py-2 border border-gray-300 rounded-md text-center focus:outline-none focus:ring-2 focus:ring-[#0A3B76] focus:border-[#0A3B76]"
+            />
+          </div>
+        </div>
 
         <!-- Objetivo -->
         <div>
@@ -738,6 +737,7 @@
 </template>
 
 <script setup>
+import { tutoresAPI } from '@/api/tutores'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
@@ -788,12 +788,7 @@ const caracterLimites = {
 // ==================== API CALLS ====================
 const fetchTutorData = async () => {
   try {
-    const token = localStorage.getItem('accessToken')
-    const response = await axios.get('http://localhost:8000/api/tutores/me', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    const response = await tutoresAPI.getMe()
 
     tutorData.value = response.data
     console.log('✅ Datos del tutor cargados:', tutorData.value)

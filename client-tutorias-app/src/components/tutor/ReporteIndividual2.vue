@@ -737,6 +737,7 @@
 </template>
 
 <script setup>
+import { tutoresAPI } from '@/api/tutores'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
@@ -787,12 +788,7 @@ const caracterLimites = {
 // ==================== API CALLS ====================
 const fetchTutorData = async () => {
   try {
-    const token = localStorage.getItem('accessToken')
-    const response = await axios.get('http://localhost:8000/api/tutores/me', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    const response = await tutoresAPI.getMe()
 
     tutorData.value = response.data
     console.log('✅ Datos del tutor cargados:', tutorData.value)

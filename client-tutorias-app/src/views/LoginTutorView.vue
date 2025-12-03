@@ -189,14 +189,13 @@
   </div>
 </template>
 
-
 <script setup>
+import { tutoresAPI } from '@/api/tutores'
 import { ref } from 'vue'
 import HomeLogo from '../components/icons/HomeLogo.vue'
 import ShowEye from '@/components/icons/ShowEye.vue'
 import HideEye from '@/components/icons/HideEye.vue'
 import { RouterLink, useRouter } from 'vue-router'
-import axios from 'axios'
 
 // ==================== STATE ====================
 const correo = ref('')
@@ -212,29 +211,21 @@ const handleSubmit = async () => {
   errorMessage.value = ''
 
   try {
-    const formData = new URLSearchParams()
-    formData.append('username', correo.value)
-    formData.append('password', password.value)
-
-    const response = await axios.post('http://localhost:8000/api/tutores/login', formData, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+    const response = await tutoresAPI.login({
+      username: correo.value,
+      password: password.value,
     })
 
-    if (response.status === 200 && response.data.access_token) {
-      console.log('✅ Inicio de sesión exitoso:', response.data)
+    console.log('✅ Inicio de sesión exitoso:', response.data)
 
-      // Guardar token y rol
-      localStorage.setItem('accessToken', response.data.access_token)
-      localStorage.setItem('userRole', 'tutor')
+    localStorage.setItem('accessToken', response.data.access_token)
+    localStorage.setItem('userRole', 'tutor')
 
-      // Redirigir al dashboard
-      router.push('/tutor/dashboard')
-    }
+    // Redirigir al dashboard
+    router.push('/tutor/dashboard')
   } catch (error) {
     console.error('❌ Error en la solicitud:', error)
-    if (error.response && error.response.data && error.response.data.detail) {
+    if (error.response?.data?.detail) {
       errorMessage.value = error.response.data.detail
     } else {
       errorMessage.value = 'Error de conexión o credenciales incorrectas.'
@@ -259,7 +250,6 @@ const circles = [
   { color: 'bg-[#0A3B76]', size: 104, top: 15, left: 60 },
   { color: 'bg-[#ABACAE]/70', size: 68, top: 50, left: 85 },
 ]
-
 </script>
 
 <style scoped>

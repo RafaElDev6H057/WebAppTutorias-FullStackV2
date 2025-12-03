@@ -331,8 +331,9 @@
 </template>
 
 <script setup>
+import { alumnosAPI } from '@/api/alumnos'
+import { tutoresAPI } from '@/api/tutores'
 import { ref, watch } from 'vue'
-import axios from 'axios'
 
 // ==================== PROPS ====================
 const props = defineProps({
@@ -418,40 +419,24 @@ const handleChangePassword = async () => {
   isChangingPassword.value = true
 
   try {
-    const token = localStorage.getItem('accessToken')
-
-    // Determinar endpoint según tipo de usuario y si es primera vez
-    let endpoint = ''
-    let requestData = {}
+    // Seleccionar API según tipo de usuario
+    const api = props.userType === 'tutor' ? tutoresAPI : alumnosAPI
+    let response
 
     if (props.requiresPasswordChange) {
-      // Primera vez - sin token
-      endpoint = `http://localhost:8000/api/${props.userType === 'tutor' ? 'tutores' : 'alumnos'}/set-password`
-      requestData = {
+      // Primera vez - setPassword
+      response = await api.setPassword({
         correo: passwordFormInternal.value.correo,
         contraseña_actual: passwordFormInternal.value.currentPassword,
         nueva_contraseña: passwordFormInternal.value.newPassword,
-      }
+      })
     } else {
-      // Cambio normal - con token
-      endpoint = `http://localhost:8000/api/${props.userType === 'tutor' ? 'tutores' : 'alumnos'}/change-password`
-      requestData = {
+      // Cambio normal - changePassword
+      response = await api.changePassword({
         contraseña_actual: passwordFormInternal.value.currentPassword,
         nueva_contraseña: passwordFormInternal.value.newPassword,
-      }
+      })
     }
-
-    const config = props.requiresPasswordChange
-      ? {}
-      : {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-
-    const response = props.requiresPasswordChange
-      ? await axios.post(endpoint, requestData)
-      : await axios.put(endpoint, requestData, config)
 
     if (response.status === 200) {
       passwordChangeSuccess.value = true
