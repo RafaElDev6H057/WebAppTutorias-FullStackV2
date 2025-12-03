@@ -1,6 +1,4 @@
 import axios from 'axios'
-// eslnt-disable-next-line no-unused-vars
-// import { useRouter } from 'vue-router'
 
 // ==================== CONFIGURACIÓN BASE ====================
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
@@ -30,13 +28,23 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Si el token expiró (401), redirigir al login
-    if (error.response && error.response.status === 401) {
+    // Solo redirigir si:
+    // 1. Es un error 401
+    // 2. HAY un token en localStorage (significa que estaba autenticado)
+    // 3. NO es una petición a endpoints de login
+
+    const isLoginRequest =
+      error.config?.url?.includes('/login') || error.config?.url?.includes('/set-password')
+
+    if (error.response?.status === 401 && localStorage.getItem('accessToken') && !isLoginRequest) {
+      // Guardar el rol antes de eliminarlo
+      const userRole = localStorage.getItem('userRole')
+
+      // Limpiar storage
       localStorage.removeItem('accessToken')
       localStorage.removeItem('userRole')
 
-      // Determinar la ruta de login según el rol previo
-      const userRole = localStorage.getItem('userRole')
+      // Determinar la ruta de login según el rol
       let loginRoute = '/'
 
       switch (userRole) {
@@ -49,14 +57,20 @@ apiClient.interceptors.response.use(
         case 'super_admin':
           loginRoute = '/login_admin'
           break
+        case 'psicologia':
+        case 'ciencias_basicas':
+        case 'jefatura_academica':
+          loginRoute = '/'
+          break
         default:
           loginRoute = '/'
       }
 
-      // Redirigir (nota: en composables se puede usar router.push directamente)
+      console.log('🔒 Sesión expirada. Redirigiendo al login...')
       window.location.href = loginRoute
     }
 
+    // Para cualquier otro error (incluidos los 401 en login), simplemente rechazar
     return Promise.reject(error)
   },
 )
