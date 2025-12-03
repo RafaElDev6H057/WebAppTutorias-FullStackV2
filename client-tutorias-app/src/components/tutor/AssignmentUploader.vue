@@ -1,6 +1,6 @@
 <script setup>
+import { tutoriasAPI } from '@/api/tutorias'
 import { ref, computed } from 'vue'
-import axios from 'axios'
 
 // --- Props y Emits ---
 defineProps({
@@ -65,29 +65,11 @@ const processFiles = async () => {
   processingLog.value = [`🏁 Iniciando procesamiento de ${totalFilesToProcess.value} archivos...`]
   filesProcessed.value = 0
 
-  const token = localStorage.getItem('accessToken')
-  if (!token) {
-    processingLog.value.push('❌ Error: No se encontró token. Inicie sesión.')
-    isProcessing.value = false
-    return
-  }
-
   for (const file of selectedFiles.value) {
     processingLog.value.push(`⏳ Procesando ${file.name}...`)
-    const formData = new FormData()
-    formData.append('file', file)
 
     try {
-      const response = await axios.post(
-        'http://localhost:8000/api/tutorias/upload-assignment',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
+      const response = await tutoriasAPI.uploadAssignment(file)
 
       processingLog.value.push(`✅ ${file.name}: Procesado correctamente`)
       processingLog.value.push(
@@ -111,16 +93,13 @@ const processFiles = async () => {
       }
     } catch (error) {
       console.error(`Error procesando ${file.name}:`, error)
-      let errorDetail = 'Error desconocido.'
-      if (error.response && error.response.data && error.response.data.detail) {
-        errorDetail = error.response.data.detail
-      } else if (error.message) {
-        errorDetail = error.message
-      }
+
+      const errorDetail = error.response?.data?.detail || error.message || 'Error desconocido.'
       processingLog.value.push(`❌ ${file.name}: Error - ${errorDetail}`)
     } finally {
       filesProcessed.value++
     }
+
     processingLog.value.push(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`)
   }
 

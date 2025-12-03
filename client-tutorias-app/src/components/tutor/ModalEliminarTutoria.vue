@@ -204,8 +204,8 @@
 </template>
 
 <script setup>
+import { tutoriasAPI } from '@/api/tutorias'
 import { ref } from 'vue'
-import axios from 'axios'
 
 // ==================== PROPS ====================
 const props = defineProps({
@@ -249,15 +249,7 @@ const eliminarTutoria = async () => {
   isDeleting.value = true
 
   try {
-    const token = localStorage.getItem('accessToken')
-    const response = await axios.delete(
-      `http://localhost:8000/api/tutorias/${props.tutoria.tutoringId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
+    const response = await tutoriasAPI.delete(props.tutoria.tutoringId)
 
     if (response.status === 200 || response.status === 204) {
       // Mostrar mensaje de éxito

@@ -2,9 +2,7 @@
   <div class="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-hidden flex flex-col z-[9999]">
     <div class="flex-1 flex flex-col max-h-screen">
       <!-- Header con más color -->
-      <div
-        class="bg-[#0A3B76] shadow-2xl p-6 text-white flex-shrink-0"
-      >
+      <div class="bg-[#0A3B76] shadow-2xl p-6 text-white flex-shrink-0">
         <div class="flex justify-between items-center">
           <div>
             <h1 class="text-3xl font-bold drop-shadow-md">Reporte Integral de Tutoría</h1>
@@ -308,9 +306,7 @@
       <div class="flex-1 overflow-hidden bg-white shadow-xl rounded-xl border-2 border-gray-200">
         <div class="h-full overflow-auto">
           <table class="min-w-full divide-y divide-gray-200">
-            <thead
-              class="bg-[#0A3B76] sticky top-0 z-20 shadow-md"
-            >
+            <thead class="bg-[#0A3B76] sticky top-0 z-20 shadow-md">
               <tr>
                 <th
                   class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider sticky left-0 bg-[#0A3B76] z-30 border-r border-gray-300 min-w-[200px]"
@@ -678,19 +674,18 @@
 
                   <!-- Si NO está guardado (pendiente) -->
                   <button
-  v-else-if="alumno.estado === 'pendiente'"
-  @click="guardarAlumno(alumno)"
-  :disabled="alumno.estado === 'guardando' || tieneErrores(alumno)"
-  :class="[
-    'px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all text-xs font-bold shadow-md transform hover:scale-105',
-    tieneErrores(alumno)
-      ? 'bg-gray-400 text-gray-700 cursor-not-allowed'   // Gris institucional
-      : 'bg-[#0A3B76] text-white hover:bg-blue-800 focus:ring-[#0A3B76]', // Azul institucional
-  ]"
->
-  {{ tieneErrores(alumno) ? 'Errores' : 'Guardar' }}
-</button>
-
+                    v-else-if="alumno.estado === 'pendiente'"
+                    @click="guardarAlumno(alumno)"
+                    :disabled="alumno.estado === 'guardando' || tieneErrores(alumno)"
+                    :class="[
+                      'px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all text-xs font-bold shadow-md transform hover:scale-105',
+                      tieneErrores(alumno)
+                        ? 'bg-gray-400 text-gray-700 cursor-not-allowed' // Gris institucional
+                        : 'bg-[#0A3B76] text-white hover:bg-blue-800 focus:ring-[#0A3B76]', // Azul institucional
+                    ]"
+                  >
+                    {{ tieneErrores(alumno) ? 'Errores' : 'Guardar' }}
+                  </button>
 
                   <!-- Si está GUARDADO - Botones Ver/Editar/Eliminar -->
                   <div v-else-if="alumno.estado === 'guardado'" class="flex gap-2 justify-center">
@@ -797,9 +792,9 @@
 </template>
 
 <script setup>
+import { tutoriasAPI } from '@/api/tutorias'
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
-import TutorService from '@/services/TutorService.js'
 
 // ==================== PROPS ====================
 const props = defineProps({
@@ -971,15 +966,10 @@ const cargarTodosLosAlumnos = async () => {
   errorMessage.value = null
 
   try {
-    const responseInicial = await TutorService.getTutoriasPorTutor(props.tutorId, 1, 1, '')
+    const responseInicial = await tutoriasAPI.getByTutor(props.tutorId, 1, 1, '')
     totalAlumnos.value = responseInicial.data.total_tutorias
 
-    const response = await TutorService.getTutoriasPorTutor(
-      props.tutorId,
-      1,
-      totalAlumnos.value,
-      '',
-    )
+    const response = await tutoriasAPI.getByTutor(props.tutorId, 1, totalAlumnos.value, '')
 
     console.log('Response completa:', response.data)
 

@@ -854,9 +854,9 @@
 
 <script setup>
 import { alumnosAPI } from '@/api/alumnos'
+import { tutoriasAPI } from '@/api/tutorias'
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
 import AvisosAlumno from '@/components/student/AvisosAlumno.vue'
 
 // ==================== STATE - GENERAL ====================
@@ -924,9 +924,7 @@ const fetchTutorias = async () => {
       return
     }
 
-    const response = await axios.get(
-      `http://localhost:8000/api/tutorias/alumno/${alumno.value.id_alumno}`,
-    )
+    const response = await tutoriasAPI.getByAlumno(alumno.value.id_alumno)
 
     tutorias.value = response.data
     console.log('✅ Tutorías cargadas:', tutorias.value)

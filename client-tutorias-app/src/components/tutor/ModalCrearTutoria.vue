@@ -266,9 +266,9 @@
 </template>
 
 <script setup>
+import { tutoriasAPI } from '@/api/tutorias'
 import { alumnosAPI } from '@/api/alumnos'
 import { ref } from 'vue'
-import axios from 'axios'
 
 // ==================== PROPS ====================
 const props = defineProps({
@@ -383,23 +383,14 @@ const crearTutoria = async () => {
   isCreating.value = true
 
   try {
-    const token = localStorage.getItem('accessToken')
-    const response = await axios.post(
-      'http://localhost:8000/api/tutorias/',
-      {
-        periodo: periodoInput.value,
-        estado: 'pendiente',
-        observaciones: null,
-        semestre: parseInt(semestreSeleccionado.value),
-        alumno_id: alumnoSeleccionado.value.id_alumno,
-        tutor_id: props.tutorId,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
+    const response = await tutoriasAPI.create({
+      periodo: periodoInput.value,
+      estado: 'pendiente',
+      observaciones: null,
+      semestre: parseInt(semestreSeleccionado.value),
+      alumno_id: alumnoSeleccionado.value.id_alumno,
+      tutor_id: props.tutorId,
+    })
 
     if (response.status === 201 || response.status === 200) {
       errorModalCrear.value = null

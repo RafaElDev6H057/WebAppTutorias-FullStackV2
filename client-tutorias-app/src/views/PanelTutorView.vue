@@ -516,10 +516,10 @@
 
 <script setup>
 import { tutoresAPI } from '@/api/tutores'
+import { tutoriasAPI } from '@/api/tutorias'
 import { ref, computed, onMounted, watch, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import TutorService from '@/services/TutorService.js'
 import ReporteIntegralMasivo from '@/components/ReporteIntegralMasivo.vue'
 import BaseSearchInput from '@/components/ui/BaseSearchInput.vue'
 import ReporteIndividual1 from '@/components/tutor/ReporteIndividual1.vue'
@@ -639,7 +639,7 @@ const fetchAssignedStudents = async (page) => {
   error.value = null
 
   try {
-    const response = await TutorService.getTutoriasPorTutor(
+    const response = await tutoriasAPI.getByTutor(
       tutor.value.id_tutor,
       page,
       itemsPerPage.value,
@@ -729,9 +729,7 @@ watch(searchQuery, () => {
 // ==================== MODAL HANDLERS ====================
 const viewDetails = async (student) => {
   try {
-    const tutoringResponse = await axios.get(
-      `http://localhost:8000/api/tutorias/alumno/${student.tutoringId}`,
-    )
+    const tutoringResponse = await tutoriasAPI.getByAlumno(student.tutoringId)
 
     selectedStudent.value = {
       ...tutoringResponse.data.alumno,
