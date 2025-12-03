@@ -80,4 +80,11 @@ export const reportesAPI = {
       responseType: 'blob',
     })
   },
+
+  // ==================== REPORTE ANEXO 3 ====================
+  downloadAnexo3Excel(periodo) {
+    return apiClient.get(`/api/reportes/anexo-3/excel/${periodo}`, {
+      responseType: 'blob',
+    })
+  },
 }

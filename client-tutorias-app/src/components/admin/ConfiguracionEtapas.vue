@@ -395,6 +395,7 @@
 </template>
 
 <script setup>
+import { reportesAPI } from '@/api/reportes'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
@@ -501,23 +502,7 @@ const descargarAnexo3 = async () => {
   successAnexo.value = null
 
   try {
-    const token = localStorage.getItem('accessToken')
-
-    if (!token) {
-      console.log('No hay token, redirigiendo al login...')
-      router.push('/login_admin')
-      return
-    }
-
-    const response = await axios.get(
-      `http://localhost:8000/api/reportes/anexo-3/excel/${periodoAnexo.value}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        responseType: 'blob',
-      },
-    )
+    const response = await reportesAPI.downloadAnexo3Excel(periodoAnexo.value)
 
     // Crear el blob y descargar
     const blob = new Blob([response.data], {
