@@ -1,6 +1,32 @@
 import apiClient from './client'
 
 export const reportesAPI = {
+  // ==================== REPORTE INTEGRAL ====================
+  getIntegralByTutoria(idTutoria) {
+    return apiClient.get(`/api/reportes/integral/tutoria/${idTutoria}`)
+  },
+
+  getIntegralByReporte(id) {
+    return apiClient.get(`/api/reportes/integral/${id}`)
+  },
+
+  createIntegral(data) {
+    return apiClient.post('/api/reportes/integral', data)
+  },
+
+  updateIntegral(id, data) {
+    return apiClient.put(`/api/reportes/integral/${id}`, data)
+  },
+
+  deleteIntegral(id) {
+    return apiClient.delete(`/api/reportes/integral/${id}`)
+  },
+
+  downloadIntegralPDF(id, periodo) {
+    return apiClient.get(`/api/reportes/integral/pdf/tutor/${id}/periodo/${periodo}`, {
+      responseType: 'blob',
+    })
+  },
   // ==================== REPORTE GENERAL 1 ====================
   getGeneral1ByTutor() {
     return apiClient.get('/api/reportes/general-1/tutor')
