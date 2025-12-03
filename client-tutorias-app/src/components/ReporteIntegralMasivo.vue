@@ -795,7 +795,7 @@
 import { tutoriasAPI } from '@/api/tutorias'
 import { reportesAPI } from '@/api/reportes'
 import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
+import { configuracionesAPI } from '@/api/configuraciones'
 
 // ==================== PROPS ====================
 const props = defineProps({
@@ -939,13 +939,8 @@ const tieneErrores = (alumno) => {
 const fetchConfiguracion = async () => {
   try {
     isLoadingConfig.value = true
-    const token = localStorage.getItem('accessToken')
 
-    const response = await axios.get('http://localhost:8000/api/configuracion/', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    const response = await configuracionesAPI.getEtapaActual()
 
     if (response.status === 200) {
       reporteIntegralEtapa.value = response.data.reporte_integral_etapa

@@ -336,11 +336,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
-
-// ==================== ROUTER ====================
-const router = useRouter()
+import { configuracionesAPI } from '@/api/configuraciones'
 
 // ==================== STATE ====================
 const selectedFile = ref(null)
@@ -397,27 +393,7 @@ const uploadTemplate = async () => {
   successMessage.value = null
 
   try {
-    const token = localStorage.getItem('accessToken')
-
-    if (!token) {
-      console.log('No hay token, redirigiendo al login...')
-      router.push('/login_admin')
-      return
-    }
-
-    const formData = new FormData()
-    formData.append('file', selectedFile.value)
-
-    const response = await axios.post(
-      'http://localhost:8000/api/configuracion/upload-template/integral',
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      },
-    )
+    const response = await configuracionesAPI.updatePlantillaIntegral(selectedFile.value)
 
     if (response.status === 200) {
       successMessage.value = '✅ Plantilla actualizada exitosamente'
@@ -458,23 +434,7 @@ const resetTemplate = async () => {
   successMessage.value = null
 
   try {
-    const token = localStorage.getItem('accessToken')
-
-    if (!token) {
-      console.log('No hay token, redirigiendo al login...')
-      router.push('/login_admin')
-      return
-    }
-
-    const response = await axios.post(
-      'http://localhost:8000/api/configuracion/reset-template/integral',
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
+    const response = await configuracionesAPI.resetPlantillaIntegral()
 
     if (response.status === 200) {
       successMessage.value = '✅ Plantilla restaurada exitosamente al formato original'

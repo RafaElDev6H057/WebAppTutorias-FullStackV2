@@ -397,11 +397,7 @@
 <script setup>
 import { reportesAPI } from '@/api/reportes'
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
-
-// ==================== ROUTER ====================
-const router = useRouter()
+import { configuracionesAPI } from '@/api/configuraciones'
 
 // ==================== STATE - ETAPAS ====================
 const reporteIntegralEtapa = ref(null)
@@ -421,19 +417,7 @@ const fetchConfiguracion = async () => {
   errorEtapa.value = null
 
   try {
-    const token = localStorage.getItem('accessToken')
-
-    if (!token) {
-      console.log('No hay token, redirigiendo al login...')
-      router.push('/login_admin')
-      return
-    }
-
-    const response = await axios.get('http://localhost:8000/api/configuracion/', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    const response = await configuracionesAPI.getEtapaActual()
 
     if (response.status === 200) {
       reporteIntegralEtapa.value = response.data.reporte_integral_etapa
@@ -453,25 +437,9 @@ const cambiarEtapa = async (nuevaEtapa) => {
   successEtapa.value = null
 
   try {
-    const token = localStorage.getItem('accessToken')
-
-    if (!token) {
-      console.log('No hay token, redirigiendo al login...')
-      router.push('/login_admin')
-      return
-    }
-
-    const response = await axios.put(
-      'http://localhost:8000/api/configuracion/',
-      {
-        reporte_integral_etapa: nuevaEtapa,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
+    const response = await configuracionesAPI.updateEtapaActual({
+      reporte_integral_etapa: nuevaEtapa,
+    })
 
     if (response.status === 200) {
       reporteIntegralEtapa.value = nuevaEtapa
