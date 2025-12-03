@@ -196,6 +196,7 @@
 </template>
 
 <script setup>
+import { administradoresAPI } from '@/api/administradores'
 import HomeLogo from '../components/icons/HomeLogo.vue'
 import ShowEye from '@/components/icons/ShowEye.vue'
 import HideEye from '@/components/icons/HideEye.vue'
@@ -203,7 +204,6 @@ import PsicologiaLogo from '@/components/icons/PsicologiaLogo.vue'
 import CienciasLogo from '@/components/icons/CienciasLogo.vue'
 import JefaturaLogo from '@/components/icons/JefaturaLogo.vue'
 import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
 import { RouterLink, useRouter, useRoute } from 'vue-router'
 
 // ==================== ROUTER ====================
@@ -320,14 +320,9 @@ const handleSubmit = async () => {
   errorMessage.value = ''
 
   try {
-    const formData = new URLSearchParams()
-    formData.append('username', usuario.value)
-    formData.append('password', password.value)
-
-    const response = await axios.post('http://localhost:8000/api/administradores/login', formData, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+    const response = await administradoresAPI.login({
+      username: usuario.value,
+      password: password.value,
     })
 
     if (response.status === 200 && response.data.access_token) {
