@@ -98,24 +98,44 @@ def process_and_load_excel(db: Session, file: UploadFile) -> int:
             "carrera": "carrera",
             "semestre": "semestre_actual",
             "estatus": "estado",
-            "email": "correo"
+            "email": "correo",
+            "telefono": "telefono"  # ✅ AGREGADO - Mapeo explícito
         }
         
-        df = pd.read_excel(file.file, dtype={'numero_control': str})
-        df.rename(columns=column_map, inplace=True)
-        df = df.astype(object).where(pd.notnull(df), None)
+        # ✅ FORZAR telefono como string al leer
+        df = pd.read_excel(
+            file.file, 
+            dtype={
+                'numero_control': str,
+                'telefono': str  # ✅ AGREGADO - Forzar como string
+            }
+        )
         
+        df.rename(columns=column_map, inplace=True)
+        df = df.astype(object).where(pd.notnull(df), None) #type: ignore
+        
+        # Normalizar nombres
         name_columns = ['nombre', 'apellido_p', 'apellido_m']
         for col in name_columns:
             if col in df.columns:
                 df[col] = df[col].str.title()
         
+        # Normalizar carrera
         if 'carrera' in df.columns:
             df['carrera'] = df['carrera'].str.title().str.replace(" En ", " en ")
         
+        # Normalizar correo
         if 'correo' in df.columns:
             df['correo'] = df['correo'].str.lower()
         
+        # ✅ AGREGADO - Normalizar teléfono
+        if 'telefono' in df.columns:
+            # Convertir cualquier valor a string, manejar NaN
+            df['telefono'] = df['telefono'].apply(
+                lambda x: str(x).strip() if pd.notna(x) and str(x).strip() != '' else None
+            )
+        
+        # Validar columnas requeridas
         required_columns = ['num_control', 'nombre', 'apellido_p', 'carrera', 'semestre_actual', 'correo']
         null_check = df[required_columns].isnull()
         
@@ -131,13 +151,24 @@ def process_and_load_excel(db: Session, file: UploadFile) -> int:
         for _, row in df.iterrows():
             row_data = row.to_dict()
             
+            # Manejar estado/estatus
             if 'estado' not in row_data and 'estatus' in row_data:
                 row_data['estado'] = row_data.pop('estatus')
             
-            # Contraseña temporal en texto plano (flag requires_password_change=True por defecto en modelo)
+            # Contraseña temporal
             row_data["contraseña"] = f'{row_data["num_control"]}itsf'
+            
+            # ✅ AGREGADO - Asegurar que telefono sea string o None
+            if 'telefono' in row_data:
+                telefono_val = row_data['telefono']
+                if telefono_val is not None and telefono_val != '' and telefono_val != 'nan':
+                    row_data['telefono'] = str(telefono_val)
+                else:
+                    row_data['telefono'] = None
+            
             alumnos_a_crear.append(Alumno(**row_data))
         
+        # Limpiar tabla y cargar nuevos datos
         db.execute(delete(Alumno))
         db.add_all(alumnos_a_crear)
         db.commit()
