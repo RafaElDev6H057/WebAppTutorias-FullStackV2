@@ -12,4 +12,12 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  // Agregamos la configuración de esbuild aquí
+  esbuild: {
+    // Elimina la función 'debugger' del código final
+    drop: ['debugger'],
+    // Elimina las llamadas a console.log, info, debug y trace,
+    // pero MANTIENE console.warn y console.error para que puedas ver errores en producción.
+    pure: ['console.log', 'console.info', 'console.debug', 'console.trace'],
+  },
 })
