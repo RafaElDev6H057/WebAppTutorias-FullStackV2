@@ -7,6 +7,7 @@ y registro de todos los routers del sistema de gestión de tutorías.
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
 from app.database import create_db_and_tables
 from app.routers import (
@@ -23,11 +24,33 @@ from app.routers import (
     reportes_anexos
 )
 
-app = FastAPI(title="API CRUD Tutorías")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Gestiona el ciclo de vida de la aplicación.
+    Crea las tablas al iniciar si no existen.
+    """
+    try:
+        create_db_and_tables()
+    except Exception as e:
+        print(f"Error durante inicialización: {e}")
+    yield
 
+app = FastAPI(
+    title="API CRUD Tutorías",
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+# --- CONFIGURACIÓN DE CORS ---
 origins = [
+    # Desarrollo Local
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    
+    # Producción (Vercel)
+    "https://web-app-tutorias.vercel.app", 
 ]
 
 app.add_middleware(
@@ -38,22 +61,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-@app.on_event("startup")
-async def on_startup():
-    """
-    Evento de inicio de la aplicación.
-    
-    Crea las tablas de la base de datos si no existen.
-    Maneja errores de inicialización de forma silenciosa para
-    permitir recargas graciosas durante el desarrollo.
-    """
-    try:
-        create_db_and_tables()
-    except Exception as e:
-        print(f"Error durante inicialización: {e}")
-
-
+# Registro de Routers
 app.include_router(administradores.router, prefix="/api")
 app.include_router(alumnos.router, prefix="/api")
 app.include_router(tutores.router, prefix="/api")
@@ -65,3 +73,7 @@ app.include_router(reportes_integral.router, prefix="/api")
 app.include_router(reportes_general1.router, prefix="/api")
 app.include_router(reportes_general2.router, prefix="/api")
 app.include_router(reportes_anexos.router, prefix="/api")
+
+@app.get("/")
+def read_root():
+    return {"message": "API de Tutorías operando correctamente."}
