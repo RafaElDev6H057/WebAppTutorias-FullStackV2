@@ -1,0 +1,39 @@
+services:
+  frontend:
+    build:
+      context: ./client-tutorias-app
+      target: dev-stage
+    container_name: tutorias-frontend-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client-tutorias-app:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    networks:
+      - tutorias-network
+
+  backend:
+    build:
+      context: ./server-tutorias-app
+      target: development
+    container_name: tutorias-backend-dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./server-tutorias-app:/code
+      - ./server-tutorias-app/data:/code/data
+    environment:
+      - DATABASE_URL=sqlite:///./data/tutorias.db
+      - ENV=development
+      - DEBUG=True
+      - CORS_ORIGINS=http://localhost:5173
+    networks:
+      - tutorias-network
+
+networks:
+  tutorias-network:
+    driver: bridge
