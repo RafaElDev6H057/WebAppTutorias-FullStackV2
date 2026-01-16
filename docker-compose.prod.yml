@@ -3,7 +3,7 @@ services:
     build:
       context: ./client-tutorias-app
       target: production-stage
-      args: # ← AGREGAR ESTO
+      args:
         VITE_API_URL: https://tutorias-back.devizac.top
     container_name: tutorias-frontend-prod
     expose:
@@ -22,7 +22,7 @@ services:
           "--quiet",
           "--tries=1",
           "--spider",
-          "http://localhost:80",
+          "http://localhost:80/",
         ]
       interval: 30s
       timeout: 10s
@@ -35,13 +35,13 @@ services:
       target: production
     container_name: tutorias-backend-prod
     expose:
-      - "8000" # ← CAMBIADO: Ahora coincide con el Dockerfile
+      - "8000"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       - ENV=production
       - DEBUG=False
       - SECRET_KEY=${SECRET_KEY}
-      - CORS_ORIGINS=https://tutorias.devizac.top # ← Tu dominio frontend
+      - CORS_ORIGINS=https://tutorias.devizac.top
     depends_on:
       db:
         condition: service_healthy
@@ -49,7 +49,7 @@ services:
       - tutorias-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"] # ← CAMBIADO
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -62,9 +62,9 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
-      - PGDATA=/var/lib/postgresql/data/pgdata # ← AGREGADO: Mejor práctica
+      - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - postgres_data:/var/lib/postgresql/data # ← Configuración correcta
+      - postgres_data:/var/lib/postgresql/data
     expose:
       - "5432"
     networks:
