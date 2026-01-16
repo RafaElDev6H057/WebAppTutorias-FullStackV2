@@ -14,8 +14,8 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Build argument para la API URL
-ARG VITE_API_URL=https://tutorias-back.devizac.top
+# Build argument - USA RUTA RELATIVA, NO DOMINIO COMPLETO
+ARG VITE_API_URL=/api
 ENV VITE_API_URL=$VITE_API_URL
 
 # Build for production
@@ -52,7 +52,7 @@ COPY --from=build-stage /app/dist /usr/share/nginx/html
 # Expose port 80
 EXPOSE 80
 
-# Health check CORREGIDO - especifica puerto 80 explícitamente
+# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
   CMD wget --quiet --tries=1 --spider http://localhost:80/ || exit 1
 
