@@ -4,7 +4,7 @@ services:
       context: ./client-tutorias-app
       target: production-stage
       args:
-        VITE_API_URL: /api # ← CAMBIO CRÍTICO: ruta relativa
+        VITE_API_URL: https://tutorias-back.devizac.top
     container_name: tutorias-frontend-prod
     expose:
       - "80"
