@@ -8,6 +8,7 @@ y registro de todos los routers del sistema de gestión de tutorías.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from sqlalchemy import text
 
 from app.core.config import settings
 from app.database import create_db_and_tables, engine
@@ -93,9 +94,9 @@ async def health_check():
     Verifica el estado de la API y la conexión a la base de datos.
     """
     try:
-        # Intenta hacer una query simple para verificar la conexión a la DB
+        # Usar text() para SQLAlchemy 2.x
         with engine.connect() as connection:
-            connection.execute("SELECT 1")
+            connection.execute(text("SELECT 1"))  # ← CAMBIO AQUÍ
             db_status = "connected"
     except Exception as e:
         db_status = f"error: {str(e)}"

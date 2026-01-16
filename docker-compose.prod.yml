@@ -3,11 +3,11 @@ services:
     build:
       context: ./client-tutorias-app
       target: production-stage
+      args: # ← AGREGAR ESTO
+        VITE_API_URL: https://tutorias-back.devizac.top
     container_name: tutorias-frontend-prod
     expose:
-      - "80" # ← Puerto interno correcto
-    environment:
-      - VITE_API_URL=https://tutorias-back.devizac.top # ← Usa el dominio del backend
+      - "80"
     depends_on:
       backend:
         condition: service_healthy
