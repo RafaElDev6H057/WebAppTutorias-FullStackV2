@@ -28,8 +28,10 @@ class Settings:
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./database.db")
 
     # Controla si SQLModel imprime las consultas en consola.
-    # True en desarrollo para depuración, False en producción.
-    DB_ECHO: bool = os.getenv("DB_ECHO", "True").lower() == "true"
+    # False en producción para mejor performance
+    DB_ECHO: bool = (
+        os.getenv("DB_ECHO", "False" if ENV == "production" else "True").lower() == "true"
+    )
 
     # --- Connection Pool Settings (PostgreSQL) ---
     # Número de conexiones permanentes en el pool
@@ -56,7 +58,11 @@ class Settings:
     )  # 8 horas
 
     # --- CORS ---
-    CORS_ORIGINS: list = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+    # Procesa la lista de origins y elimina espacios en blanco
+    CORS_ORIGINS: list = [
+        origin.strip()
+        for origin in os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+    ]
 
     @staticmethod
     def normalize_database_url(url: str) -> str:
@@ -82,3 +88,9 @@ settings = Settings()
 
 # Normalizar DATABASE_URL al instanciar
 settings.DATABASE_URL = Settings.normalize_database_url(settings.DATABASE_URL)
+
+# Debug logging para verificar configuración en desarrollo
+if settings.ENV == "development":
+    print(f"🔧 ENV: {settings.ENV}")
+    print(f"🗄️  DATABASE: {settings.DATABASE_URL}")
+    print(f"🌐 CORS: {settings.CORS_ORIGINS}")
